@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cafe Tycoon - Kafe Yönetim Simülasyonu</title>
+  <meta name="description" content="Commercial-quality 2.5D Isometric Cafe Management Simulation Game">
+  <link rel="stylesheet" href="/src/style.css">
+</head>
+<body>
+  <div id="app">
+    <!-- 2.5D Isometric Canvas -->
+    <canvas id="game-canvas"></canvas>
+
+    <!-- TOP HUD BAR -->
+    <header class="top-hud glass-panel">
+      <div class="brand-section">
+        <span class="brand-icon">☕</span>
+        <div>
+          <h1 id="cafe-name" class="cafe-title">Ekin Cafe</h1>
+          <div id="user-name" class="user-subtitle">İşletmeci: Mehmet</div>
+        </div>
+      </div>
+
+      <div class="stats-group">
+        <div class="stat-pill" title="Kasadaki Toplam Bakiye">
+          <span class="icon">💰</span>
+          <span id="stat-money" class="value gold">100,000 TL</span>
+        </div>
+        <div class="stat-pill" title="Günlük Brüt Kar">
+          <span class="icon">📈</span>
+          <span id="stat-daily-profit" class="value green">+0 TL</span>
+        </div>
+        <div id="stat-pill-customer-frequency" class="stat-pill clickable-stat-pill" style="cursor: pointer;" title="Müşteri Akışı & Trafik Detayları (Detaylar İçin Tıklayın)">
+          <span class="icon">⚡</span>
+          <span id="stat-customer-frequency" class="value green">4.5 dk'da 1 (Yüksek)</span>
+        </div>
+        <div class="stat-pill" title="Kafe İtibar Derecesi">
+          <span class="icon">⭐</span>
+          <span id="stat-reputation" class="value">4.2 Yıldız</span>
+        </div>
+        <div class="stat-pill" title="Kafe Seviyesi">
+          <span class="icon">🏆</span>
+          <span id="stat-level" class="value">Seviye 1</span>
+        </div>
+      </div>
+
+      <div class="clock-group">
+        <span id="time-display" class="time-display">Gün 1 - 08:00</span>
+        <div class="speed-btn-group">
+          <button id="speed-pause" class="speed-btn">⏸</button>
+          <button id="speed-1x" class="speed-btn active">1x</button>
+          <button id="speed-2x" class="speed-btn">2x</button>
+          <button id="speed-3x" class="speed-btn">3x</button>
+        </div>
+        <button id="sound-btn" class="speed-btn" title="Ses Mute/Unmute">🔊</button>
+      </div>
+    </header>
+
+    <!-- LEFT SIDEBAR CONTAINER (FLEX COLUMN FOR QUEST & NOTIFICATIONS) -->
+    <aside class="left-sidebar">
+      <!-- QUEST DRAWER -->
+      <div class="quest-drawer glass-panel">
+        <div class="quest-header">
+          <div class="quest-header-left">
+            <span>📋</span> <span id="quest-number">GÖREV 1 / 50</span>
+          </div>
+          <div id="quest-progress" class="quest-progress-pill">0 / 1</div>
+        </div>
+        <div id="quest-title" class="quest-title">1. İlk Müşterini Ağırla ☕</div>
+        <div id="quest-desc" class="quest-desc">Gelen müşteriye kahve servis yap.</div>
+        <div class="quest-rewards">
+          <span class="reward-label">🎁 Ödül:</span>
+          <span id="reward-xp" class="reward-tag">+50 XP</span>
+          <span id="reward-money" class="reward-tag">+200 TL</span>
+        </div>
+      </div>
+
+      <!-- WARNING NOTIFICATIONS COLUMN -->
+      <div id="notifications-drawer" class="notifications-drawer glass-panel">
+        <div class="notifications-header">
+          <span>⚠️</span> UYARILAR KOLONU
+        </div>
+        <div id="notifications-list" class="notifications-list">
+          <div id="no-warnings-msg" class="no-warnings-msg">⚠️ Şu an aktif stok uyarısı yok</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- RIGHT SIDEBAR CONTAINER (FLEX COLUMN FOR KITCHEN / PREPARATION QUEUE) -->
+    <aside class="right-sidebar">
+      <div id="kitchen-drawer" class="kitchen-drawer glass-panel">
+        <div class="kitchen-header">
+          <span>🍳</span> MUTFAK & BARIŞTA KUYRUĞU
+        </div>
+        <div id="kitchen-list" class="kitchen-list">
+          <div id="no-kitchen-msg" class="no-kitchen-msg">🍳 Şu an hazırlanmakta olan ürün yok</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- BOTTOM NAVIGATION DOCK -->
+    <nav class="bottom-dock glass-panel">
+      <button id="btn-build" class="dock-btn">
+        <span class="icon">🔨</span>
+        <span>İnşa</span>
+      </button>
+      <button id="btn-menu" class="dock-btn">
+        <span class="icon">📋</span>
+        <span>Menü</span>
+      </button>
+      <button id="btn-staff" class="dock-btn">
+        <span class="icon">👨‍🍳</span>
+        <span>Personel</span>
+      </button>
+      <button id="btn-inventory" class="dock-btn">
+        <span class="icon">📦</span>
+        <span>Stok</span>
+      </button>
+      <button id="btn-leaderboard" class="dock-btn" title="Skorboard & Liderlik Tablosu">
+        <span class="icon">🏆</span>
+        <span>Liderler</span>
+      </button>
+      <button id="btn-reputation" class="dock-btn">
+        <span class="icon">⭐</span>
+        <span>İtibar</span>
+      </button>
+      <button id="btn-end-day" class="dock-btn">
+        <span class="icon">🌙</span>
+        <span>Günü Bitir</span>
+      </button>
+      <button id="btn-finish-game" class="dock-btn" style="border-color: rgba(255, 179, 0, 0.5); color: #ffd54f;" title="Oyunu Tamamla ve Kafeyi Devret">
+        <span class="icon">🏁</span>
+        <span>Oyunu Tamamla</span>
+      </button>
+    </nav>
+
+    <!-- BOTTOM-RIGHT ZOOM CONTROLS -->
+    <div class="zoom-controls glass-panel">
+      <button id="btn-zoom-in" class="zoom-btn" title="Yakınlaştır (+)">+</button>
+      <button id="btn-zoom-out" class="zoom-btn" title="Uzaklaştır (-)">-</button>
+      <button id="btn-zoom-reset" class="zoom-btn" title="Sıfırla (100%)">🎯</button>
+    </div>
+
+    <!-- FLOATING OBJECT SELECTION / SELL & REPAIR POPOVER -->
+    <div id="object-sell-popover" class="object-sell-popover glass-panel">
+      <div class="popover-header">
+        <span id="popover-item-name" class="popover-title">Ahşap Bistro Masası</span>
+        <button id="popover-close-btn" class="popover-close-btn">&times;</button>
+      </div>
+      <div class="popover-actions">
+        <button id="btn-move-item" class="move-btn" style="background: rgba(33, 150, 243, 0.25); border: 1px solid #2196f3; color: #64b5f6; border-radius: 8px; padding: 6px 12px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 4px;">
+          <span class="icon">🚚</span> Taşı
+        </button>
+        <button id="btn-repair-item" class="repair-btn" style="display:none;">
+          <span class="icon">🔧</span> <span id="popover-repair-label">Tamir Et (<span id="popover-repair-price">500</span> TL)</span>
+        </button>
+        <button id="btn-sell-item" class="sell-btn">
+          <span class="icon">💰</span> Sat (<span id="popover-sell-price">250</span> TL)
+        </button>
+      </div>
+    </div>
+
+    <!-- CUSTOMER FLOW BREAKDOWN POPOVER TOOLTIP -->
+    <div id="flow-breakdown-popover" class="flow-breakdown-popover glass-panel"></div>
+
+    <!-- GENERIC MODAL OVERLAY -->
+    <div id="modal-overlay" class="modal-overlay">
+      <div class="modal-content glass-panel">
+        <div class="modal-header">
+          <h2 id="modal-title" class="modal-title">Mağaza & Dekorasyon</h2>
+          <button id="modal-close" class="modal-close-btn">&times;</button>
+        </div>
+        <div id="modal-body">
+          <!-- Dynamic Content Rendered by UIManager -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
