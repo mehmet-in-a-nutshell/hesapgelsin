@@ -10,6 +10,7 @@ import { LOCATIONS } from '../game/LocationManager.js';
 import { EMPLOYEE_TRAITS, Employee } from '../game/EmployeeAI.js';
 import { audioEngine } from '../audio/AudioEngine.js';
 import { QUESTS } from '../game/QuestManager.js';
+import { LeaderboardService } from '../game/LeaderboardService.js';
 
 export class UIManager {
   constructor(gameState, recipeManager, questManager, employeeSystem, canvasRenderer) {
@@ -1867,59 +1868,26 @@ export class UIManager {
 
   // --- LEADERBOARD LOGIC & MODAL ---
   getLeaderboardEntries() {
-    try {
-      const raw = localStorage.getItem('cafe_tycoon_leaderboard');
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed)) {
-          // Remove mock entries if they exist in localStorage from previous builds
-          let filtered = parsed.filter(e => 
-            !(e.userName === 'Mehmet' && e.cafeName === 'Coffee Central') &&
-            !(e.userName === 'Ayşe' && e.cafeName === 'Plaza Brew') &&
-            !(e.userName === 'Can' && e.cafeName === 'Coastal Grind') &&
-            !(e.userName === 'Zeynep' && e.cafeName === 'Bistro Express')
-          );
-
-          // Deduplicate any existing identical entries
-          const uniqueEntries = [];
-          const seen = new Set();
-          filtered.forEach(e => {
-            const key = `${e.userName}_${e.cafeName}_${e.money}_${e.customersServed}_${e.date}`;
-            if (!seen.has(key)) {
-              seen.add(key);
-              uniqueEntries.push(e);
-            }
-          });
-
-          if (uniqueEntries.length !== parsed.length) {
-            localStorage.setItem('cafe_tycoon_leaderboard', JSON.stringify(uniqueEntries));
-          }
-          return uniqueEntries;
-        }
-      }
-    } catch (e) {
-      console.warn('Failed to load leaderboard from localStorage:', e);
-    }
-
-    return [];
+    return LeaderboardService.getLocalEntries();
   }
 
-  saveScoreToLeaderboard(entry) {
+  async saveScoreToLeaderboard(entry) {
     try {
-      let entries = this.getLeaderboardEntries();
-      if (!Array.isArray(entries)) entries = [];
-      entries.push(entry);
-      entries.sort((a, b) => (Number(b.money) || 0) - (Number(a.money) || 0));
-      const trimmed = entries.slice(0, 30);
-      localStorage.setItem('cafe_tycoon_leaderboard', JSON.stringify(trimmed));
+      await LeaderboardService.saveEntry(entry);
     } catch (e) {
       console.error('Failed to save score to leaderboard:', e);
     }
   }
 
-  openLeaderboardModal(options = {}) {
+  async openLeaderboardModal(options = {}) {
     audioEngine.playClick();
-    const entries = this.getLeaderboardEntries();
+
+    const isSupabaseActive = LeaderboardService.isConfigured();
+    const statusBadge = isSupabaseActive
+      ? `<span style="background: rgba(76, 175, 80, 0.2); color: #81c784; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; border: 1px solid rgba(76, 175, 80, 0.4);">🌐 CANLI GLOBAL LİDERLİK TABLOSU (SUPABASE)</span>`
+      : `<span style="background: rgba(255, 179, 0, 0.2); color: #ffd54f; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; border: 1px solid rgba(255, 179, 0, 0.4);" title="Supabase Bağlandığında Tüm Oyuncular Canlı Sıralamasını Görür">💻 LOKAL LİDERLİK TABLOSU</span>`;
+
+    const entries = await LeaderboardService.getEntries();
     entries.sort((a, b) => (Number(b.money) || 0) - (Number(a.money) || 0));
 
     let userRankIndex = -1;
@@ -2030,9 +1998,10 @@ export class UIManager {
     const html = `
       <div style="padding: 6px; color: #fff;">
         ${topBannerHtml}
-        <p style="font-size: 13px; color: #ccc; margin-bottom: 14px; text-align: center;">
-          🏆 En başarılı kafe işletmecileri ve servet sıralaması:
-        </p>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; gap: 8px; flex-wrap: wrap;">
+          <span style="font-size: 13px; color: #ccc;">🏆 En başarılı kafe işletmecileri ve servet sıralaması:</span>
+          ${statusBadge}
+        </div>
 
         <div style="max-height: 400px; overflow-y: auto; border-radius: 12px; background: rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.12);">
           <table style="width: 100%; border-collapse: separate; border-spacing: 0; text-align: left;">
