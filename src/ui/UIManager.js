@@ -9,6 +9,7 @@ import { INGREDIENT_TYPES } from '../game/Economy.js';
 import { LOCATIONS } from '../game/LocationManager.js';
 import { EMPLOYEE_TRAITS, Employee } from '../game/EmployeeAI.js';
 import { audioEngine } from '../audio/AudioEngine.js';
+import { QUESTS } from '../game/QuestManager.js';
 
 export class UIManager {
   constructor(gameState, recipeManager, questManager, employeeSystem, canvasRenderer) {
@@ -180,6 +181,12 @@ export class UIManager {
     if (statRep && statRep.parentElement) {
       statRep.parentElement.style.cursor = 'pointer';
       statRep.parentElement.addEventListener('click', () => this.openReputationModal());
+    }
+
+    if (this.questDrawer) {
+      this.questDrawer.addEventListener('click', () => {
+        this.showQuestsModal();
+      });
     }
 
     document.getElementById('btn-end-day').addEventListener('click', () => this.openEndDayModal());
@@ -458,6 +465,110 @@ export class UIManager {
     `;
 
     this.openModal('⭐ İtibar & Yıldız Derecesi Rehberi', html);
+  }
+
+  showQuestsModal() {
+    audioEngine.playClick();
+
+    if (!this.questManager) return;
+
+    const currentIndex = this.questManager.currentQuestIndex;
+    const totalQuests = QUESTS.length;
+    const completedCount = Math.min(currentIndex, totalQuests);
+
+    let questListHTML = '';
+
+    QUESTS.forEach((q, idx) => {
+      const isCompleted = idx < currentIndex;
+      const isActive = idx === currentIndex;
+      const isLocked = idx > currentIndex;
+
+      let cardStyle = '';
+      let badgeHTML = '';
+      let itemIDAttr = '';
+      let progressText = '';
+
+      if (isActive) {
+        cardStyle = `background: linear-gradient(135deg, rgba(255, 179, 0, 0.22), rgba(255, 111, 0, 0.12)); border: 2px solid #ffb300; box-shadow: 0 0 16px rgba(255, 179, 0, 0.35); position: relative; border-radius: 12px; padding: 14px; transform: scale(1.01);`;
+        badgeHTML = `<span style="background: #ffb300; color: #000; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 0 8px rgba(255,179,0,0.5);">⚡ AKTİF GÖREV</span>`;
+        itemIDAttr = 'id="active-quest-item"';
+        progressText = `<div style="margin-top: 8px; font-size: 13px; font-weight: 700; color: #ffd54f; display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.3); padding: 6px 12px; border-radius: 8px;">
+          <span>İlerleme Durumu:</span>
+          <span>${this.questManager.getFormattedProgress()}</span>
+        </div>`;
+      } else if (isCompleted) {
+        cardStyle = `background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(76, 175, 80, 0.35); opacity: 0.55; border-radius: 12px; padding: 12px; transition: opacity 0.2s;`;
+        badgeHTML = `<span style="background: rgba(76, 175, 80, 0.2); color: #81c784; border: 1px solid rgba(76, 175, 80, 0.4); padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 700;">✅ TAMAMLANDI</span>`;
+      } else {
+        cardStyle = `background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.08); opacity: 0.75; border-radius: 12px; padding: 12px;`;
+        badgeHTML = `<span style="background: rgba(255, 255, 255, 0.08); color: #aaa; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 600;">🔒 KİLİTLİ</span>`;
+      }
+
+      const rewardMoneyText = q.rewardMoney.toLocaleString('tr-TR');
+      const rewardXPText = q.rewardXP.toLocaleString('tr-TR');
+
+      const titleStyle = isCompleted
+        ? 'color: #a5d6a7; text-decoration: line-through; opacity: 0.9; font-weight: 600;'
+        : (isActive ? 'color: #fff; font-weight: 800; font-size: 16px;' : 'color: #eee; font-weight: 700;');
+
+      const descStyle = isCompleted ? 'color: #888; font-size: 12px;' : 'color: #bbb; font-size: 13px;';
+
+      questListHTML += `
+        <div ${itemIDAttr} class="quest-list-card" style="${cardStyle}">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; gap: 8px;">
+            <div style="${titleStyle}">${q.title}</div>
+            <div>${badgeHTML}</div>
+          </div>
+          <div style="${descStyle} margin-bottom: 8px;">${q.desc}</div>
+          ${progressText}
+          <div style="display: flex; gap: 12px; font-size: 12px; margin-top: 8px; font-weight: 700;">
+            <span style="background: rgba(156, 39, 176, 0.2); border: 1px solid rgba(156, 39, 176, 0.4); color: #e1bee7; padding: 3px 8px; border-radius: 6px;">
+              🏆 +${rewardXPText} XP
+            </span>
+            <span style="background: rgba(255, 179, 0, 0.2); border: 1px solid rgba(255, 179, 0, 0.4); color: #ffe082; padding: 3px 8px; border-radius: 6px;">
+              💰 +${rewardMoneyText} TL
+            </span>
+          </div>
+        </div>
+      `;
+    });
+
+    const progressPercentage = Math.round((completedCount / totalQuests) * 100);
+
+    const html = `
+      <div style="padding: 6px 4px; color: #fff;">
+        <!-- TOP SUMMARY HEADER -->
+        <div style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 14px 16px; margin-bottom: 14px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <span style="font-weight: 700; font-size: 15px; color: #ffd54f;">🎯 Görev İlerlemesi</span>
+            <span style="font-weight: 800; font-size: 14px; color: #fff;">${completedCount} / ${totalQuests} Görev (${progressPercentage}%)</span>
+          </div>
+          <div style="width: 100%; height: 10px; background: rgba(255,255,255,0.1); border-radius: 5px; overflow: hidden;">
+            <div style="width: ${progressPercentage}%; height: 100%; background: linear-gradient(90deg, #4caf50, #ffb300); transition: width 0.3s;"></div>
+          </div>
+          <div style="font-size: 12px; color: #aaa; margin-top: 8px; text-align: center;">
+            💡 Sol üst köşedeki görev kutucuğuna tıklayarak istediğin zaman tüm görevleri inceleyebilirsin.
+          </div>
+        </div>
+
+        <!-- QUEST LIST CONTAINER -->
+        <div id="quest-modal-list-container" style="max-height: 480px; overflow-y: auto; padding-right: 6px; display: flex; flex-direction: column; gap: 10px;">
+          ${questListHTML}
+        </div>
+      </div>
+    `;
+
+    this.openModal('📋 Kafe Görevleri & Ödül Listesi (1-50)', html, '750px');
+
+    // Auto-scroll container to active quest item
+    setTimeout(() => {
+      const container = document.getElementById('quest-modal-list-container');
+      const activeItem = document.getElementById('active-quest-item');
+      if (container && activeItem) {
+        const topPos = activeItem.offsetTop - container.offsetTop - 20;
+        container.scrollTo({ top: Math.max(0, topPos), behavior: 'smooth' });
+      }
+    }, 100);
   }
 
   setSpeed(speed) {

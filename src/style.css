@@ -222,7 +222,34 @@ html, body {
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.27), opacity 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+  transition: transform 0.25s ease, opacity 0.4s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  cursor: pointer;
+  user-select: none;
+}
+
+.quest-drawer:hover {
+  border-color: rgba(255, 179, 0, 0.6) !important;
+  box-shadow: 0 4px 20px rgba(255, 179, 0, 0.25);
+  transform: translateY(-2px);
+}
+
+.quest-click-hint {
+  font-size: 11px;
+  color: #ffb300;
+  margin-top: 6px;
+  text-align: right;
+  font-weight: 700;
+  opacity: 0.85;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  transition: opacity 0.2s ease;
+}
+
+.quest-drawer:hover .quest-click-hint {
+  opacity: 1;
+  color: #ffd54f;
 }
 
 .quest-drawer.quest-completed {
