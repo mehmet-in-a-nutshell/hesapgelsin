@@ -1002,56 +1002,171 @@ export function renderDistrictProp(propId) {
     ctx.stroke();
 
   } else if (propId === 'DIGITAL_BILLBOARD_STOCK') {
-    // Finans Merkezi - High-Tech 3D Stock Ticker Billboard Pillar
+    // Finans Merkezi - Sleek 3D Digital Advertisement Billboard Pillar (Resized & Branded Ad Graphic)
+    // 1. Soft Oval Ground Shadow
     ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
     ctx.beginPath();
-    ctx.ellipse(cx, cy + 2, 26, 11, 0, 0, Math.PI * 2);
+    ctx.ellipse(cx, cy + 2, 18, 7, 0, 0, Math.PI * 2);
     ctx.fill();
 
-    // Steel & Titanium Pillar Base
-    const baseGrad = ctx.createLinearGradient(cx - 18, 0, cx + 18, 0);
-    baseGrad.addColorStop(0, '#263238');
+    // 2. Titanium Pillar Base Stand
+    const baseGrad = ctx.createLinearGradient(cx - 12, 0, cx + 12, 0);
+    baseGrad.addColorStop(0, '#1a2327');
     baseGrad.addColorStop(0.5, '#455a64');
-    baseGrad.addColorStop(1, '#1c272b');
+    baseGrad.addColorStop(1, '#11181b');
     ctx.fillStyle = baseGrad;
-    ctx.fillRect(cx - 18, cy - 10, 36, 10);
+    ctx.fillRect(cx - 12, cy - 8, 24, 8);
 
-    // Modern High-Rise Display Column (3D Glass Body)
-    ctx.fillStyle = '#0a1017';
-    ctx.fillRect(cx - 20, cy - 90, 40, 80);
-    ctx.strokeStyle = '#00e5ff';
+    // Base Rim Line
+    ctx.strokeStyle = '#607d8b';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(cx - 12, cy - 8, 24, 8);
+
+    // 3. Compact Vertical Display Column Frame (30px Wide x 62px High)
+    const frameX = cx - 15;
+    const frameY = cy - 70;
+    const frameW = 30;
+    const frameH = 62;
+
+    ctx.fillStyle = '#0f171e';
+    ctx.fillRect(frameX, frameY, frameW, frameH);
+
+    // Glowing Neon Cyber Frame Border
+    ctx.strokeStyle = '#ffb300';
     ctx.lineWidth = 1.5;
-    ctx.strokeRect(cx - 20, cy - 90, 40, 80);
+    ctx.strokeRect(frameX, frameY, frameW, frameH);
 
-    // Glowing Backlight
-    ctx.fillStyle = 'rgba(0, 229, 255, 0.08)';
-    ctx.fillRect(cx - 18, cy - 88, 36, 76);
+    // Corner Neon Accent Dots
+    ctx.fillStyle = '#00e5ff';
+    ctx.fillRect(frameX - 1, frameY - 1, 3, 3);
+    ctx.fillRect(frameX + frameW - 2, frameY - 1, 3, 3);
+    ctx.fillRect(frameX - 1, frameY + frameH - 2, 3, 3);
+    ctx.fillRect(frameX + frameW - 2, frameY + frameH - 2, 3, 3);
 
-    // Stock Market Chart (Green Bullish Candlesticks)
-    ctx.strokeStyle = '#00e676';
-    ctx.lineWidth = 2;
+    // 4. INNER ADVERTISEMENT SCREEN (26px Wide x 58px High)
+    const screenX = frameX + 2;
+    const screenY = frameY + 2;
+    const screenW = frameW - 4; // 26px
+    const screenH = frameH - 4; // 58px
+
+    // Screen Background Gradient (Deep Luxury Purple to Warm Amber)
+    const scrGrad = ctx.createLinearGradient(screenX, screenY, screenX, screenY + screenH);
+    scrGrad.addColorStop(0, '#0d0714');
+    scrGrad.addColorStop(0.5, '#1e102d');
+    scrGrad.addColorStop(1, '#2b1704');
+    ctx.fillStyle = scrGrad;
+    ctx.fillRect(screenX, screenY, screenW, screenH);
+
+    // Screen Ambient Backlight Glow
+    ctx.fillStyle = 'rgba(255, 179, 0, 0.12)';
+    ctx.fillRect(screenX, screenY, screenW, screenH);
+
+    // --- AD GRAPHICAL ELEMENTS ---
+    // A. Top Brand Header Tag
+    ctx.fillStyle = '#ffb300';
+    drawRoundRect(ctx, screenX + 2, screenY + 3, screenW - 4, 9, 3);
+    ctx.fill();
+
+    ctx.fillStyle = '#000000';
+    ctx.font = '900 6.5px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('EKİN CAFE', cx, screenY + 9.5);
+
+    // B. Coffee Cup & Latte Art Illustration Graphic
+    const cupY = screenY + 30;
+
+    // Glowing Radial Aura behind Cup
+    const auraGrad = ctx.createRadialGradient(cx, cupY - 2, 1, cx, cupY - 2, 12);
+    auraGrad.addColorStop(0, 'rgba(255, 213, 79, 0.45)');
+    auraGrad.addColorStop(1, 'rgba(255, 213, 79, 0)');
+    ctx.fillStyle = auraGrad;
     ctx.beginPath();
-    ctx.moveTo(cx - 14, cy - 30);
-    ctx.lineTo(cx - 8, cy - 42);
-    ctx.lineTo(cx - 2, cy - 36);
-    ctx.lineTo(cx + 6, cy - 58);
-    ctx.lineTo(cx + 14, cy - 72);
+    ctx.arc(cx, cupY - 2, 12, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Saucer Base
+    ctx.fillStyle = '#eceff1';
+    ctx.beginPath();
+    ctx.ellipse(cx, cupY + 4, 8, 3, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#b0bec5';
+    ctx.lineWidth = 0.8;
     ctx.stroke();
 
-    // Chart Candles
-    ctx.fillStyle = '#00e676';
-    ctx.fillRect(cx - 10, cy - 44, 4, 10);
-    ctx.fillRect(cx + 4, cy - 64, 4, 14);
-    ctx.fillStyle = '#ff5252';
-    ctx.fillRect(cx - 3, cy - 40, 4, 8);
+    // Mug Body
+    const mugGrad = ctx.createLinearGradient(cx - 6, 0, cx + 6, 0);
+    mugGrad.addColorStop(0, '#1565c0');
+    mugGrad.addColorStop(0.5, '#42a5f5');
+    mugGrad.addColorStop(1, '#0d47a1');
+    ctx.fillStyle = mugGrad;
+    ctx.beginPath();
+    ctx.moveTo(cx - 6, cupY - 6);
+    ctx.lineTo(cx - 5, cupY + 2);
+    ctx.quadraticCurveTo(cx, cupY + 5, cx + 5, cupY + 2);
+    ctx.lineTo(cx + 6, cupY - 6);
+    ctx.closePath();
+    ctx.fill();
 
-    // Live LED Stock Ticker Text Line
-    ctx.fillStyle = '#00e5ff';
-    ctx.font = 'bold 9px monospace';
+    // Mug Handle
+    ctx.strokeStyle = '#42a5f5';
+    ctx.lineWidth = 1.2;
+    ctx.beginPath();
+    ctx.arc(cx + 6, cupY - 2, 3.5, -Math.PI / 2, Math.PI / 2);
+    ctx.stroke();
+
+    // Coffee Liquid Surface
+    ctx.fillStyle = '#3e2723';
+    ctx.beginPath();
+    ctx.ellipse(cx, cupY - 6, 5.5, 2, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Latte Art Heart Pattern in Foam
+    ctx.fillStyle = '#fff8e1';
+    ctx.beginPath();
+    ctx.arc(cx - 1.2, cupY - 6.5, 1.2, 0, Math.PI * 2);
+    ctx.arc(cx + 1.2, cupY - 6.5, 1.2, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(cx - 2.2, cupY - 6.2);
+    ctx.lineTo(cx, cupY - 4.5);
+    ctx.lineTo(cx + 2.2, cupY - 6.2);
+    ctx.fill();
+
+    // Steam Wisps Floating Upwards
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.75)';
+    ctx.lineWidth = 0.9;
+    ctx.beginPath();
+    ctx.moveTo(cx - 2, cupY - 9);
+    ctx.quadraticCurveTo(cx - 4, cupY - 13, cx - 1, cupY - 17);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(cx + 2, cupY - 9);
+    ctx.quadraticCurveTo(cx + 4, cupY - 13, cx + 1, cupY - 17);
+    ctx.stroke();
+
+    // C. Ad Promo Tagline & Offer Badge
+    ctx.fillStyle = '#ffd54f';
+    ctx.font = 'bold 6px sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('BIST ▲2.4%', cx, cy - 78);
-    ctx.fillStyle = '#00e676';
-    ctx.fillText('CUP +18%', cx, cy - 18);
+    ctx.fillText('TAZE KAHVE', cx, screenY + 44);
+
+    // %20 İNDİRİM Red Promo Pill
+    ctx.fillStyle = '#d50000';
+    drawRoundRect(ctx, screenX + 2, screenY + 47, screenW - 4, 8, 2);
+    ctx.fill();
+
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '800 6px sans-serif';
+    ctx.fillText('%20 İNDİRİM', cx, screenY + 53);
+
+    // D. Glass Screen Surface Diagonal Shine / Reflection
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.12)';
+    ctx.beginPath();
+    ctx.moveTo(screenX, screenY);
+    ctx.lineTo(screenX + 16, screenY);
+    ctx.lineTo(screenX, screenY + 28);
+    ctx.closePath();
+    ctx.fill();
 
   } else if (propId === 'SKYSCRAPER_PILLAR') {
     // Finans Merkezi - Modern Architectural Skyscraper Pillar Canopy
