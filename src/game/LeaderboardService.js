@@ -76,7 +76,7 @@ export class LeaderboardService {
           days: Number(entry.days) || 1,
           customers_served: Number(entry.customersServed) || 0,
           missed_customers: Number(entry.missedCustomers) || 0,
-          success_rate: Number(entry.successRate) || 100,
+          success_rate: (entry.successRate !== undefined && !isNaN(entry.successRate)) ? Number(entry.successRate) : 100,
           money: Math.floor(Number(entry.money) || 0),
           reputation: Number(entry.reputation) || 4.2
         };

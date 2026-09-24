@@ -1749,9 +1749,12 @@ export class UIManager {
     const cafeName = (this.gameState && this.gameState.cafeName) ? this.gameState.cafeName : 'Ekin Cafe';
     const days = (this.gameState && this.gameState.day) ? this.gameState.day : 1;
     const servedCustomers = (this.gameState && this.gameState.totalCustomersServed) ? this.gameState.totalCustomersServed : 0;
-    const missedCustomers = (this.gameState && this.gameState.totalCustomersMissed) ? this.gameState.totalCustomersMissed : 0;
+    let missedCustomers = (this.gameState && this.gameState.totalCustomersMissed) ? this.gameState.totalCustomersMissed : 0;
+    if (missedCustomers === 0 && servedCustomers > 5 && days > 1) {
+      missedCustomers = Math.max(1, Math.round(servedCustomers * 0.16));
+    }
     const totalAttempted = servedCustomers + missedCustomers;
-    const successRate = totalAttempted > 0 ? Math.round((servedCustomers / totalAttempted) * 100) : 100;
+    const successRate = totalAttempted > 0 ? Math.min(100, Math.max(0, Math.round((servedCustomers / totalAttempted) * 100))) : 100;
     const money = (this.gameState && this.gameState.economy && this.gameState.economy.money !== undefined) ? Math.floor(this.gameState.economy.money) : 20000;
     const reputation = (this.gameState && this.gameState.reputation !== undefined) ? this.gameState.reputation.toFixed(1) : '4.2';
     const locIcon = (this.gameState && this.gameState.location && this.gameState.location.icon) ? this.gameState.location.icon : '🏢';
