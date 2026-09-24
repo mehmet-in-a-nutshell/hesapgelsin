@@ -454,7 +454,7 @@ export class CustomerSystem {
               if (this.renderer) this.renderer.addParticle(cust.x, cust.y, 'Yol Tıkalı! 😡', '#f44336');
               if (this.uiManager) this.uiManager.addNotification('Yol Tıkalı! Müşteri Kafeyi Terk Etti 😡', '😡');
               this.gameState.updateReputation(-0.1);
-              this.gameState.dailyMissedCustomers = (this.gameState.dailyMissedCustomers || 0) + 1;
+              this.gameState.recordMissedCustomer();
               cust.clearTableItem();
               cust.state = 'LEAVING';
               cust.stuckTimer = 0;
@@ -499,7 +499,7 @@ export class CustomerSystem {
           cust.activeBubble = 'angry';
           if (this.uiManager) this.uiManager.addNotification('Sandalye Bulamadı! Müşteri Terk Etti 😡', '😡');
           this.gameState.updateReputation(-0.1);
-          this.gameState.dailyMissedCustomers = (this.gameState.dailyMissedCustomers || 0) + 1;
+          this.gameState.recordMissedCustomer();
           cust.clearTableItem();
           cust.state = 'LEAVING';
           cust.stuckTimer = 0;
@@ -555,7 +555,7 @@ export class CustomerSystem {
                 this.uiManager.addNotification(`İstenen Ürün Menüde Yok! (${recipeDef ? recipeDef.name : 'Ürün'}) 😢`, '😢');
               }
               this.gameState.updateReputation(-0.05);
-              this.gameState.dailyMissedCustomers = (this.gameState.dailyMissedCustomers || 0) + 1;
+              this.gameState.recordMissedCustomer();
               cust.clearTableItem();
               cust.state = 'LEAVING';
               cust.stuckTimer = 0;
@@ -590,6 +590,7 @@ export class CustomerSystem {
                   this.uiManager.addNotification(`${prodName} Fiyatı Çok Yüksek! ${label} Sipariş Vermeden Çıktı 💸`, '💸');
                 }
                 // Leaves table cleanly with NO star/reputation penalty or instagram review!
+                this.gameState.recordMissedCustomer();
                 cust.clearTableItem();
                 cust.state = 'LEAVING';
                 cust.stuckTimer = 0;
@@ -623,7 +624,7 @@ export class CustomerSystem {
                   this.uiManager.addNotification('Sipariş 30 dk Gecikti! Müşteri Terk Etti 😡', '😡');
                 }
                 this.gameState.updateReputation(-0.1);
-                this.gameState.dailyMissedCustomers = (this.gameState.dailyMissedCustomers || 0) + 1;
+                this.gameState.recordMissedCustomer();
                 cust.clearTableItem();
                 cust.state = 'LEAVING';
                 cust.stuckTimer = 0;

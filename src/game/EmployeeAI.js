@@ -337,7 +337,7 @@ export class EmployeeSystem {
                 this.gameState.renderer.addParticle(cust.x, cust.y, 'Makine Bozuk! 😡', '#f44336');
               }
               this.gameState.updateReputation(-0.1);
-              this.gameState.dailyMissedCustomers = (this.gameState.dailyMissedCustomers || 0) + 1;
+              this.gameState.recordMissedCustomer();
               cust.clearTableItem();
               cust.state = 'LEAVING';
               cust.stuckTimer = 0;
@@ -388,7 +388,7 @@ export class EmployeeSystem {
                 this.gameState.renderer.addParticle(cust.x, cust.y, 'Stok Yok! 😡', '#f44336');
               }
               this.gameState.updateReputation(-0.1);
-              this.gameState.dailyMissedCustomers = (this.gameState.dailyMissedCustomers || 0) + 1;
+              this.gameState.recordMissedCustomer();
               cust.clearTableItem();
               cust.state = 'LEAVING';
               cust.stuckTimer = 0;

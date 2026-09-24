@@ -28,6 +28,7 @@ export class GameState {
     this.xpToNextLevel = 100;
     this.reputation = 4.2; // Star rating out of 5.0
     this.totalCustomersServed = 0;
+    this.totalCustomersMissed = 0;
     this.dailyServedCustomers = 0;
     this.dailyMissedCustomers = 0;
     this.userName = 'Mehmet';
@@ -39,6 +40,11 @@ export class GameState {
 
     // Specialization choice (unlocked at lvl 5)
     this.specialization = null; // 'artisan_coffee', 'bakery_sweet', 'express_drive'
+  }
+
+  recordMissedCustomer() {
+    this.totalCustomersMissed = (this.totalCustomersMissed || 0) + 1;
+    this.dailyMissedCustomers = (this.dailyMissedCustomers || 0) + 1;
   }
 
   resetGame(startingMoney = 20000, newCafeName = 'Ekin Cafe', locationId = 'university', newUserName = 'Mehmet') {
@@ -64,6 +70,7 @@ export class GameState {
     this.xpToNextLevel = 100;
     this.reputation = 4.2;
     this.totalCustomersServed = 0;
+    this.totalCustomersMissed = 0;
     this.dailyServedCustomers = 0;
     this.dailyMissedCustomers = 0;
     this.userName = newUserName || 'Mehmet';
@@ -132,6 +139,7 @@ export class GameState {
         xp: this.xp,
         reputation: this.reputation,
         totalCustomersServed: this.totalCustomersServed || 0,
+        totalCustomersMissed: this.totalCustomersMissed || 0,
         dailyServedCustomers: this.dailyServedCustomers || 0,
         dailyMissedCustomers: this.dailyMissedCustomers || 0,
         questIndex: this.questManager ? this.questManager.currentQuestIndex : 0,
@@ -173,6 +181,7 @@ export class GameState {
       this.xp = data.xp || 0;
       this.reputation = data.reputation || 4.2;
       this.totalCustomersServed = data.totalCustomersServed || 0;
+      this.totalCustomersMissed = data.totalCustomersMissed || 0;
       this.dailyServedCustomers = data.dailyServedCustomers || 0;
       this.dailyMissedCustomers = data.dailyMissedCustomers || 0;
       this.userName = data.userName || 'Mehmet';
