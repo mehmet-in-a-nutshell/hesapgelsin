@@ -17,6 +17,17 @@ export function gridToIso(gx, gy) {
 
 const canvasCache = new Map();
 
+export function drawRoundRect(ctx, x, y, w, h, r = 4) {
+  if (w <= 0 || h <= 0) return;
+  if (typeof ctx.roundRect === 'function') {
+    ctx.beginPath();
+    ctx.roundRect(x, y, w, h, r);
+  } else {
+    ctx.beginPath();
+    ctx.rect(x, y, w, h);
+  }
+}
+
 function createCacheCanvas(width, height) {
   const c = document.createElement('canvas');
   c.width = width;
