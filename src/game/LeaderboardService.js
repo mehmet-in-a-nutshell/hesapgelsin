@@ -4,13 +4,13 @@
  */
 
 // Supabase Configuration
-// Put your Supabase project credentials here:
-export const SUPABASE_URL = 'https://YOUR_SUPABASE_PROJECT_ID.supabase.co';
-export const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+export const SUPABASE_URL = 'https://nnkovapfyfleeqcdgsed.supabase.co';
+export const SUPABASE_ANON_KEY = 'sb_publishable_zpuEh_wz2fAGHxvTyX_gmw_g9wsf9h7';
 
 export class LeaderboardService {
   static isConfigured() {
     return SUPABASE_URL && 
+           SUPABASE_URL.startsWith('https://') &&
            !SUPABASE_URL.includes('YOUR_SUPABASE_PROJECT_ID') && 
            SUPABASE_ANON_KEY && 
            !SUPABASE_ANON_KEY.includes('YOUR_SUPABASE_ANON_KEY');
