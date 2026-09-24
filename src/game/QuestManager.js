@@ -12,7 +12,7 @@ export const QUESTS = [
     targetType: 'serve_customers',
     targetAmount: 1,
     rewardXP: 50,
-    rewardMoney: 1000
+    rewardMoney: 700
   },
   {
     id: 'q2_unlock_recipe',
@@ -21,7 +21,7 @@ export const QUESTS = [
     targetType: 'unlock_recipe',
     targetAmount: 1,
     rewardXP: 100,
-    rewardMoney: 1500
+    rewardMoney: 1050
   },
   {
     id: 'q3_place_decor',
@@ -30,7 +30,7 @@ export const QUESTS = [
     targetType: 'place_decor',
     targetAmount: 2,
     rewardXP: 120,
-    rewardMoney: 2000
+    rewardMoney: 1400
   },
   {
     id: 'q4_serve_10',
@@ -39,7 +39,7 @@ export const QUESTS = [
     targetType: 'serve_customers',
     targetAmount: 10,
     rewardXP: 200,
-    rewardMoney: 3000
+    rewardMoney: 2100
   },
   {
     id: 'q5_hire_staff',
@@ -48,7 +48,7 @@ export const QUESTS = [
     targetType: 'hire_staff',
     targetAmount: 2,
     rewardXP: 250,
-    rewardMoney: 4000
+    rewardMoney: 2800
   },
   {
     id: 'q6_unlock_3_recipes',
@@ -57,7 +57,7 @@ export const QUESTS = [
     targetType: 'unlock_recipe',
     targetAmount: 3,
     rewardXP: 350,
-    rewardMoney: 6000
+    rewardMoney: 4200
   },
   {
     id: 'q7_reputation_4_5',
@@ -66,7 +66,7 @@ export const QUESTS = [
     targetType: 'reputation',
     targetAmount: 4.5,
     rewardXP: 450,
-    rewardMoney: 7500
+    rewardMoney: 5250
   },
   {
     id: 'q8_reach_level_3',
@@ -75,7 +75,7 @@ export const QUESTS = [
     targetType: 'level',
     targetAmount: 3,
     rewardXP: 600,
-    rewardMoney: 10000
+    rewardMoney: 7000
   },
   {
     id: 'q9_serve_50',
@@ -84,7 +84,7 @@ export const QUESTS = [
     targetType: 'serve_customers',
     targetAmount: 50,
     rewardXP: 1000,
-    rewardMoney: 20000
+    rewardMoney: 14000
   },
   {
     id: 'q10_max_reputation',
@@ -93,7 +93,7 @@ export const QUESTS = [
     targetType: 'reputation',
     targetAmount: 5.0,
     rewardXP: 2000,
-    rewardMoney: 40000
+    rewardMoney: 28000
   },
   {
     id: 'q11_serve_75',
@@ -102,7 +102,7 @@ export const QUESTS = [
     targetType: 'serve_customers',
     targetAmount: 75,
     rewardXP: 2500,
-    rewardMoney: 50000
+    rewardMoney: 35000
   },
   {
     id: 'q12_unlock_4_recipes',
@@ -111,7 +111,7 @@ export const QUESTS = [
     targetType: 'unlock_recipe',
     targetAmount: 4,
     rewardXP: 2800,
-    rewardMoney: 55000
+    rewardMoney: 38500
   },
   {
     id: 'q13_place_6_decor',
@@ -120,7 +120,7 @@ export const QUESTS = [
     targetType: 'place_decor',
     targetAmount: 6,
     rewardXP: 3000,
-    rewardMoney: 60000
+    rewardMoney: 42000
   },
   {
     id: 'q14_reach_level_4',
@@ -129,7 +129,7 @@ export const QUESTS = [
     targetType: 'level',
     targetAmount: 4,
     rewardXP: 3500,
-    rewardMoney: 67500
+    rewardMoney: 47250
   },
   {
     id: 'q15_hire_3_staff',
@@ -138,7 +138,7 @@ export const QUESTS = [
     targetType: 'hire_staff',
     targetAmount: 3,
     rewardXP: 4000,
-    rewardMoney: 75000
+    rewardMoney: 52500
   },
   {
     id: 'q16_serve_120',
@@ -147,7 +147,7 @@ export const QUESTS = [
     targetType: 'serve_customers',
     targetAmount: 120,
     rewardXP: 4500,
-    rewardMoney: 82500
+    rewardMoney: 57750
   },
   {
     id: 'q17_unlock_5_recipes',
@@ -156,7 +156,7 @@ export const QUESTS = [
     targetType: 'unlock_recipe',
     targetAmount: 5,
     rewardXP: 5000,
-    rewardMoney: 90000
+    rewardMoney: 63000
   },
   {
     id: 'q18_reach_level_5',
@@ -165,7 +165,7 @@ export const QUESTS = [
     targetType: 'level',
     targetAmount: 5,
     rewardXP: 5500,
-    rewardMoney: 100000
+    rewardMoney: 70000
   },
   {
     id: 'q19_place_10_decor',
@@ -174,7 +174,7 @@ export const QUESTS = [
     targetType: 'place_decor',
     targetAmount: 10,
     rewardXP: 6000,
-    rewardMoney: 110000
+    rewardMoney: 77000
   },
   {
     id: 'q20_serve_200',
@@ -183,7 +183,7 @@ export const QUESTS = [
     targetType: 'serve_customers',
     targetAmount: 200,
     rewardXP: 6500,
-    rewardMoney: 125000
+    rewardMoney: 87500
   },
   {
     id: 'q21_unlock_6_recipes',
@@ -192,7 +192,7 @@ export const QUESTS = [
     targetType: 'unlock_recipe',
     targetAmount: 6,
     rewardXP: 7000,
-    rewardMoney: 135000
+    rewardMoney: 67500
   },
   {
     id: 'q22_reach_level_6',
@@ -201,7 +201,7 @@ export const QUESTS = [
     targetType: 'level',
     targetAmount: 6,
     rewardXP: 7500,
-    rewardMoney: 150000
+    rewardMoney: 75000
   },
   {
     id: 'q23_hire_4_staff',
@@ -210,7 +210,7 @@ export const QUESTS = [
     targetType: 'hire_staff',
     targetAmount: 4,
     rewardXP: 8000,
-    rewardMoney: 160000
+    rewardMoney: 80000
   },
   {
     id: 'q24_serve_300',
@@ -219,7 +219,7 @@ export const QUESTS = [
     targetType: 'serve_customers',
     targetAmount: 300,
     rewardXP: 8500,
-    rewardMoney: 175000
+    rewardMoney: 87500
   },
   {
     id: 'q25_place_15_furniture',
@@ -228,7 +228,7 @@ export const QUESTS = [
     targetType: 'place_decor',
     targetAmount: 15,
     rewardXP: 9000,
-    rewardMoney: 190000
+    rewardMoney: 95000
   },
   {
     id: 'q26_reach_level_7',
@@ -237,7 +237,7 @@ export const QUESTS = [
     targetType: 'level',
     targetAmount: 7,
     rewardXP: 9500,
-    rewardMoney: 200000
+    rewardMoney: 100000
   },
   {
     id: 'q27_serve_400',
@@ -246,7 +246,7 @@ export const QUESTS = [
     targetType: 'serve_customers',
     targetAmount: 400,
     rewardXP: 10000,
-    rewardMoney: 225000
+    rewardMoney: 112500
   },
   {
     id: 'q28_unlock_all_recipes',
@@ -255,7 +255,7 @@ export const QUESTS = [
     targetType: 'unlock_recipe',
     targetAmount: 7,
     rewardXP: 11000,
-    rewardMoney: 250000
+    rewardMoney: 125000
   },
   {
     id: 'q29_reach_level_8',
@@ -264,7 +264,7 @@ export const QUESTS = [
     targetType: 'level',
     targetAmount: 8,
     rewardXP: 12000,
-    rewardMoney: 275000
+    rewardMoney: 137500
   },
   {
     id: 'q30_hire_5_staff',
@@ -273,7 +273,7 @@ export const QUESTS = [
     targetType: 'hire_staff',
     targetAmount: 5,
     rewardXP: 13000,
-    rewardMoney: 300000
+    rewardMoney: 150000
   },
   {
     id: 'q31_serve_550',
@@ -282,7 +282,7 @@ export const QUESTS = [
     targetType: 'serve_customers',
     targetAmount: 550,
     rewardXP: 14000,
-    rewardMoney: 325000
+    rewardMoney: 162500
   },
   {
     id: 'q32_place_20_furniture',
@@ -291,7 +291,7 @@ export const QUESTS = [
     targetType: 'place_decor',
     targetAmount: 20,
     rewardXP: 15000,
-    rewardMoney: 350000
+    rewardMoney: 175000
   },
   {
     id: 'q33_reach_level_9',
@@ -300,7 +300,7 @@ export const QUESTS = [
     targetType: 'level',
     targetAmount: 9,
     rewardXP: 16000,
-    rewardMoney: 375000
+    rewardMoney: 187500
   },
   {
     id: 'q34_serve_700',
@@ -309,7 +309,7 @@ export const QUESTS = [
     targetType: 'serve_customers',
     targetAmount: 700,
     rewardXP: 17000,
-    rewardMoney: 400000
+    rewardMoney: 200000
   },
   {
     id: 'q35_reach_level_10',
@@ -318,7 +318,7 @@ export const QUESTS = [
     targetType: 'level',
     targetAmount: 10,
     rewardXP: 18000,
-    rewardMoney: 425000
+    rewardMoney: 212500
   },
   {
     id: 'q36_serve_900',
@@ -327,7 +327,7 @@ export const QUESTS = [
     targetType: 'serve_customers',
     targetAmount: 900,
     rewardXP: 20000,
-    rewardMoney: 450000
+    rewardMoney: 135000
   },
   {
     id: 'q37_hire_6_staff',
@@ -336,7 +336,7 @@ export const QUESTS = [
     targetType: 'hire_staff',
     targetAmount: 6,
     rewardXP: 22000,
-    rewardMoney: 500000
+    rewardMoney: 150000
   },
   {
     id: 'q38_place_25_furniture',
@@ -345,7 +345,7 @@ export const QUESTS = [
     targetType: 'place_decor',
     targetAmount: 25,
     rewardXP: 25000,
-    rewardMoney: 550000
+    rewardMoney: 165000
   },
   {
     id: 'q39_serve_1200',
@@ -354,7 +354,7 @@ export const QUESTS = [
     targetType: 'serve_customers',
     targetAmount: 1200,
     rewardXP: 30000,
-    rewardMoney: 625000
+    rewardMoney: 187500
   },
   {
     id: 'q40_serve_1500',
@@ -363,7 +363,7 @@ export const QUESTS = [
     targetType: 'serve_customers',
     targetAmount: 1500,
     rewardXP: 35000,
-    rewardMoney: 750000
+    rewardMoney: 225000
   },
   {
     id: 'q41_serve_1800',
@@ -372,7 +372,7 @@ export const QUESTS = [
     targetType: 'serve_customers',
     targetAmount: 1800,
     rewardXP: 40000,
-    rewardMoney: 875000
+    rewardMoney: 262500
   },
   {
     id: 'q42_place_30_furniture',
@@ -381,7 +381,7 @@ export const QUESTS = [
     targetType: 'place_decor',
     targetAmount: 30,
     rewardXP: 45000,
-    rewardMoney: 1000000
+    rewardMoney: 300000
   },
   {
     id: 'q43_serve_2000',
@@ -390,7 +390,7 @@ export const QUESTS = [
     targetType: 'serve_customers',
     targetAmount: 2000,
     rewardXP: 50000,
-    rewardMoney: 1125000
+    rewardMoney: 337500
   },
   {
     id: 'q44_hire_7_staff',
@@ -399,7 +399,7 @@ export const QUESTS = [
     targetType: 'hire_staff',
     targetAmount: 7,
     rewardXP: 55000,
-    rewardMoney: 1250000
+    rewardMoney: 375000
   },
   {
     id: 'q45_serve_2500',
@@ -408,7 +408,7 @@ export const QUESTS = [
     targetType: 'serve_customers',
     targetAmount: 2500,
     rewardXP: 60000,
-    rewardMoney: 1500000
+    rewardMoney: 450000
   },
   {
     id: 'q46_place_35_furniture',
@@ -417,7 +417,7 @@ export const QUESTS = [
     targetType: 'place_decor',
     targetAmount: 35,
     rewardXP: 70000,
-    rewardMoney: 1750000
+    rewardMoney: 525000
   },
   {
     id: 'q47_serve_3000',
@@ -426,7 +426,7 @@ export const QUESTS = [
     targetType: 'serve_customers',
     targetAmount: 3000,
     rewardXP: 80000,
-    rewardMoney: 2000000
+    rewardMoney: 600000
   },
   {
     id: 'q48_hire_8_staff',
@@ -435,7 +435,7 @@ export const QUESTS = [
     targetType: 'hire_staff',
     targetAmount: 8,
     rewardXP: 90000,
-    rewardMoney: 2250000
+    rewardMoney: 675000
   },
   {
     id: 'q49_serve_4000',
@@ -444,7 +444,7 @@ export const QUESTS = [
     targetType: 'serve_customers',
     targetAmount: 4000,
     rewardXP: 100000,
-    rewardMoney: 2500000
+    rewardMoney: 750000
   },
   {
     id: 'q50_ultimate_empire',
@@ -453,7 +453,7 @@ export const QUESTS = [
     targetType: 'serve_customers',
     targetAmount: 5000,
     rewardXP: 250000,
-    rewardMoney: 5000000
+    rewardMoney: 1500000
   }
 ];
 
