@@ -19,8 +19,17 @@ export class Customer {
     this.animState = 'idle';
 
     this.preferredRecipe = preferredRecipe;
-    this.patience = 100; // max 100
-    this.maxPatience = 100;
+    
+    // Demographic-based Patience Configuration
+    let maxPat = 100;
+    if (type === 'executive') maxPat = 75;      // Impatient high-roller CEO
+    else if (type === 'senior') maxPat = 135;   // Relaxed & patient retiree
+    else if (type === 'hipster') maxPat = 110;  // Chill artist
+    else if (type === 'athlete') maxPat = 90;   // Energetic runner
+    else if (type === 'tourist') maxPat = 115;  // Sightseeing tourist
+
+    this.patience = maxPat;
+    this.maxPatience = maxPat;
     this.satisfaction = 100;
     this.state = 'ENTERING'; // ENTERING, ORDERING, WAITING_SEAT, SEATED, CONSUMING, PAYING, LEAVING
 
@@ -250,7 +259,12 @@ export class CustomerSystem {
       freelancer: 1.1,
       office_worker: 0.9,
       tourist: 0.55,
-      influencer: 0.65
+      influencer: 0.65,
+      hipster: 1.0,
+      athlete: 1.1,
+      senior: 0.85,
+      goth: 1.05,
+      executive: 0.4 // Luxury spender, low price sensitivity
     };
     const demoSens = demoSensMap[cust.type] || 1.0;
     const effectiveSensitivity = locSens * demoSens;
@@ -349,7 +363,7 @@ export class CustomerSystem {
     this.pedestrianTimer += dt * this.gameState.gameSpeed;
     if (this.pedestrianTimer >= 4.5 && this.pedestrians.length < 4) {
       this.pedestrianTimer = 0;
-      const types = ['student', 'office_worker', 'tourist', 'freelancer', 'influencer'];
+      const types = ['student', 'office_worker', 'tourist', 'freelancer', 'influencer', 'hipster', 'athlete', 'senior', 'goth', 'executive'];
       const pType = types[Math.floor(Math.random() * types.length)];
 
       const side = Math.random() < 0.5 ? 'NE' : 'NW';

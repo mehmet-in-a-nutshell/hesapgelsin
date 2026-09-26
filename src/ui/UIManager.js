@@ -317,8 +317,27 @@ export class UIManager {
     const cafeName = this.tempNewCafeName || 'Ekin Cafe';
     const locations = LOCATIONS;
 
+    const demoLabels = {
+      student: '🎓 Öğrenci',
+      office_worker: '💼 Ofis',
+      freelancer: '💻 Yazılımcı',
+      tourist: '📸 Turist',
+      influencer: '📱 Influencer',
+      hipster: '🎨 Sanatçı',
+      athlete: '🏃 Sporcu',
+      senior: '👴 Müdavim',
+      goth: '🎸 Rockçı',
+      executive: '👔 CEO'
+    };
+
     let cardsHtml = '';
     Object.values(locations).forEach(loc => {
+      const topDemosHtml = Object.entries(loc.demographics || {})
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 4)
+        .map(([t, w]) => `<span style="background: rgba(255,255,255,0.08); padding: 2px 6px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1); font-size: 10px; color: #e0e0e0;">${demoLabels[t] || t} %${Math.round(w * 100)}</span>`)
+        .join(' ');
+
       cardsHtml += `
         <div class="location-card glass-panel" style="background: rgba(30, 35, 45, 0.75); border: 1.5px solid rgba(255,255,255,0.12); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; justify-content: space-between; gap: 10px;">
           <div>
@@ -333,6 +352,7 @@ export class UIManager {
               <div>⚡ Müşteri Akışı: <b style="color:#4caf50;">${loc.trafficMultiplier}x</b></div>
               <div>💰 Harcama Gücü: <b style="color:${loc.spendingPower >= 1.3 ? '#4caf50' : (loc.spendingPower < 1.0 ? '#ff9800' : '#2196f3')};">${loc.spendingPower}x</b></div>
               <div style="grid-column: span 2;">⚖️ Fiyat Duyarlılığı: <b style="color:${loc.priceSensitivity >= 1.2 ? '#f44336' : (loc.priceSensitivity <= 0.7 ? '#4caf50' : '#ff9800')};">${loc.priceSensitivity >= 1.2 ? 'Çok Yüksek (Duyarlı)' : (loc.priceSensitivity <= 0.7 ? 'Düşük (Toleranslı)' : 'Dengeli')}</b></div>
+              <div style="grid-column: span 2; display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; align-items: center;"><span style="color:#aaa; font-size: 10.5px; width: 100%;">👥 Müşteri Kitle Yapısı:</span> ${topDemosHtml}</div>
             </div>
           </div>
           
@@ -2076,9 +2096,28 @@ export class UIManager {
     audioEngine.playClick();
     const locations = LOCATIONS;
 
+    const demoLabels = {
+      student: '🎓 Öğrenci',
+      office_worker: '💼 Ofis',
+      freelancer: '💻 Yazılımcı',
+      tourist: '📸 Turist',
+      influencer: '📱 Influencer',
+      hipster: '🎨 Sanatçı',
+      athlete: '🏃 Sporcu',
+      senior: '👴 Müdavim',
+      goth: '🎸 Rockçı',
+      executive: '👔 CEO'
+    };
+
     let cardsHtml = '';
     Object.values(locations).forEach(loc => {
       const cleanLocName = loc.name.replace(/\s*\([^)]*\)/g, '').trim();
+      const topDemosHtml = Object.entries(loc.demographics || {})
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 4)
+        .map(([t, w]) => `<span style="background: rgba(255,255,255,0.08); padding: 2px 6px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1); font-size: 10px; color: #e0e0e0;">${demoLabels[t] || t} %${Math.round(w * 100)}</span>`)
+        .join(' ');
+
       cardsHtml += `
         <div class="glass-panel" style="background: rgba(30, 35, 45, 0.85); border: 1.5px solid rgba(255,213,79,0.25); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; justify-content: space-between; gap: 10px;">
           <div>
@@ -2095,6 +2134,7 @@ export class UIManager {
               <div>⚡ Müşteri Akışı: <b style="color:#4caf50;">${loc.trafficMultiplier}x</b></div>
               <div>💰 Harcama Gücü: <b style="color:${loc.spendingPower >= 1.3 ? '#4caf50' : (loc.spendingPower < 1.0 ? '#ff9800' : '#2196f3')};">${loc.spendingPower}x</b></div>
               <div style="grid-column: span 2;">⚖️ Fiyat Duyarlılığı: <b style="color:${loc.priceSensitivity >= 1.2 ? '#f44336' : (loc.priceSensitivity <= 0.7 ? '#4caf50' : '#ff9800')};">${loc.priceSensitivity >= 1.2 ? 'Çok Yüksek (Duyarlı)' : (loc.priceSensitivity <= 0.7 ? 'Düşük (Toleranslı)' : 'Dengeli')}</b></div>
+              <div style="grid-column: span 2; display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; align-items: center;"><span style="color:#aaa; font-size: 10.5px; width: 100%;">👥 Müşteri Kitle Yapısı:</span> ${topDemosHtml}</div>
             </div>
           </div>
         </div>

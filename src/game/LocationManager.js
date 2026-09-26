@@ -18,14 +18,16 @@ export const LOCATIONS = {
     spendingPower: 0.8,
     priceSensitivity: 1.4, // high sensitivity to expensive prices
     demographics: {
-      student: 0.55,
-      office_worker: 0.20,
-      freelancer: 0.15,
-      tourist: 0.05,
-      influencer: 0.05
+      student: 0.40,
+      athlete: 0.15,
+      hipster: 0.15,
+      freelancer: 0.12,
+      goth: 0.08,
+      office_worker: 0.06,
+      influencer: 0.04
     },
     peakHours: [9, 12, 14, 16],
-    description: 'Öğrenci yoğunluğu yüksek, bütçe duyarlı ancak yüksek müşteri trafiğine sahip canlı lokasyon.'
+    description: 'Öğrenciler, genç sporcular ve alternatif sanatçılar yoğunlukta. Bütçe duyarlı ancak sirkülasyonu çok yüksek canlı lokasyon.'
   },
   business: {
     id: 'business',
@@ -36,14 +38,15 @@ export const LOCATIONS = {
     spendingPower: 1.6,
     priceSensitivity: 0.7,
     demographics: {
-      student: 0.10,
-      office_worker: 0.65,
+      office_worker: 0.45,
+      executive: 0.25,
       freelancer: 0.15,
-      tourist: 0.05,
-      influencer: 0.05
+      senior: 0.08,
+      student: 0.04,
+      hipster: 0.03
     },
     peakHours: [8, 12, 13, 17],
-    description: 'Yüksek harcama gücüne sahip ofis çalışanları. Sabah espresso ve öğle latte talebi çok yüksek.'
+    description: 'Yüksek harcama gücüne sahip ofis çalışanları ve şirket CEO\'ları. Hızlı servis, isli kahveler ve gurme tatlılar talep ediliyor.'
   },
   residential: {
     id: 'residential',
@@ -54,14 +57,16 @@ export const LOCATIONS = {
     spendingPower: 1.1,
     priceSensitivity: 1.0,
     demographics: {
-      student: 0.15,
-      office_worker: 0.30,
-      freelancer: 0.35,
-      tourist: 0.10,
-      influencer: 0.10
+      senior: 0.30,
+      freelancer: 0.20,
+      student: 0.18,
+      athlete: 0.15,
+      office_worker: 0.10,
+      tourist: 0.04,
+      influencer: 0.03
     },
     peakHours: [10, 15, 18, 20],
-    description: 'İstikrarlı müşteri akışı. Rahat oturma alanları ve tatlı çeşitleri tercih ediliyor.'
+    description: 'Kıdemli müdavimler, mahalle sakinleri ve evden çalışanlar. Sabırlı müşteri yapısı, hamur işleri ve taze kahvaltılıklara ilgi yüksek.'
   },
   entertainment: {
     id: 'entertainment',
@@ -72,14 +77,15 @@ export const LOCATIONS = {
     spendingPower: 1.3,
     priceSensitivity: 0.85,
     demographics: {
-      student: 0.20,
-      office_worker: 0.25,
-      freelancer: 0.20,
-      tourist: 0.20,
-      influencer: 0.15
+      hipster: 0.25,
+      goth: 0.22,
+      influencer: 0.18,
+      tourist: 0.15,
+      student: 0.12,
+      athlete: 0.08
     },
     peakHours: [14, 17, 19, 21],
-    description: 'Akşam trafiği yoğun, imza içecekler ve dekoratif ambiyansa yüksek ilgi var.'
+    description: 'Sanatçılar, rock tutkunları ve popüler içerik üreticileri. Akşam trafiği yoğun, fotojenik ürünler ve soğuk demlenmiş kahveler popüler.'
   },
   tourist: {
     id: 'tourist',
@@ -90,13 +96,14 @@ export const LOCATIONS = {
     spendingPower: 1.8,
     priceSensitivity: 0.5,
     demographics: {
-      student: 0.05,
-      office_worker: 0.15,
-      freelancer: 0.10,
-      tourist: 0.60,
-      influencer: 0.10
+      tourist: 0.50,
+      senior: 0.15,
+      executive: 0.12,
+      influencer: 0.10,
+      hipster: 0.08,
+      office_worker: 0.05
     },
     peakHours: [11, 13, 16, 18],
-    description: 'Turistler yüksek fiyatları tolere eder ve birinci sınıf premium ürünleri talep eder.'
+    description: 'Yabancı turistler ve varlıklı gezi grupları. Yüksek fiyat toleransı ve birinci sınıf premium kahve-tatlı menülerine yüksek talep.'
   }
 };

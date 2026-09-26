@@ -17,7 +17,7 @@ export const RECIPES = {
     sellPrice: 160.0,
     ingredients: { coffee_beans: 0.1 },
     popularity: 0.9,
-    favoredBy: ['office_worker', 'freelancer'],
+    favoredBy: ['office_worker', 'freelancer', 'executive', 'goth', 'hipster'],
     description: 'Yoğun aromalı klasik İtalyan espressosu.'
   },
   americano: {
@@ -32,7 +32,7 @@ export const RECIPES = {
     sellPrice: 200.0,
     ingredients: { coffee_beans: 0.1 },
     popularity: 0.85,
-    favoredBy: ['student', 'office_worker'],
+    favoredBy: ['student', 'office_worker', 'athlete'],
     description: 'Sıcak su ile yumuşatılmış taze espresso.'
   },
   latte: {
@@ -47,7 +47,7 @@ export const RECIPES = {
     sellPrice: 240.0,
     ingredients: { coffee_beans: 0.1, milk: 0.2 },
     popularity: 0.95,
-    favoredBy: ['student', 'freelancer', 'influencer'],
+    favoredBy: ['student', 'freelancer', 'influencer', 'senior'],
     description: 'Köpürtülmüş taze süt ile hazırlanan kadifemsi latte.'
   },
   cappuccino: {
@@ -62,7 +62,7 @@ export const RECIPES = {
     sellPrice: 230.0,
     ingredients: { coffee_beans: 0.1, milk: 0.25 },
     popularity: 0.90,
-    favoredBy: ['tourist', 'office_worker'],
+    favoredBy: ['tourist', 'office_worker', 'senior'],
     description: 'Zengin süt köpüğü ve kakao tozu süslemeli.'
   },
   cold_brew: {
@@ -77,7 +77,7 @@ export const RECIPES = {
     sellPrice: 255.0,
     ingredients: { coffee_beans: 0.15 },
     popularity: 0.88,
-    favoredBy: ['freelancer', 'student', 'influencer'],
+    favoredBy: ['freelancer', 'student', 'influencer', 'hipster', 'athlete', 'goth', 'executive'],
     description: '18 saat soğuk demlenmiş ferahlatıcı soğuk kahve.'
   },
   croissant: {
@@ -92,7 +92,7 @@ export const RECIPES = {
     sellPrice: 230.0,
     ingredients: { pastry_dough: 1 },
     popularity: 0.92,
-    favoredBy: ['tourist', 'office_worker'],
+    favoredBy: ['tourist', 'office_worker', 'hipster', 'senior'],
     description: 'Çıtır katmanlı tereyağlı Fransız kruvasanı.'
   },
   cheesecake: {
@@ -107,7 +107,7 @@ export const RECIPES = {
     sellPrice: 275.0,
     ingredients: { pastry_dough: 1 },
     popularity: 0.96,
-    favoredBy: ['influencer', 'tourist'],
+    favoredBy: ['influencer', 'tourist', 'executive'],
     description: 'İçi kremsi akışkan meşhur cheesecake.'
   },
   waffle: {
@@ -122,7 +122,7 @@ export const RECIPES = {
     sellPrice: 250.0,
     ingredients: { pastry_dough: 1, milk: 0.1 },
     popularity: 0.94,
-    favoredBy: ['student', 'tourist'],
+    favoredBy: ['student', 'tourist', 'influencer'],
     description: 'Taze meyveler ve eritilmiş Belçika çikolatası ile.'
   },
   toast: {
@@ -137,7 +137,7 @@ export const RECIPES = {
     sellPrice: 250.0,
     ingredients: { pastry_dough: 1 },
     popularity: 0.90,
-    favoredBy: ['student', 'office_worker', 'freelancer'],
+    favoredBy: ['student', 'office_worker', 'freelancer', 'athlete', 'senior'],
     description: 'Sıcak basılmış gurme sandviç tost.'
   },
   donut: {
@@ -152,7 +152,7 @@ export const RECIPES = {
     sellPrice: 250.0,
     ingredients: { pastry_dough: 1 },
     popularity: 0.91,
-    favoredBy: ['student', 'influencer'],
+    favoredBy: ['student', 'influencer', 'goth'],
     description: 'Nispeten hafif çikolata kaplı taze donut.'
   },
   coca_cola: {
@@ -168,7 +168,7 @@ export const RECIPES = {
     sellPrice: 120.0,
     ingredients: { coca_cola_stock: 1 },
     popularity: 0.95,
-    favoredBy: ['student', 'office_worker', 'tourist'],
+    favoredBy: ['student', 'office_worker', 'tourist', 'athlete'],
     description: 'Buz gibi serinletici Coca-Cola (Çift Kapılı İçecek Dolabı gerektirir ❄️).'
   },
   fanta: {
@@ -200,7 +200,7 @@ export const RECIPES = {
     sellPrice: 120.0,
     ingredients: { ice_tea_stock: 1 },
     popularity: 0.93,
-    favoredBy: ['student', 'freelancer', 'tourist'],
+    favoredBy: ['student', 'freelancer', 'tourist', 'athlete'],
     description: 'Şeftali & limon aromalı serinletici Lipton Ice Tea (Çift Kapılı İçecek Dolabı gerektirir ❄️).'
   }
 };

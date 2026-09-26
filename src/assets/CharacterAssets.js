@@ -15,7 +15,7 @@ function createCacheCanvas(w, h) {
 
 export const CUSTOMER_PRESETS = {
   student: {
-    name: 'Student',
+    name: 'Öğrenci',
     skin: '#ffdbac',
     hair: '#4a2e1b',
     shirt: '#42a5f5', // Blue hoodie
@@ -23,7 +23,7 @@ export const CUSTOMER_PRESETS = {
     accessory: 'backpack'
   },
   office_worker: {
-    name: 'Office Worker',
+    name: 'Ofis Çalışanı',
     skin: '#f1c27d',
     hair: '#212121',
     shirt: '#ffffff', // White suit shirt
@@ -32,7 +32,7 @@ export const CUSTOMER_PRESETS = {
     accessory: 'briefcase'
   },
   freelancer: {
-    name: 'Freelancer',
+    name: 'Yazılımcı / Freelancer',
     skin: '#e0ac69',
     hair: '#d84315',
     shirt: '#26a69a', // Teal sweater
@@ -40,7 +40,7 @@ export const CUSTOMER_PRESETS = {
     accessory: 'glasses'
   },
   tourist: {
-    name: 'Tourist',
+    name: 'Turist',
     skin: '#f5c68c',
     hair: '#fbc02d',
     shirt: '#ff7043', // Hawaiian orange shirt
@@ -54,6 +54,47 @@ export const CUSTOMER_PRESETS = {
     shirt: '#ab47bc', // Stylish purple top
     pants: '#ffffff',
     accessory: 'sunglasses'
+  },
+  hipster: {
+    name: 'Sanatçı / Hipster',
+    skin: '#ffdbac',
+    hair: '#3e2723',
+    shirt: '#8e24aa', // Vintage plum magenta top
+    pants: '#37474f',
+    accessory: 'beret_headphones'
+  },
+  athlete: {
+    name: 'Sporcu / Fit Yaşam',
+    skin: '#e0ac69',
+    hair: '#212121',
+    shirt: '#76ff03', // Neon lime green tank top
+    pants: '#1a237e', // Dark navy compression shorts
+    accessory: 'headband_shaker'
+  },
+  senior: {
+    name: 'Kıdemli Müdavim',
+    skin: '#ffdbac',
+    hair: '#cfd8dc', // Silver white hair
+    shirt: '#558b2f', // Olive green cardigan
+    pants: '#4e342e',
+    accessory: 'flat_cap_glasses'
+  },
+  goth: {
+    name: 'Rockçı / Goth',
+    skin: '#fff0f5', // Fair pale skin
+    hair: '#7b1fa2', // Deep purple hair
+    shirt: '#212121', // Black studded leather jacket
+    pants: '#121212',
+    accessory: 'goth_spikes'
+  },
+  executive: {
+    name: 'CEO / Yönetici',
+    skin: '#f1c27d',
+    hair: '#37474f',
+    shirt: '#0d47a1', // Luxury navy suit
+    tie: '#ffd700',   // Gold tie
+    pants: '#0d47a1',
+    accessory: 'gold_watch'
   },
   barista: {
     name: 'Barista',
@@ -303,10 +344,29 @@ export function renderCharacterSprite(type, state = 'idle', dir = 'SE') {
     ctx.fillRect(cx + 5, headY - 4, 4, 12);
   } else if (type === 'student') {
     ctx.fillRect(cx - 8, headY - 5, 5, 4); // Front hair bangs
+  } else if (type === 'goth') {
+    // Spiked purple punk hair tufts
+    ctx.fillStyle = preset.hair;
+    ctx.beginPath();
+    ctx.moveTo(cx - 8, headY - 6);
+    ctx.lineTo(cx - 5, headY - 14);
+    ctx.lineTo(cx - 1, headY - 7);
+    ctx.lineTo(cx + 3, headY - 15);
+    ctx.lineTo(cx + 7, headY - 6);
+    ctx.fill();
+  } else if (type === 'executive') {
+    // Sleek hair comb-over highlight
+    ctx.fillStyle = '#78909c';
+    ctx.fillRect(cx - 5, headY - 9, 7, 2);
+  } else if (type === 'senior') {
+    // Side grey hair tufts
+    ctx.fillStyle = preset.hair;
+    ctx.fillRect(cx - 9, headY - 4, 3, 7);
+    ctx.fillRect(cx + 6, headY - 4, 3, 7);
   }
 
-  // Accessories
-  if (preset.accessory === 'glasses') {
+  // Accessories & Specific Outfits
+  if (preset.accessory === 'glasses' || preset.accessory === 'flat_cap_glasses') {
     ctx.strokeStyle = '#212121';
     ctx.lineWidth = 1.2;
     ctx.strokeRect(eye1X - 2, headY - 3.5, 5, 4.5);
@@ -315,6 +375,84 @@ export function renderCharacterSprite(type, state = 'idle', dir = 'SE') {
     ctx.moveTo(eye1X + 3, headY - 1.5);
     ctx.lineTo(eye2X - 2, headY - 1.5);
     ctx.stroke();
+  }
+  
+  if (preset.accessory === 'flat_cap_glasses' || type === 'senior') {
+    // Vintage Newsboy Flat Cap (Kasket)
+    ctx.fillStyle = '#4e342e';
+    ctx.beginPath();
+    ctx.ellipse(cx, headY - 7, 10, 5, 0, Math.PI, Math.PI * 2);
+    ctx.fill();
+    ctx.fillRect(cx - 11, headY - 6, 22, 2.5); // Cap visor brim
+
+    // Cardigan center buttons line
+    ctx.fillStyle = '#33691e';
+    ctx.fillRect(cx - 1, torsoY - 6, 2, 12);
+    ctx.fillStyle = '#ffd54f';
+    ctx.fillRect(cx - 1, torsoY - 3, 2, 2);
+    ctx.fillRect(cx - 1, torsoY + 2, 2, 2);
+  } else if (preset.accessory === 'beret_headphones' || type === 'hipster') {
+    // French Beret Hat
+    ctx.fillStyle = '#263238';
+    ctx.beginPath();
+    ctx.ellipse(cx + 2, headY - 8, 10, 5, -0.2, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillRect(cx + 4, headY - 13, 2, 3); // Beret stem tip
+
+    // Hipster Mustache
+    ctx.fillStyle = '#3e2723';
+    ctx.beginPath();
+    const stacheX = isFacingRight ? faceX + 1.5 : faceX - 2.5;
+    ctx.ellipse(stacheX - 2, headY + 1.8, 3, 1.2, -0.2, 0, Math.PI * 2);
+    ctx.ellipse(stacheX + 2, headY + 1.8, 3, 1.2, 0.2, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Orange Headphones around neck
+    ctx.strokeStyle = '#ff5722';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.arc(cx, torsoY - 5, 8, 0.2, Math.PI - 0.2);
+    ctx.stroke();
+    ctx.fillStyle = '#212121';
+    ctx.fillRect(cx - 9, torsoY - 7, 3, 5);
+    ctx.fillRect(cx + 6, torsoY - 7, 3, 5);
+  } else if (preset.accessory === 'headband_shaker' || type === 'athlete') {
+    // Athletic Headband
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(cx - 8, headY - 7, 16, 3);
+    ctx.fillStyle = '#e53935';
+    ctx.fillRect(cx - 8, headY - 6, 16, 1);
+
+    // Shaker bottle in hand
+    ctx.fillStyle = '#00e676';
+    ctx.fillRect(cx + 7, torsoY + 2, 4, 7);
+    ctx.fillStyle = '#212121';
+    ctx.fillRect(cx + 6.5, torsoY, 5, 2);
+  } else if (preset.accessory === 'goth_spikes' || type === 'goth') {
+    // Leather jacket silver stud dots
+    ctx.fillStyle = '#cfd8dc';
+    ctx.fillRect(cx - 5, torsoY - 4, 2, 2);
+    ctx.fillRect(cx + 3, torsoY - 4, 2, 2);
+    ctx.fillRect(cx - 5, torsoY + 2, 2, 2);
+    ctx.fillRect(cx + 3, torsoY + 2, 2, 2);
+
+    // Choker necklace with gold ring
+    ctx.fillStyle = '#121212';
+    ctx.fillRect(cx - 4, torsoY - 7, 8, 2);
+    ctx.fillStyle = '#ffd54f';
+    ctx.fillRect(cx - 1, torsoY - 7, 2, 2);
+  } else if (preset.accessory === 'gold_watch' || type === 'executive') {
+    // Gold Watch on wrist
+    ctx.fillStyle = '#ffd700';
+    ctx.fillRect(cx + 6, torsoY + 2, 3, 3);
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(cx + 7, torsoY + 2.5, 1, 2);
+
+    // Gold tie clip & white pocket square
+    ctx.fillStyle = '#ffd700';
+    ctx.fillRect(cx - 1, torsoY - 2, 2, 1.5);
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(cx - 5, torsoY - 4, 3, 2);
   } else if (preset.accessory === 'sunglasses') {
     ctx.fillStyle = '#1c1c1c';
     ctx.fillRect(eye1X - 2, headY - 3.5, 12, 5);
