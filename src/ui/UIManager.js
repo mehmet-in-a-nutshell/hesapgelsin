@@ -35,6 +35,7 @@ export class UIManager {
     this.initFlowBreakdownPopover();
     this.initWeatherPopover();
     this.setupQuestSystem();
+    this.initWelcomeScreen();
   }
 
   setupQuestSystem() {
@@ -192,6 +193,132 @@ export class UIManager {
     }
 
     document.getElementById('btn-end-day').addEventListener('click', () => this.openEndDayModal());
+  }
+
+  initWelcomeScreen() {
+    const welcomeScreen = document.getElementById('welcome-screen');
+    const btnStart = document.getElementById('btn-welcome-start');
+    const btnLeaderboard = document.getElementById('btn-welcome-leaderboard');
+    const btnGuide = document.getElementById('btn-welcome-guide');
+    const welcomeSoundToggle = document.getElementById('welcome-sound-toggle');
+    const tipTextEl = document.getElementById('welcome-daily-tip-text');
+
+    // Array of helpful daily barista tips
+    const tips = [
+      "Günün İpucu: Yağmurlu günlerde kahve satışı coşar! Deponuzda taze kahve çekirdeği bulundurun. ☕🌧️",
+      "Günün İpucu: Güler Yüzlü personel çalıştırmak her serviste ekstra +0.03 Yıldız kazandırır. 👨‍🍳⭐",
+      "Günün İpucu: Tier 2 ve Tier 3 espresso makineleri Instagram'da viral olarak müşteri akışını artırır! 📸✨",
+      "Günün İpucu: Her gün saat 23:00'te dükkan kapanır ve günlük kira ile malzeme giderleri hesaplanır. 🌙💰",
+      "Günün İpucu: Kafeyi lambalar ve saksı bitkileri ile dekore etmek itibar puanınızı hızla yükseltir. 🪴💡",
+      "Günün İpucu: İşletmeci Profilinizi ve Kafe İsminizi dilediğiniz an değiştirebilirsiniz. 👤🏷️"
+    ];
+
+    if (tipTextEl) {
+      const randomTip = tips[Math.floor(Math.random() * tips.length)];
+      tipTextEl.innerText = randomTip;
+    }
+
+    if (welcomeSoundToggle) {
+      welcomeSoundToggle.innerText = audioEngine.isMuted ? '🔇' : '🔊';
+      welcomeSoundToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isMuted = audioEngine.toggleMute();
+        welcomeSoundToggle.innerText = isMuted ? '🔇' : '🔊';
+        const soundBtn = document.getElementById('sound-btn');
+        if (soundBtn) soundBtn.innerText = isMuted ? '🔇' : '🔊';
+      });
+    }
+
+    if (btnLeaderboard) {
+      btnLeaderboard.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.openLeaderboardModal();
+      });
+    }
+
+    if (btnGuide) {
+      btnGuide.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.openGuideModal();
+      });
+    }
+
+    if (btnStart) {
+      btnStart.addEventListener('click', (e) => {
+        e.stopPropagation();
+        audioEngine.playClick();
+        audioEngine.ensureContext();
+
+        if (welcomeScreen) {
+          welcomeScreen.classList.add('welcome-fade-out');
+          setTimeout(() => {
+            welcomeScreen.style.display = 'none';
+          }, 600);
+        }
+
+        if (this.gameState && this.gameState.gameSpeed > 0 && !audioEngine.isModalActive) {
+          audioEngine.startBGM();
+        }
+
+        // Check if user has save or needs new game setup
+        const hasSave = localStorage.getItem('cafe_tycoon_save');
+        if (!hasSave) {
+          setTimeout(() => {
+            this.startNewGameWizard();
+          }, 350);
+        }
+      });
+    }
+  }
+
+  openGuideModal() {
+    audioEngine.playClick();
+    const html = `
+      <div style="padding: 10px; color: #fff; line-height: 1.6;">
+        <div style="text-align: center; margin-bottom: 16px;">
+          <div style="font-size: 40px; margin-bottom: 4px;">📖</div>
+          <h3 style="color: #ffd54f; font-size: 20px; margin: 0;">Kafe İşletme & Başlangıç Rehberi</h3>
+          <p style="font-size: 13px; color: #ccc;">Şehrin en popüler kafesini yönetmek için bilmen gereken 4 temel altın kural:</p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px;">
+          <div style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 14px;">
+            <div style="font-size: 15px; font-weight: 800; color: #ffd54f; margin-bottom: 6px;">1. ☕ Sipariş & Servis</div>
+            <p style="font-size: 12px; color: #bbb; margin: 0;">Müşteriler masalara oturduğunda sipariş verir. Baristalarınız ürünleri hazırlayıp masaya taşır. Hızlı servis yüksek yıldız kazandırır!</p>
+          </div>
+
+          <div style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 14px;">
+            <div style="font-size: 15px; font-weight: 800; color: #ffd54f; margin-bottom: 6px;">2. 📦 Stok & Depo</div>
+            <p style="font-size: 12px; color: #bbb; margin: 0;">Süt, kahve çekirdeği ve un gibi malzemelerinizi "Stok" sekmesinden toptan satın alın. Malzemeleriniz tükenirse siparişler aksar.</p>
+          </div>
+
+          <div style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 14px;">
+            <div style="font-size: 15px; font-weight: 800; color: #ffd54f; margin-bottom: 6px;">3. 👨‍🍳 Personel Yönetimi</div>
+            <p style="font-size: 12px; color: #bbb; margin: 0;">Kafeyi tek başınıza yönetemezsiniz! "Personel" sekmesinden Hızlı, Güler Yüzlü veya Çalışkan baristalar işe alın.</p>
+          </div>
+
+          <div style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 14px;">
+            <div style="font-size: 15px; font-weight: 800; color: #ffd54f; margin-bottom: 6px;">4. ☀️ Hava & Müşteri Akışı</div>
+            <p style="font-size: 12px; color: #bbb; margin: 0;">Güneşli, yağmurlu veya karlı günlerde müşteri sayıları ve talepleri değişir. Hava durumunu üst bardan takip edin!</p>
+          </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 20px;">
+          <button id="btn-guide-close-confirm" style="background: linear-gradient(135deg, #ffb300, #ff8f00); color: #000; font-weight: 800; border: none; padding: 10px 28px; border-radius: 10px; cursor: pointer; font-size: 14px; box-shadow: 0 4px 12px rgba(255, 179, 0, 0.4);">
+            Anladım, Oyuna Dön 🚀
+          </button>
+        </div>
+      </div>
+    `;
+
+    this.openModal('📖 Nasıl Oynanır? Rehberi', html, '680px');
+
+    const btnCloseConfirm = document.getElementById('btn-guide-close-confirm');
+    if (btnCloseConfirm) {
+      btnCloseConfirm.addEventListener('click', () => {
+        this.closeModal();
+      });
+    }
   }
 
   confirmNewGame() {

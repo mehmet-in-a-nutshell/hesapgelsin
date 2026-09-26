@@ -66,14 +66,10 @@ async function init() {
     window.addEventListener('click', unlockAudio, { once: true });
     window.addEventListener('keydown', unlockAudio, { once: true });
 
-    if (!hasSave) {
-      setTimeout(() => {
-        uiManager.startNewGameWizard();
-      }, 300);
-    } else {
+    if (hasSave) {
       gameState.saveToLocalStorage();
-      uiManager.updateHUD();
     }
+    uiManager.updateHUD();
 
     // Pre-bake assets synchronously
     assetManager.preloadAll();
