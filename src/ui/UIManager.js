@@ -606,6 +606,17 @@ export class UIManager {
     document.getElementById('stat-level').innerText = `Seviye ${this.gameState.level}`;
     document.getElementById('time-display').innerText = this.gameState.formattedTime;
 
+    // Staff Absence Spotlight Pulse Check (Highlight Staff button if no staff hired)
+    const btnStaff = document.getElementById('btn-staff');
+    if (btnStaff) {
+      const hasStaff = this.gameState.employees && this.gameState.employees.length > 0;
+      if (!hasStaff) {
+        btnStaff.classList.add('btn-pulse-glow');
+      } else {
+        btnStaff.classList.remove('btn-pulse-glow');
+      }
+    }
+
     // Quest UI Update
     if (this.questManager) {
       if (this.questManager.isAllCompleted) {
