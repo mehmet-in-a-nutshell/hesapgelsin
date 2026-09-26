@@ -1082,6 +1082,13 @@ export class UIManager {
         </div>
 
         <div style="display: flex; justify-content: space-between; align-items: center;">
+          <span>${data.weatherIcon || '☀️'} Hava Durumu Etkisi (${data.weatherName || 'Güneşli'}):</span>
+          <span style="font-weight: 700; color: ${(data.weatherBonusPct || 0) > 0 ? '#81c784' : '#ffd54f'};">
+            ${(data.weatherBonusPct || 0) > 0 ? `+${data.weatherBonusPct}% Hızlı Sığınma 🏃` : 'Standart (Nötr)'}
+          </span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center;">
           <span>🏷️ Menü Fiyat Politikası:</span>
           <span style="font-weight: 700;" class="${priceClass}">${priceText}</span>
         </div>

@@ -343,6 +343,11 @@ export class CustomerSystem {
     const priceRatio = this.calculateAveragePriceRatio();
     const isPeak = loc.peakHours ? loc.peakHours.includes(this.gameState.hour) : true;
 
+    const wm = this.gameState.weatherManager;
+    const weather = wm ? wm.currentWeather : null;
+    const weatherMult = weather ? weather.spawnRateMultiplier : 1.0;
+    const weatherBonusPct = Math.round((weatherMult - 1.0) * 100);
+
     return {
       spawnRate,
       rawGameMinutes,
@@ -356,7 +361,11 @@ export class CustomerSystem {
       staffCount,
       staffBonusPct,
       priceRatio,
-      isPeak
+      isPeak,
+      weatherIcon: weather ? weather.icon : '☀️',
+      weatherName: weather ? weather.name : 'Açık & Güneşli',
+      weatherMult,
+      weatherBonusPct
     };
   }
 
