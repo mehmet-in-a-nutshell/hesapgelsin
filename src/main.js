@@ -59,8 +59,13 @@ async function init() {
     // Handle user interaction to unlock Web Audio API Context and start relaxing Lo-Fi Cafe BGM
     const unlockAudio = () => {
       audioEngine.ensureContext();
-      if (gameState && gameState.gameSpeed > 0 && !audioEngine.isModalActive) {
-        audioEngine.startBGM();
+      const ws = document.getElementById('welcome-screen');
+      const isWelcomeActive = ws && ws.style.display !== 'none' && !ws.classList.contains('welcome-fade-out');
+
+      if (!audioEngine.isMuted && !audioEngine.isModalActive && !audioEngine.isTabHidden) {
+        if (isWelcomeActive || (gameState && gameState.gameSpeed > 0)) {
+          audioEngine.startBGM();
+        }
       }
     };
     window.addEventListener('click', unlockAudio, { once: true });

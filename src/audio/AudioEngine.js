@@ -36,8 +36,10 @@ class AudioEngine {
       if (this.ctx && this.ctx.state === 'suspended') {
         this.ctx.resume();
       }
-      if (!this.isMuted && this.gameState && this.gameState.gameSpeed > 0 && !this.isModalActive) {
-        this.startBGM();
+      if (!this.isMuted && !this.isModalActive) {
+        if (this.isWelcomeActive() || (this.gameState && this.gameState.gameSpeed > 0)) {
+          this.startBGM();
+        }
       }
     };
 
@@ -262,13 +264,21 @@ class AudioEngine {
     });
   }
 
+  isWelcomeActive() {
+    if (typeof document === 'undefined') return false;
+    const ws = document.getElementById('welcome-screen');
+    return !!(ws && ws.style.display !== 'none' && !ws.classList.contains('welcome-fade-out'));
+  }
+
   setModalActive(active) {
     this.isModalActive = active;
     if (active) {
       this.pauseBGM();
     } else {
-      if (!this.isMuted && this.gameState && this.gameState.gameSpeed > 0 && !this.isTabHidden) {
-        this.startBGM();
+      if (!this.isMuted && !this.isTabHidden) {
+        if (this.isWelcomeActive() || (this.gameState && this.gameState.gameSpeed > 0)) {
+          this.startBGM();
+        }
       }
     }
   }
@@ -432,8 +442,10 @@ class AudioEngine {
     this.isMuted = !this.isMuted;
     if (this.isMuted) {
       this.pauseBGM();
-    } else if (this.gameState && this.gameState.gameSpeed > 0 && !this.isModalActive) {
-      this.startBGM();
+    } else if (!this.isModalActive && !this.isTabHidden) {
+      if (this.isWelcomeActive() || (this.gameState && this.gameState.gameSpeed > 0)) {
+        this.startBGM();
+      }
     }
     return this.isMuted;
   }
