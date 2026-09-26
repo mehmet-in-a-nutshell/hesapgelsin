@@ -443,57 +443,6 @@ export class UIManager {
     }
   }
 
-  openNewCafeNameModal() {
-    audioEngine.playClick();
-    const userName = this.tempUserName || 'Mehmet';
-    const currentCafeName = this.tempNewCafeName || this.gameState.cafeName || 'Ekin Cafe';
-
-    const html = `
-      <div style="padding: 16px; text-align: center; color: #fff;">
-        <div style="font-size: 44px; margin-bottom: 8px;">☕</div>
-        <h3 style="margin-bottom: 8px; color: #ffd54f; font-size: 20px;">Sayın ${userName}, Kafenizin İsmi Nedir?</h3>
-        <p style="font-size: 13px; color: #ccc; margin-bottom: 24px; line-height: 1.4;">
-          Kafenizin ismi sol üst başlık alanında ve müşteri değerlendirmalarında görüntülenecektir.
-        </p>
-        <div style="margin-bottom: 24px;">
-          <input type="text" id="input-new-cafe-name" value="${currentCafeName}" 
-            placeholder="Örn: Lezzet Durağı" 
-            style="width: 85%; max-width: 340px; padding: 12px 16px; border-radius: 10px; border: 2px solid #ffb300; background: rgba(0,0,0,0.5); color: #fff; font-size: 16px; font-weight: 700; text-align: center; outline: none; box-shadow: 0 0 10px rgba(255, 179, 0, 0.2);">
-        </div>
-        <button id="btn-submit-cafe-name" style="background: linear-gradient(135deg, #4caf50, #2e7d32); color: #fff; border: none; padding: 12px 32px; border-radius: 10px; font-weight: 700; font-size: 15px; cursor: pointer; transition: transform 0.15s, filter 0.15s;">
-          Devam Et (Lokasyon Seçimi) ➡️
-        </button>
-      </div>
-    `;
-
-    this.openModal('☕ Kafe Adı Seçimi', html);
-
-    const inputEl = this.modalBody.querySelector('#input-new-cafe-name');
-    const submitBtn = this.modalBody.querySelector('#btn-submit-cafe-name');
-
-    if (inputEl) {
-      inputEl.focus();
-      inputEl.select();
-
-      inputEl.addEventListener('keyup', (e) => {
-        if (e.key === 'Enter') {
-          if (submitBtn) submitBtn.click();
-        }
-      });
-    }
-
-    if (submitBtn) {
-      submitBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        audioEngine.playClick();
-        const enteredName = inputEl ? inputEl.value.trim() : '';
-        this.tempNewCafeName = enteredName || 'Ekin Cafe';
-        this.openLocationSelectionModal();
-      });
-    }
-  }
-
   openLocationSelectionModal() {
     audioEngine.playClick();
     const userName = this.tempUserName || 'Mehmet';
@@ -779,12 +728,6 @@ export class UIManager {
   setSpeed(speed) {
     audioEngine.playClick();
     this.gameState.gameSpeed = speed;
-    if (speed === 0) {
-      audioEngine.pauseBGM();
-    } else if (!audioEngine.isModalActive) {
-      audioEngine.pauseBGM();
-      audioEngine.startBGM();
-    }
     ['pause', '1x', '2x', '3x'].forEach((s, idx) => {
       const btn = document.getElementById(`speed-${s}`);
       if (btn) {

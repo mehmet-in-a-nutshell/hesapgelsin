@@ -290,20 +290,12 @@ class AudioEngine {
   }
 
   setModalActive(active) {
+    // Modals no longer interrupt background soundtrack
     this.isModalActive = active;
-    if (active) {
-      this.pauseBGM();
-    } else {
-      if (!this.isMuted && !this.isTabHidden) {
-        if (this.isWelcomeActive() || (this.gameState && this.gameState.gameSpeed > 0)) {
-          this.startBGM();
-        }
-      }
-    }
   }
 
   startBGM() {
-    if (this.isMuted || this.bgmPlaying || this.isModalActive || this.isTabHidden) return;
+    if (this.isMuted || this.bgmPlaying || this.isTabHidden) return;
     this.ensureContext();
     if (!this.ctx) return;
 
@@ -325,7 +317,7 @@ class AudioEngine {
   }
 
   scheduleBGMStep() {
-    if (!this.bgmPlaying || this.isMuted || this.isModalActive || this.isTabHidden) {
+    if (!this.bgmPlaying || this.isMuted || this.isTabHidden) {
       this.bgmPlaying = false;
       return;
     }
@@ -334,14 +326,7 @@ class AudioEngine {
     if (!this.ctx) return;
 
     const now = this.ctx.currentTime;
-
-    // Scale tempo dynamically with gameState.gameSpeed
-    // 1x speed => multiplier 1.0 (0.42s per beat)
-    // 2x speed => multiplier 1.5 (0.28s per beat)
-    // 3x speed => multiplier 2.0 (0.21s per beat)
-    const speed = (this.gameState && this.gameState.gameSpeed) ? Math.max(1, this.gameState.gameSpeed) : 1;
-    const speedMultiplier = 1 + (speed - 1) * 0.5;
-    const stepDuration = 0.42 / speedMultiplier;
+    const stepDuration = 0.42; // Constant relaxed ~72 BPM tempo
 
     // Relaxing 4-Bar Lo-Fi Jazz Chord Progression (Cmaj7 -> Am7 -> Dm7 -> G7)
     const chords = [
@@ -362,8 +347,8 @@ class AudioEngine {
         const filter = this.ctx.createBiquadFilter();
         const gain = this.ctx.createGain();
 
-        const strumTime = now + (idx * 0.03) / speedMultiplier;
-        const noteDuration = 1.2 / speedMultiplier;
+        const strumTime = now + idx * 0.03;
+        const noteDuration = 1.2;
 
         osc.type = 'triangle'; // Smooth Fender Rhodes tone
         osc.frequency.setValueAtTime(freq, strumTime);
@@ -372,7 +357,7 @@ class AudioEngine {
         filter.frequency.setValueAtTime(1050, now);
 
         gain.gain.setValueAtTime(0.012, strumTime);
-        gain.gain.linearRampToValueAtTime(0.022, strumTime + 0.08 / speedMultiplier);
+        gain.gain.linearRampToValueAtTime(0.022, strumTime + 0.08);
         gain.gain.exponentialRampToValueAtTime(0.0005, strumTime + noteDuration);
 
         osc.connect(filter);
@@ -391,7 +376,7 @@ class AudioEngine {
       const bassGain = this.ctx.createGain();
 
       const bassFreq = beatInMeasure === 0 ? chord.bass : chord.bass * 1.5; // Root & Fifth
-      const bassDuration = 0.7 / speedMultiplier;
+      const bassDuration = 0.7;
 
       bassOsc.type = 'sine';
       bassOsc.frequency.setValueAtTime(bassFreq, now);
@@ -417,7 +402,7 @@ class AudioEngine {
       const noiseFilter = this.ctx.createBiquadFilter();
       const noiseGain = this.ctx.createGain();
 
-      const noiseDuration = 0.07 / speedMultiplier;
+      const noiseDuration = 0.07;
 
       noise.buffer = noiseBuffer;
       noiseFilter.type = 'highpass';
