@@ -13,8 +13,44 @@ class AudioEngine {
     this.bgmTimer = null;
     this.bgmStep = 0;
     this.isModalActive = false;
+    this.isTabHidden = false;
     this.brushBuffer = null;
     this.gameState = null;
+
+    this.initTabVisibilityListeners();
+  }
+
+  initTabVisibilityListeners() {
+    if (typeof document === 'undefined') return;
+
+    const handleHide = () => {
+      this.isTabHidden = true;
+      this.pauseBGM();
+      if (this.ctx && this.ctx.state === 'running') {
+        this.ctx.suspend();
+      }
+    };
+
+    const handleShow = () => {
+      this.isTabHidden = false;
+      if (this.ctx && this.ctx.state === 'suspended') {
+        this.ctx.resume();
+      }
+      if (!this.isMuted && this.gameState && this.gameState.gameSpeed > 0 && !this.isModalActive) {
+        this.startBGM();
+      }
+    };
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden || document.visibilityState === 'hidden') {
+        handleHide();
+      } else {
+        handleShow();
+      }
+    });
+
+    window.addEventListener('blur', () => handleHide());
+    window.addEventListener('focus', () => handleShow());
   }
 
   init() {
@@ -231,14 +267,14 @@ class AudioEngine {
     if (active) {
       this.pauseBGM();
     } else {
-      if (!this.isMuted && this.gameState && this.gameState.gameSpeed > 0) {
+      if (!this.isMuted && this.gameState && this.gameState.gameSpeed > 0 && !this.isTabHidden) {
         this.startBGM();
       }
     }
   }
 
   startBGM() {
-    if (this.isMuted || this.bgmPlaying || this.isModalActive) return;
+    if (this.isMuted || this.bgmPlaying || this.isModalActive || this.isTabHidden) return;
     this.ensureContext();
     if (!this.ctx) return;
 
@@ -260,7 +296,7 @@ class AudioEngine {
   }
 
   scheduleBGMStep() {
-    if (!this.bgmPlaying || this.isMuted || this.isModalActive) {
+    if (!this.bgmPlaying || this.isMuted || this.isModalActive || this.isTabHidden) {
       this.bgmPlaying = false;
       return;
     }
@@ -269,7 +305,14 @@ class AudioEngine {
     if (!this.ctx) return;
 
     const now = this.ctx.currentTime;
-    const stepDuration = 0.42; // ~72 BPM lo-fi tempo (0.42s per beat)
+
+    // Scale tempo dynamically with gameState.gameSpeed
+    // 1x speed => multiplier 1.0 (0.42s per beat)
+    // 2x speed => multiplier 1.5 (0.28s per beat)
+    // 3x speed => multiplier 2.0 (0.21s per beat)
+    const speed = (this.gameState && this.gameState.gameSpeed) ? Math.max(1, this.gameState.gameSpeed) : 1;
+    const speedMultiplier = 1 + (speed - 1) * 0.5;
+    const stepDuration = 0.42 / speedMultiplier;
 
     // Relaxing 4-Bar Lo-Fi Jazz Chord Progression (Cmaj7 -> Am7 -> Dm7 -> G7)
     const chords = [
@@ -290,22 +333,25 @@ class AudioEngine {
         const filter = this.ctx.createBiquadFilter();
         const gain = this.ctx.createGain();
 
+        const strumTime = now + (idx * 0.03) / speedMultiplier;
+        const noteDuration = 1.2 / speedMultiplier;
+
         osc.type = 'triangle'; // Smooth Fender Rhodes tone
-        osc.frequency.setValueAtTime(freq, now + idx * 0.03); // Delicate arpeggio strum
+        osc.frequency.setValueAtTime(freq, strumTime);
 
         filter.type = 'lowpass';
-        filter.frequency.setValueAtTime(1050, now); // Lowpass filter keeps sounds soft & ear-pleasing
+        filter.frequency.setValueAtTime(1050, now);
 
-        gain.gain.setValueAtTime(0.012, now + idx * 0.03);
-        gain.gain.linearRampToValueAtTime(0.022, now + idx * 0.03 + 0.08);
-        gain.gain.exponentialRampToValueAtTime(0.0005, now + idx * 0.03 + 1.2);
+        gain.gain.setValueAtTime(0.012, strumTime);
+        gain.gain.linearRampToValueAtTime(0.022, strumTime + 0.08 / speedMultiplier);
+        gain.gain.exponentialRampToValueAtTime(0.0005, strumTime + noteDuration);
 
         osc.connect(filter);
         filter.connect(gain);
         gain.connect(this.ctx.destination);
 
-        osc.start(now + idx * 0.03);
-        osc.stop(now + idx * 0.03 + 1.25);
+        osc.start(strumTime);
+        osc.stop(strumTime + noteDuration + 0.05);
       });
     }
 
@@ -316,6 +362,8 @@ class AudioEngine {
       const bassGain = this.ctx.createGain();
 
       const bassFreq = beatInMeasure === 0 ? chord.bass : chord.bass * 1.5; // Root & Fifth
+      const bassDuration = 0.7 / speedMultiplier;
+
       bassOsc.type = 'sine';
       bassOsc.frequency.setValueAtTime(bassFreq, now);
 
@@ -323,14 +371,14 @@ class AudioEngine {
       bassFilter.frequency.setValueAtTime(280, now); // Deep low bass warmth
 
       bassGain.gain.setValueAtTime(0.035, now);
-      bassGain.gain.exponentialRampToValueAtTime(0.001, now + 0.7);
+      bassGain.gain.exponentialRampToValueAtTime(0.001, now + bassDuration);
 
       bassOsc.connect(bassFilter);
       bassFilter.connect(bassGain);
       bassGain.connect(this.ctx.destination);
 
       bassOsc.start(now);
-      bassOsc.stop(now + 0.75);
+      bassOsc.stop(now + bassDuration + 0.05);
     }
 
     // 3. Ultra-Soft Brush Ride Percussion Tap (Every Beat)
@@ -340,20 +388,22 @@ class AudioEngine {
       const noiseFilter = this.ctx.createBiquadFilter();
       const noiseGain = this.ctx.createGain();
 
+      const noiseDuration = 0.07 / speedMultiplier;
+
       noise.buffer = noiseBuffer;
       noiseFilter.type = 'highpass';
       noiseFilter.frequency.setValueAtTime(7000, now);
 
       const tapGain = beatInMeasure === 2 ? 0.005 : 0.0025; // Soft backbeat
       noiseGain.gain.setValueAtTime(tapGain, now);
-      noiseGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.07);
+      noiseGain.gain.exponentialRampToValueAtTime(0.0001, now + noiseDuration);
 
       noise.connect(noiseFilter);
       noiseFilter.connect(noiseGain);
       noiseGain.connect(this.ctx.destination);
 
       noise.start(now);
-      noise.stop(now + 0.08);
+      noise.stop(now + noiseDuration + 0.01);
     }
 
     this.bgmStep++;

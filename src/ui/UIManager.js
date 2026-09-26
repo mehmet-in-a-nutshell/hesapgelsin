@@ -599,6 +599,7 @@ export class UIManager {
     if (speed === 0) {
       audioEngine.pauseBGM();
     } else if (!audioEngine.isModalActive) {
+      audioEngine.pauseBGM();
       audioEngine.startBGM();
     }
     ['pause', '1x', '2x', '3x'].forEach((s, idx) => {
