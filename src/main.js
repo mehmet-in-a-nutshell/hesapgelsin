@@ -54,6 +54,18 @@ async function init() {
     repairmanSystem.uiManager = uiManager;
     renderer.customerSystem = customerSystem;
 
+    audioEngine.gameState = gameState;
+
+    // Handle user interaction to unlock Web Audio API Context and start relaxing Lo-Fi Cafe BGM
+    const unlockAudio = () => {
+      audioEngine.ensureContext();
+      if (gameState && gameState.gameSpeed > 0 && !audioEngine.isModalActive) {
+        audioEngine.startBGM();
+      }
+    };
+    window.addEventListener('click', unlockAudio, { once: true });
+    window.addEventListener('keydown', unlockAudio, { once: true });
+
     if (!hasSave) {
       setTimeout(() => {
         uiManager.startNewGameWizard();

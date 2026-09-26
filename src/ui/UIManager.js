@@ -596,6 +596,11 @@ export class UIManager {
   setSpeed(speed) {
     audioEngine.playClick();
     this.gameState.gameSpeed = speed;
+    if (speed === 0) {
+      audioEngine.pauseBGM();
+    } else if (!audioEngine.isModalActive) {
+      audioEngine.startBGM();
+    }
     ['pause', '1x', '2x', '3x'].forEach((s, idx) => {
       const btn = document.getElementById(`speed-${s}`);
       if (btn) {
@@ -1338,6 +1343,7 @@ export class UIManager {
 
   openModal(title, contentHTML, customMaxWidth = null, preventClose = false) {
     audioEngine.playClick();
+    audioEngine.setModalActive(true);
     this.modalTitle.innerText = title;
     this.modalBody.innerHTML = contentHTML;
     this.preventModalClose = preventClose;
@@ -1364,6 +1370,7 @@ export class UIManager {
   closeModal() {
     if (this.preventModalClose) return;
     audioEngine.playClick();
+    audioEngine.setModalActive(false);
     this.modalOverlay.classList.remove('open');
     this.modalOverlay.style.display = 'none';
     const closeBtn = document.getElementById('modal-close');
