@@ -225,68 +225,155 @@ export class TrafficManager {
   }
 
   renderBike(ctx, cx, cy, e) {
+    // 1. Oval Ground Shadow
     ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
     ctx.beginPath();
-    ctx.ellipse(cx, cy + 2, 12, 4, 0, 0, Math.PI * 2);
+    ctx.ellipse(cx, cy + 2, 14, 4.5, 0, 0, Math.PI * 2);
     ctx.fill();
 
-    ctx.strokeStyle = '#1e293b';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.arc(cx - 10, cy - 2, 5.5, 0, Math.PI * 2);
-    ctx.arc(cx + 10, cy - 2, 5.5, 0, Math.PI * 2);
-    ctx.stroke();
+    // 2. Wheels (Rear: -11, Front: +11)
+    const drawWheel = (wx, wy) => {
+      // Outer Tire
+      ctx.strokeStyle = '#0f172a';
+      ctx.lineWidth = 2.2;
+      ctx.beginPath();
+      ctx.arc(wx, wy, 5.5, 0, Math.PI * 2);
+      ctx.stroke();
 
-    ctx.fillStyle = '#cbd5e0';
-    ctx.beginPath();
-    ctx.arc(cx - 10, cy - 2, 2, 0, Math.PI * 2);
-    ctx.arc(cx + 10, cy - 2, 2, 0, Math.PI * 2);
-    ctx.fill();
+      // Silver Rim / Hub
+      ctx.fillStyle = '#cbd5e0';
+      ctx.beginPath();
+      ctx.arc(wx, wy, 1.8, 0, Math.PI * 2);
+      ctx.fill();
 
+      // Spokes cross
+      ctx.strokeStyle = 'rgba(203, 213, 224, 0.6)';
+      ctx.lineWidth = 0.8;
+      ctx.beginPath();
+      ctx.moveTo(wx - 4, wy); ctx.lineTo(wx + 4, wy);
+      ctx.moveTo(wx, wy - 4); ctx.lineTo(wx, wy + 4);
+      ctx.stroke();
+    };
+
+    drawWheel(cx - 11, cy - 2); // Rear Wheel
+    drawWheel(cx + 11, cy - 2); // Front Wheel
+
+    // 3. Bicycle Frame Tubes (Diamond Geometry facing +X forward)
     ctx.strokeStyle = e.color;
-    ctx.lineWidth = 2.2;
+    ctx.lineWidth = 2.4;
     ctx.beginPath();
-    ctx.moveTo(cx - 10, cy - 2);
-    ctx.lineTo(cx - 3, cy - 11);
-    ctx.lineTo(cx + 2, cy - 2);
-    ctx.lineTo(cx - 10, cy - 2);
-    ctx.moveTo(cx - 3, cy - 11);
-    ctx.lineTo(cx + 6, cy - 11);
-    ctx.lineTo(cx + 2, cy - 2);
-    ctx.lineTo(cx + 10, cy - 2);
+    // Rear stays: rear hub (-11, -2) to seat post (-5, -12) and bottom bracket (-1, -2)
+    ctx.moveTo(cx - 11, cy - 2);
+    ctx.lineTo(cx - 5, cy - 12);
+    ctx.lineTo(cx - 1, cy - 2);
+    ctx.lineTo(cx - 11, cy - 2);
+
+    // Main triangle: seat post (-5, -12) to head tube (+6, -13) and bottom bracket (-1, -2)
+    ctx.moveTo(cx - 5, cy - 12);
+    ctx.lineTo(cx + 6, cy - 13);
+    ctx.lineTo(cx - 1, cy - 2);
+
+    // Front fork: head tube (+6, -13) down to front hub (+11, -2)
+    ctx.lineTo(cx + 11, cy - 2);
     ctx.stroke();
 
-    ctx.fillStyle = '#1e293b';
-    ctx.fillRect(cx - 6, cy - 13, 5, 2.5);
+    // 4. Saddle / Seat (facing forward)
+    ctx.fillStyle = '#0f172a';
+    ctx.beginPath();
+    ctx.ellipse(cx - 5.5, cy - 13.5, 3.5, 1.5, -Math.PI / 12, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 5. Handlebars & Stem (extending forward towards +X)
     ctx.strokeStyle = '#e2e8f0';
-    ctx.lineWidth = 1.5;
+    ctx.lineWidth = 1.8;
     ctx.beginPath();
-    ctx.moveTo(cx + 6, cy - 11);
-    ctx.lineTo(cx + 5, cy - 16);
-    ctx.lineTo(cx + 2, cy - 16);
+    ctx.moveTo(cx + 6, cy - 13);
+    ctx.lineTo(cx + 8, cy - 17); // Fork stem up & forward
+    ctx.lineTo(cx + 11, cy - 17); // Handlebar grip forward (+X)
     ctx.stroke();
 
-    const pedalOffset = Math.sin(e.animTimer) * 3;
-    
+    // 6. Lights & Reflectors
+    // Front LED Headlight (glowing white beam forward +X)
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath();
+    ctx.arc(cx + 9, cy - 15, 1.8, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = 'rgba(254, 240, 138, 0.4)';
+    ctx.beginPath();
+    ctx.moveTo(cx + 10, cy - 16);
+    ctx.lineTo(cx + 20, cy - 19);
+    ctx.lineTo(cx + 20, cy - 11);
+    ctx.closePath();
+    ctx.fill();
+
+    // Rear Red Reflector Light (pointing -X)
+    ctx.fillStyle = '#ef4444';
+    ctx.fillRect(cx - 7.5, cy - 12, 1.8, 2);
+
+    // 7. Dynamic Pedaling Legs
+    const pedalAngle = e.animTimer * 5;
+    const pedalR = 3;
+    const pedalX1 = (cx - 1) + Math.cos(pedalAngle) * pedalR;
+    const pedalY1 = (cy - 2) + Math.sin(pedalAngle) * pedalR;
+    const pedalX2 = (cx - 1) - Math.cos(pedalAngle) * pedalR;
+    const pedalY2 = (cy - 2) - Math.sin(pedalAngle) * pedalR;
+
+    // Legs / Trousers
+    ctx.strokeStyle = '#1e293b';
+    ctx.lineWidth = 2.2;
+    // Left leg
+    ctx.beginPath();
+    ctx.moveTo(cx - 4, cy - 14);
+    ctx.lineTo(cx, cy - 7);
+    ctx.lineTo(pedalX1, pedalY1);
+    ctx.stroke();
+    // Right leg
+    ctx.beginPath();
+    ctx.moveTo(cx - 4, cy - 14);
+    ctx.lineTo(cx + 2, cy - 8);
+    ctx.lineTo(pedalX2, pedalY2);
+    ctx.stroke();
+
+    // 8. Cyclist Torso (Tilted FORWARD -Math.PI / 8 towards handlebars!)
     ctx.fillStyle = e.color;
     ctx.beginPath();
-    ctx.ellipse(cx - 1, cy - 21, 5, 7, Math.PI / 12, 0, Math.PI * 2);
+    ctx.ellipse(cx + 1, cy - 21, 4.5, 7.5, -Math.PI / 8, 0, Math.PI * 2);
     ctx.fill();
 
+    // Cyclist Backpack (strapped on rear -X)
     ctx.fillStyle = '#334155';
-    ctx.fillRect(cx - 7, cy - 25, 4, 7);
+    drawRoundRect(ctx, cx - 6, cy - 25, 4.5, 7, 1.5);
+    ctx.fill();
 
-    ctx.strokeStyle = '#1e293b';
+    // 9. Cyclist Arms (Reaching FORWARD to hold handlebars at +X)
+    ctx.strokeStyle = e.color;
     ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.moveTo(cx - 3, cy - 15);
-    ctx.lineTo(cx - 1, cy - 8 + pedalOffset);
-    ctx.lineTo(cx + 2, cy - 2 + pedalOffset);
+    ctx.moveTo(cx + 3, cy - 23); // Shoulder
+    ctx.lineTo(cx + 7, cy - 18); // Elbow
+    ctx.lineTo(cx + 10, cy - 17); // Hand on handlebar grip
     ctx.stroke();
 
-    ctx.fillStyle = '#f87171';
+    // 10. Cyclist Head & Helmet with Forward Visor (+X)
+    // Head skin
+    ctx.fillStyle = '#fbcfe8';
     ctx.beginPath();
-    ctx.arc(cx - 1, cy - 29, 4.5, 0, Math.PI * 2);
+    ctx.arc(cx + 4, cy - 28, 4, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Sport Helmet (Color matched)
+    ctx.fillStyle = '#0f172a';
+    ctx.beginPath();
+    ctx.arc(cx + 4, cy - 29.5, 4.5, Math.PI * 0.8, Math.PI * 2.2);
+    ctx.fill();
+
+    // Helmet Sun Visor (Pointing FORWARD +X)
+    ctx.fillStyle = e.color;
+    ctx.beginPath();
+    ctx.moveTo(cx + 4, cy - 31);
+    ctx.lineTo(cx + 10, cy - 29);
+    ctx.lineTo(cx + 7, cy - 27);
+    ctx.closePath();
     ctx.fill();
   }
 
@@ -330,14 +417,22 @@ export class TrafficManager {
 
     ctx.fillStyle = '#fbcfe8';
     ctx.beginPath();
-    ctx.arc(cx, cy - 23 + bobbing, 3.5, 0, Math.PI * 2);
+    ctx.arc(cx + 1, cy - 23 + bobbing, 3.5, 0, Math.PI * 2);
     ctx.fill();
 
     ctx.fillStyle = '#1e293b';
     ctx.beginPath();
-    ctx.arc(cx, cy - 24.5 + bobbing, 4, Math.PI, Math.PI * 2);
+    ctx.arc(cx + 1, cy - 24.5 + bobbing, 4, Math.PI, Math.PI * 2);
     ctx.fill();
-    ctx.fillRect(cx - 6, cy - 25 + bobbing, 4, 1.5);
+
+    // Forward cap visor (+X)
+    ctx.fillStyle = e.color;
+    ctx.beginPath();
+    ctx.moveTo(cx + 1, cy - 25.5 + bobbing);
+    ctx.lineTo(cx + 6, cy - 24 + bobbing);
+    ctx.lineTo(cx + 3, cy - 23 + bobbing);
+    ctx.closePath();
+    ctx.fill();
   }
 
   renderScooter(ctx, cx, cy, e) {
@@ -359,15 +454,39 @@ export class TrafficManager {
     ctx.lineWidth = 1.8;
     ctx.beginPath();
     ctx.moveTo(cx + 7, cy - 1);
-    ctx.lineTo(cx + 6, cy - 16);
+    ctx.lineTo(cx + 7, cy - 16);
+    ctx.lineTo(cx + 10, cy - 16);
     ctx.stroke();
 
-    ctx.fillStyle = e.color;
-    ctx.fillRect(cx - 3, cy - 18, 7, 12);
+    // Scooter Headlight (+X)
+    ctx.fillStyle = '#feef8a';
+    ctx.fillRect(cx + 8, cy - 17, 2.5, 2);
 
+    // Rider Torso
+    ctx.fillStyle = e.color;
+    drawRoundRect(ctx, cx - 3, cy - 18, 7, 12, 2);
+    ctx.fill();
+
+    // Rider Arms extending to handlebars (+X)
+    ctx.strokeStyle = e.color;
+    ctx.lineWidth = 1.8;
+    ctx.beginPath();
+    ctx.moveTo(cx + 1, cy - 15);
+    ctx.lineTo(cx + 7, cy - 16);
+    ctx.stroke();
+
+    // Rider Helmet & Visor (+X)
     ctx.fillStyle = '#38bdf8';
     ctx.beginPath();
-    ctx.arc(cx, cy - 22, 4, 0, Math.PI * 2);
+    ctx.arc(cx + 1, cy - 22, 4, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = '#0f172a';
+    ctx.beginPath();
+    ctx.moveTo(cx + 1, cy - 24);
+    ctx.lineTo(cx + 6, cy - 22);
+    ctx.lineTo(cx + 4, cy - 20);
+    ctx.closePath();
     ctx.fill();
   }
 
