@@ -1086,10 +1086,8 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: radial-gradient(circle at center, rgba(35, 23, 16, 0.94) 0%, rgba(15, 10, 7, 0.98) 100%),
-              url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect fill="none" width="100" height="100"/><circle cx="50" cy="50" r="1" fill="rgba(255,255,255,0.05)"/></svg>');
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: linear-gradient(180deg, rgba(15, 10, 7, 0.65) 0%, rgba(20, 14, 10, 0.75) 100%),
+              url('/welcome_bg.png') center/cover no-repeat;
   transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), filter 0.6s ease;
 }
 
@@ -1103,12 +1101,14 @@ html, body {
 .welcome-hero-card {
   width: 90%;
   max-width: 520px;
-  background: rgba(30, 22, 16, 0.75);
-  border: 1.5px solid rgba(255, 179, 0, 0.3);
+  background: rgba(22, 16, 12, 0.78);
+  border: 1.5px solid rgba(255, 179, 0, 0.4);
   border-radius: 24px;
   padding: 32px 28px;
   text-align: center;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), 0 0 30px rgba(255, 179, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.85), 0 0 40px rgba(255, 179, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   display: flex;
   flex-direction: column;
   align-items: center;
