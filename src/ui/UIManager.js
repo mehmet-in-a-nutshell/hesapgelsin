@@ -626,6 +626,11 @@ export class UIManager {
     document.getElementById('stat-level').innerText = `Seviye ${this.gameState.level}`;
     document.getElementById('time-display').innerText = this.gameState.formattedTime;
 
+    if (this.weatherManager || (this.gameState && this.gameState.weatherManager)) {
+      const wm = this.weatherManager || this.gameState.weatherManager;
+      this.updateWeatherHUD(wm.currentWeather);
+    }
+
     // Staff Absence Spotlight Pulse Check (Highlight Staff button if no staff hired)
     const btnStaff = document.getElementById('btn-staff');
     if (btnStaff) {
@@ -666,6 +671,26 @@ export class UIManager {
 
     // Update object selection & sell popover position
     this.updateObjectSellPopover();
+  }
+
+  updateWeatherHUD(weather) {
+    if (!weather) return;
+    const iconEl = document.getElementById('weather-icon');
+    const displayEl = document.getElementById('weather-display');
+    const pillEl = document.getElementById('weather-pill');
+
+    if (iconEl && displayEl) {
+      iconEl.textContent = weather.icon;
+      displayEl.textContent = `${weather.name.split(' ')[0]} ${weather.temp}°C`;
+      displayEl.style.color = weather.color || '#ffd54f';
+      if (pillEl) {
+        pillEl.style.borderColor = weather.color || 'rgba(255, 213, 79, 0.4)';
+        pillEl.style.background = weather.id === 'RAINY'
+          ? 'rgba(33, 150, 243, 0.2)'
+          : (weather.id === 'SNOWY' ? 'rgba(0, 188, 212, 0.2)' : 'rgba(255, 213, 79, 0.15)');
+        pillEl.title = `Dış Mekan: ${weather.name} (${weather.temp}°C)\n${weather.desc}`;
+      }
+    }
   }
 
   updateKitchenQueue() {

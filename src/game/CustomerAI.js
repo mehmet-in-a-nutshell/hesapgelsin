@@ -180,7 +180,24 @@ export class CustomerSystem {
     // 70% chance to request a product favored by demographic type
     const favoredRecipes = allRecipes.filter(r => r.favoredBy && r.favoredBy.includes(chosenType));
     const candidatePool = (favoredRecipes.length > 0 && Math.random() < 0.7) ? favoredRecipes : allRecipes;
-    const recipe = candidatePool[Math.floor(Math.random() * candidatePool.length)];
+    
+    // Weather influence on product choice (e.g. Rain/Snow boosts hot coffee & bakery; Sunny boosts cold drinks!)
+    const wm = this.gameState.weatherManager;
+    const weather = wm ? wm.currentWeather : null;
+
+    let recipe = candidatePool[Math.floor(Math.random() * candidatePool.length)];
+
+    if (weather && Math.random() < 0.65) {
+      let weatherFavored = [];
+      if (weather.id === 'RAINY' || weather.id === 'SNOWY') {
+        weatherFavored = candidatePool.filter(r => r.category === 'coffee' || r.category === 'bakery');
+      } else if (weather.id === 'SUNNY') {
+        weatherFavored = candidatePool.filter(r => r.id === 'cold_brew' || r.category === 'beverage');
+      }
+      if (weatherFavored.length > 0) {
+        recipe = weatherFavored[Math.floor(Math.random() * weatherFavored.length)];
+      }
+    }
 
     // Spawn 3 grids away outside on the sidewalk (-2, 10 or -2, 4)
     const spawnY = Math.random() < 0.5 ? 10 : 4;
@@ -293,8 +310,12 @@ export class CustomerSystem {
     const sensitivity = loc.priceSensitivity !== undefined ? loc.priceSensitivity : 1.0;
     const priceFactor = Math.pow(priceRatio, sensitivity);
 
-    // Dynamic spawn rate interval in real seconds per customer (divided by trafficMultiplier so higher traffic = faster arrival!)
-    const spawnRate = Math.max(1.0, (baseInterval / trafficMult) * repFactor * staffFactor * priceFactor);
+    // 4. Weather Effect (Rain & Snow drive pedestrians into cafe for warmth/shelter!)
+    const wm = this.gameState.weatherManager;
+    const weatherMult = wm ? wm.currentWeather.spawnRateMultiplier : 1.0;
+
+    // Dynamic spawn rate interval in real seconds per customer
+    const spawnRate = Math.max(1.0, (baseInterval / (trafficMult * weatherMult)) * repFactor * staffFactor * priceFactor);
     return spawnRate;
   }
 

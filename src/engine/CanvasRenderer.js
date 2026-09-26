@@ -53,7 +53,43 @@ export class CanvasRenderer {
     this.particles = [];
     this.particlePool = [];
 
+    // Weather Particles System
+    this.initWeatherParticles();
+
     this.initEvents();
+  }
+
+  initWeatherParticles() {
+    this.weatherParticles = [];
+    for (let i = 0; i < 90; i++) {
+      this.weatherParticles.push(this.createRandomExteriorParticle());
+    }
+  }
+
+  createRandomExteriorParticle() {
+    const isNW = Math.random() < 0.5;
+    let gx, gy;
+    if (isNW) {
+      // NW exterior strip: gy from -5 to -1, gx from -5 to 15
+      gy = -1.2 - Math.random() * 4.0;
+      gx = -5 + Math.random() * 20;
+    } else {
+      // NE exterior strip: gx from -5 to -1, gy from -5 to 15
+      gx = -1.2 - Math.random() * 4.0;
+      gy = -5 + Math.random() * 20;
+    }
+
+    return {
+      gx,
+      gy,
+      gz: Math.random() * 200 + 30, // Height above ground in pixels
+      speed: Math.random() * 140 + 180, // Fall speed for rain
+      drift: (Math.random() - 0.5) * 12,
+      size: Math.random() * 2.2 + 1.2,
+      alpha: Math.random() * 0.45 + 0.45,
+      length: Math.random() * 14 + 10,
+      id: Math.random() * 100
+    };
   }
 
   zoomIn() {
@@ -289,6 +325,10 @@ export class CanvasRenderer {
         }
       }
     }
+
+    // Render Exterior Weather Particles & Effects (Rain drops, Snowflakes, Sun dust)
+    this.renderExteriorWeather(ctx, dt, gameState);
+
     ctx.restore();
 
     // Update dynamic road traffic
@@ -716,6 +756,95 @@ export class CanvasRenderer {
     }
 
     ctx.restore();
+    ctx.restore();
+  }
+
+  renderExteriorWeather(ctx, dt, gameState) {
+    const wm = this.weatherManager || (gameState && gameState.weatherManager);
+    if (!wm) return;
+    const weather = wm.currentWeather;
+    if (!weather) return;
+
+    if (!this.weatherParticles || this.weatherParticles.length === 0) {
+      this.initWeatherParticles();
+    }
+
+    const time = Date.now() / 1000;
+
+    ctx.save();
+
+    if (weather.id === 'RAINY') {
+      // Render Exterior Rain Drops Line
+      ctx.lineWidth = 1.2;
+      this.weatherParticles.forEach(p => {
+        p.gz -= p.speed * dt;
+        p.gx += 0.2 * dt;
+        p.gy += 0.2 * dt;
+
+        // Strict Exterior Boundary Check: If particle reaches ground or hits interior cafe space (gx >= 0 && gy >= 0), reset to top exterior
+        if (p.gz <= 0 || (p.gx >= -0.2 && p.gy >= -0.2)) {
+          const newP = this.createRandomExteriorParticle();
+          p.gx = newP.gx;
+          p.gy = newP.gy;
+          p.gz = 200 + Math.random() * 40;
+        }
+
+        const iso = gridToIso(p.gx, p.gy);
+        const screenX = iso.x;
+        const screenY = iso.y - p.gz;
+
+        ctx.strokeStyle = `rgba(160, 210, 255, ${p.alpha})`;
+        ctx.beginPath();
+        ctx.moveTo(screenX, screenY);
+        ctx.lineTo(screenX - 3, screenY + p.length);
+        ctx.stroke();
+      });
+    } else if (weather.id === 'SNOWY') {
+      // Render Exterior Floating Snow Flakes
+      this.weatherParticles.forEach(p => {
+        p.gz -= (p.speed * 0.25) * dt;
+        p.gx += Math.sin(time * 2 + p.id) * 0.4 * dt;
+
+        if (p.gz <= 0 || (p.gx >= -0.2 && p.gy >= -0.2)) {
+          const newP = this.createRandomExteriorParticle();
+          p.gx = newP.gx;
+          p.gy = newP.gy;
+          p.gz = 190 + Math.random() * 40;
+        }
+
+        const iso = gridToIso(p.gx, p.gy);
+        const screenX = iso.x + Math.sin(time * 1.5 + p.id) * 8;
+        const screenY = iso.y - p.gz;
+
+        ctx.fillStyle = `rgba(255, 255, 255, ${p.alpha})`;
+        ctx.beginPath();
+        ctx.arc(screenX, screenY, p.size, 0, Math.PI * 2);
+        ctx.fill();
+      });
+    } else if (weather.id === 'SUNNY') {
+      // Render Exterior Golden Dust Sparkles
+      this.weatherParticles.forEach(p => {
+        p.gz -= 8 * dt;
+        p.gx += Math.cos(time + p.id) * 0.2 * dt;
+
+        if (p.gz <= 0 || (p.gx >= -0.2 && p.gy >= -0.2)) {
+          const newP = this.createRandomExteriorParticle();
+          p.gx = newP.gx;
+          p.gy = newP.gy;
+          p.gz = 150 + Math.random() * 30;
+        }
+
+        const iso = gridToIso(p.gx, p.gy);
+        const screenX = iso.x;
+        const screenY = iso.y - p.gz;
+
+        ctx.fillStyle = `rgba(255, 224, 130, ${p.alpha * 0.5})`;
+        ctx.beginPath();
+        ctx.arc(screenX, screenY, p.size * 0.8, 0, Math.PI * 2);
+        ctx.fill();
+      });
+    }
+
     ctx.restore();
   }
 }

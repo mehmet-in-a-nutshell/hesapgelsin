@@ -12,10 +12,11 @@ import { CustomerSystem } from './game/CustomerAI.js';
 import { EmployeeSystem } from './game/EmployeeAI.js';
 import { RepairmanSystem } from './game/RepairmanAI.js';
 import { QuestManager } from './game/QuestManager.js';
+import { WeatherManager } from './game/WeatherManager.js';
 import { UIManager } from './ui/UIManager.js';
 import { audioEngine } from './audio/AudioEngine.js';
 
-let canvas, renderer, gameState, recipeManager, customerSystem, employeeSystem, repairmanSystem, questManager, uiManager;
+let canvas, renderer, gameState, recipeManager, customerSystem, employeeSystem, repairmanSystem, questManager, weatherManager, uiManager;
 let lastTime = performance.now();
 
 async function init() {
@@ -41,8 +42,12 @@ async function init() {
     renderer.repairmanSystem = repairmanSystem;
 
     questManager = new QuestManager(gameState);
+    weatherManager = new WeatherManager(gameState);
+    gameState.weatherManager = weatherManager;
+    renderer.weatherManager = weatherManager;
 
     uiManager = new UIManager(gameState, recipeManager, questManager, employeeSystem, renderer);
+    uiManager.weatherManager = weatherManager;
     uiManager.customerSystem = customerSystem;
     customerSystem.uiManager = uiManager;
     employeeSystem.uiManager = uiManager;
@@ -181,6 +186,7 @@ function gameLoop(now) {
     employeeSystem.update(dt);
     if (repairmanSystem) repairmanSystem.update(dt);
     if (questManager) questManager.update(dt);
+    if (weatherManager) weatherManager.update(dt);
   }
 
   if (renderer && gameState) {
