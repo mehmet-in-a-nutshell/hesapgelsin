@@ -33,6 +33,7 @@ export class UIManager {
     this.initEvents();
     this.initObjectSellPopover();
     this.initFlowBreakdownPopover();
+    this.initWeatherPopover();
     this.setupQuestSystem();
   }
 
@@ -688,8 +689,12 @@ export class UIManager {
         pillEl.style.background = weather.id === 'RAINY'
           ? 'rgba(33, 150, 243, 0.2)'
           : (weather.id === 'SNOWY' ? 'rgba(0, 188, 212, 0.2)' : 'rgba(255, 213, 79, 0.15)');
-        pillEl.title = `Dış Mekan: ${weather.name} (${weather.temp}°C)\n${weather.desc}`;
+        pillEl.title = `Dış Mekan: ${weather.name} (${weather.temp}°C) - Detaylı Müşteri Etkisi İçin Tıklayın/Hover Yapın ☀️`;
       }
+    }
+
+    if (this.weatherPopoverEl && this.weatherPopoverEl.classList.contains('active')) {
+      this.updateWeatherPopover();
     }
   }
 
@@ -1087,6 +1092,111 @@ export class UIManager {
         </div>
       </div>
     `;
+  }
+
+  positionWeatherPopover() {
+    if (!this.weatherPillEl) this.weatherPillEl = document.getElementById('weather-pill');
+    if (!this.weatherPopoverEl) this.weatherPopoverEl = document.getElementById('weather-breakdown-popover');
+    if (!this.weatherPillEl || !this.weatherPopoverEl) return;
+
+    const rect = this.weatherPillEl.getBoundingClientRect();
+    this.weatherPopoverEl.style.position = 'fixed';
+    this.weatherPopoverEl.style.top = `${rect.bottom + 8}px`;
+    this.weatherPopoverEl.style.left = `${Math.max(10, rect.left - 50)}px`;
+  }
+
+  initWeatherPopover() {
+    this.weatherPopoverEl = document.getElementById('weather-breakdown-popover');
+    this.weatherPillEl = document.getElementById('weather-pill');
+
+    if (!this.weatherPillEl || !this.weatherPopoverEl) return;
+
+    let weatherPinned = false;
+
+    this.weatherPillEl.addEventListener('mouseenter', () => {
+      this.positionWeatherPopover();
+      this.updateWeatherPopover();
+      this.weatherPopoverEl.classList.add('active');
+    });
+
+    this.weatherPillEl.addEventListener('mouseleave', () => {
+      if (!weatherPinned) {
+        this.weatherPopoverEl.classList.remove('active');
+      }
+    });
+
+    this.weatherPillEl.addEventListener('click', (e) => {
+      e.stopPropagation();
+      weatherPinned = !weatherPinned;
+      this.positionWeatherPopover();
+      this.updateWeatherPopover();
+      if (weatherPinned) {
+        this.weatherPopoverEl.classList.add('active');
+      } else {
+        this.weatherPopoverEl.classList.remove('active');
+      }
+    });
+
+    document.addEventListener('click', (e) => {
+      if (weatherPinned && !this.weatherPopoverEl.contains(e.target) && !this.weatherPillEl.contains(e.target)) {
+        weatherPinned = false;
+        this.weatherPopoverEl.classList.remove('active');
+      }
+    });
+  }
+
+  updateWeatherPopover() {
+    if (!this.weatherPopoverEl) return;
+    const wm = this.weatherManager || (this.gameState && this.gameState.weatherManager);
+    if (!wm || !wm.currentWeather) return;
+
+    const curr = wm.currentWeather;
+
+    let speedBadge = '🚶 Standart Müşteri Akış Hızı';
+    let speedColor = '#ffd54f';
+    if (curr.id === 'RAINY') {
+      speedBadge = '🏃 %20 Daha Hızlı (Yağmurdan Sığınan Müşteriler)';
+      speedColor = '#4caf50';
+    } else if (curr.id === 'SNOWY') {
+      speedBadge = '🏃 %30 Daha Hızlı (Karlı Havada Yoğun İltifat & Akış)';
+      speedColor = '#4caf50';
+    }
+
+    const html = `
+      <div style="font-family: var(--font-heading); font-size: 15px; font-weight: 800; color: ${curr.color}; display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.12); padding-bottom: 6px;">
+        <span>${curr.icon} ${curr.name} (${curr.temp}°C)</span>
+        <span style="font-size: 11px; background: rgba(255,255,255,0.1); padding: 2px 8px; border-radius: 6px; color: #fff;">Dış Mekan</span>
+      </div>
+
+      <p style="font-size: 11.5px; color: #ccc; margin-bottom: 10px; line-height: 1.4;">
+        ${curr.desc}
+      </p>
+
+      <div style="background: rgba(0,0,0,0.35); padding: 8px 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.08); margin-bottom: 10px;">
+        <div style="font-size: 11px; color: #aaa; margin-bottom: 4px;">⚡ Müşteri Geliş Hızı & Sirkülasyon:</div>
+        <div style="font-size: 12px; font-weight: 800; color: ${speedColor};">
+          ${speedBadge}
+        </div>
+      </div>
+
+      <div style="font-size: 11px; color: #aaa; margin-bottom: 6px;">📊 İçecek & Yiyecek Talebi Çarpanları:</div>
+      <div style="display: flex; flex-direction: column; gap: 5px; font-size: 11.5px;">
+        <div style="display: flex; justify-content: space-between; background: rgba(255,255,255,0.05); padding: 5px 10px; border-radius: 6px;">
+          <span>☕ Sıcak Kahveler (Espresso, Latte...)</span>
+          <b style="color: ${curr.hotDrinkMultiplier > 1.0 ? '#4caf50' : '#bbb'};">x${curr.hotDrinkMultiplier.toFixed(2)}</b>
+        </div>
+        <div style="display: flex; justify-content: space-between; background: rgba(255,255,255,0.05); padding: 5px 10px; border-radius: 6px;">
+          <span>🧋 Soğuk İçecekler & Cold Brew</span>
+          <b style="color: ${curr.coldDrinkMultiplier > 1.0 ? '#4caf50' : '#ff5252'};">x${curr.coldDrinkMultiplier.toFixed(2)}</b>
+        </div>
+        <div style="display: flex; justify-content: space-between; background: rgba(255,255,255,0.05); padding: 5px 10px; border-radius: 6px;">
+          <span>🥐 Hamur İşi & Tatlılar (Kruvasan, Tost...)</span>
+          <b style="color: ${curr.bakeryMultiplier > 1.0 ? '#4caf50' : '#bbb'};">x${curr.bakeryMultiplier.toFixed(2)}</b>
+        </div>
+      </div>
+    `;
+
+    this.weatherPopoverEl.innerHTML = html;
   }
 
   checkStockDepletions() {
