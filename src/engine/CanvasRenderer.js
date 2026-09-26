@@ -598,7 +598,9 @@ export class CanvasRenderer {
         renderList.push({
           yDepth: (p.x + p.y) * 10 + (person.isEmployee ? 3 : 2) + idx * 0.1,
           draw: () => {
-            const charType = person.isEmployee ? 'barista' : p.type;
+            const charType = person.isEmployee
+              ? (p.type || (p.gender === 'female' ? 'barista_female' : 'barista_male'))
+              : p.type;
             const img = assetManager.getCharacter(charType, p.animState, p.dir);
             ctx.drawImage(img, drawX - img.width / 2, drawY - img.height + 12);
 

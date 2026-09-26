@@ -96,13 +96,32 @@ export const CUSTOMER_PRESETS = {
     pants: '#0d47a1',
     accessory: 'gold_watch'
   },
+  barista_male: {
+    name: 'Erkek Barista',
+    skin: '#f1c27d',
+    hair: '#3e2723',
+    shirt: '#212121', // Black shirt
+    apron: '#2e7d32', // Green cafe apron
+    pants: '#212121',
+    accessory: 'barista_towel'
+  },
+  barista_female: {
+    name: 'Kadın Barista',
+    skin: '#ffdbac',
+    hair: '#4a2e1b',  // Auburn styled hair with side strands & hair clip
+    shirt: '#212121', // Black shirt
+    apron: '#2e7d32', // Green cafe apron
+    pants: '#212121',
+    accessory: 'barista_female_clip'
+  },
   barista: {
     name: 'Barista',
     skin: '#f1c27d',
     hair: '#3e2723',
     shirt: '#212121', // Black shirt
     apron: '#2e7d32', // Green cafe apron
-    pants: '#212121'
+    pants: '#212121',
+    accessory: 'barista_towel'
   },
   repairman: {
     name: 'Usta Tamirci',
@@ -363,6 +382,20 @@ export function renderCharacterSprite(type, state = 'idle', dir = 'SE') {
     ctx.fillStyle = preset.hair;
     ctx.fillRect(cx - 9, headY - 4, 3, 7);
     ctx.fillRect(cx + 6, headY - 4, 3, 7);
+  } else if (type === 'barista_female') {
+    // Long hair side strands and back bun for female barista
+    ctx.fillStyle = preset.hair;
+    ctx.fillRect(cx - 9, headY - 4, 3, 11); // Left hair strand
+    ctx.fillRect(cx + 6, headY - 4, 3, 11); // Right hair strand
+    ctx.beginPath();
+    ctx.arc(cx - 5, headY - 6, 4, 0, Math.PI * 2); // Hair bun at back-left
+    ctx.fill();
+    ctx.fillStyle = '#e53935'; // Red barista hair clip
+    ctx.fillRect(cx - 6, headY - 7, 3, 3);
+  } else if (type === 'barista_male' || type === 'barista') {
+    // Short neat hair side cut for male barista
+    ctx.fillStyle = preset.hair;
+    ctx.fillRect(cx - 8, headY - 6, 4, 3);
   }
 
   // Accessories & Specific Outfits

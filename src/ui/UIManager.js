@@ -1385,12 +1385,14 @@ export class UIManager {
 
     const employees = this.gameState.employees || [];
     const candidates = [
-      { name: 'Selin Yılmaz', trait: 'PERFECTIONIST', salary: 1100 },
-      { name: 'Caner Demir', trait: 'FAST_WORKER', salary: 1000 },
-      { name: 'Elif Kaya', trait: 'CHARMER', salary: 950 },
-      { name: 'Burak Şahin', trait: 'HARD_WORKER', salary: 900 },
-      { name: 'Deniz Arslan', trait: 'FAST_WORKER', salary: 1050 },
-      { name: 'Zeynep Çelik', trait: 'CHARMER', salary: 1000 }
+      { name: 'Selin Yılmaz', trait: 'PERFECTIONIST', salary: 1100, gender: 'female' },
+      { name: 'Caner Demir', trait: 'FAST_WORKER', salary: 1000, gender: 'male' },
+      { name: 'Elif Kaya', trait: 'CHARMER', salary: 950, gender: 'female' },
+      { name: 'Burak Şahin', trait: 'HARD_WORKER', salary: 900, gender: 'male' },
+      { name: 'Deniz Arslan', trait: 'FAST_WORKER', salary: 1050, gender: 'female' },
+      { name: 'Zeynep Çelik', trait: 'CHARMER', salary: 1000, gender: 'female' },
+      { name: 'Kaan Tunç', trait: 'PERFECTIONIST', salary: 1150, gender: 'male' },
+      { name: 'Merve Şen', trait: 'HARD_WORKER', salary: 950, gender: 'female' }
     ];
 
     let html = `
@@ -1423,15 +1425,17 @@ export class UIManager {
         const traitDef = emp.trait || EMPLOYEE_TRAITS[emp.traitKey] || EMPLOYEE_TRAITS.FAST_WORKER;
         const severanceFee = Math.floor((emp.salary || 800) * 3);
         const canAffordSeverance = this.gameState.economy.canAfford(severanceFee);
+        const isFemale = emp.gender === 'female' || emp.type === 'barista_female';
+        const empIcon = isFemale ? '👩‍🍳' : '👨‍🍳';
 
         html += `
           <div style="background: rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.12); border-radius: 12px; padding: 14px; display: flex; justify-content: space-between; align-items: center; gap: 12px;">
             <div style="display: flex; align-items: center; gap: 12px;">
               <div style="width: 44px; height: 44px; background: rgba(255,213,79,0.15); border: 1px solid rgba(255,213,79,0.4); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px;">
-                👨‍🍳
+                ${empIcon}
               </div>
               <div>
-                <div style="font-size: 15px; font-weight: 700; color: #ffffff;">${emp.name}</div>
+                <div style="font-size: 15px; font-weight: 700; color: #ffffff;">${emp.name} <span style="font-size:11px; opacity:0.75; background:rgba(255,255,255,0.1); padding:2px 6px; border-radius:4px;">${isFemale ? 'Kadın Barista' : 'Erkek Barista'}</span></div>
                 <div style="font-size: 12px; color: #ffd54f; margin-top: 2px;">
                   <b>${traitDef.name}</b> • <span style="color: #aaa;">${traitDef.desc}</span>
                 </div>
@@ -1462,16 +1466,17 @@ export class UIManager {
     candidates.forEach(cand => {
       const traitDef = EMPLOYEE_TRAITS[cand.trait];
       const canAffordHire = this.gameState.economy.canAfford(cand.salary);
+      const candIcon = cand.gender === 'female' ? '👩‍🍳' : '👨‍🍳';
 
       html += `
         <div class="item-card">
           <div>
-            <div class="card-title">👨‍🍳 ${cand.name}</div>
-            <div class="card-desc">Özellik: <b>${traitDef.name}</b><br/>${traitDef.desc}</div>
+            <div class="card-title">${candIcon} ${cand.name}</div>
+            <div class="card-desc">Cinsiyet: <b>${cand.gender === 'female' ? 'Kadın Barista' : 'Erkek Barista'}</b><br/>Özellik: <b>${traitDef.name}</b><br/>${traitDef.desc}</div>
           </div>
           <div class="card-footer">
             <span class="price-badge">${cand.salary} TL/gün</span>
-            <button class="action-btn ${canAffordHire ? '' : 'disabled'}" data-hire-name="${cand.name}" data-hire-trait="${cand.trait}" data-hire-salary="${cand.salary}">
+            <button class="action-btn ${canAffordHire ? '' : 'disabled'}" data-hire-name="${cand.name}" data-hire-trait="${cand.trait}" data-hire-salary="${cand.salary}" data-hire-gender="${cand.gender}">
               İşe Al
             </button>
           </div>
@@ -1561,12 +1566,14 @@ export class UIManager {
         const name = targetBtn.dataset.hireName;
         const trait = targetBtn.dataset.hireTrait;
         const salary = parseInt(targetBtn.dataset.hireSalary, 10);
+        const gender = targetBtn.dataset.hireGender || 'male';
 
         if (this.gameState.economy.canAfford(salary)) {
           this.gameState.economy.spendMoney(salary, `Personel İşe Alımı: ${name}`);
-          const newEmp = this.employeeSystem.hireEmployee(name, trait, salary);
+          const newEmp = this.employeeSystem.hireEmployee(name, trait, salary, gender);
+          const empIcon = gender === 'female' ? '👩‍🍳' : '👨‍🍳';
           if (newEmp && this.renderer) {
-            this.renderer.addParticle(0, 7, `👨‍🍳 ${name} İşe Başladı!`, '#4caf50');
+            this.renderer.addParticle(0, 7, `${empIcon} ${name} İşe Başladı!`, '#4caf50');
           }
           audioEngine.playLevelUp();
           if (this.questManager) this.questManager.checkProgress('hire_staff');

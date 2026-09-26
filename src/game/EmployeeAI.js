@@ -14,12 +14,21 @@ export const EMPLOYEE_TRAITS = {
   HARD_WORKER: { name: 'Dayanıklı Personel', staminaBonus: 1.5, desc: 'Yorulma hızı %50 azalır.' }
 };
 
+export function detectGenderByName(name = '') {
+  const femaleNames = ['selin', 'elif', 'zeynep', 'deniz', 'ayşe', 'fatma', 'merve', 'buse', 'ece', 'seda', 'aslı', 'irem', 'gamze', 'ceren', 'ezgi', 'melis', 'nazlı', 'leyla', 'didem', 'defne', 'sinem'];
+  const lower = name.toLowerCase();
+  return femaleNames.some(f => lower.includes(f)) ? 'female' : 'male';
+}
+
 export class Employee {
-  constructor(id, name, traitKey = 'FAST_WORKER', salary = 800) {
+  constructor(id, name, traitKey = 'FAST_WORKER', salary = 800, gender = null) {
     this.id = id;
     this.name = name;
     this.trait = EMPLOYEE_TRAITS[traitKey] || EMPLOYEE_TRAITS.FAST_WORKER;
     this.salary = salary; // daily wage
+
+    this.gender = gender || detectGenderByName(name);
+    this.type = this.gender === 'female' ? 'barista_female' : 'barista_male';
 
     this.x = 4;
     this.y = 3;
@@ -115,7 +124,7 @@ export class EmployeeSystem {
   initDefaultStaff() {
     // 1 Starting Barista spawns at entrance door and walks to random waiting tile!
     const door = this.gameState.gridManager.entrancePos; // { x: 0, y: 7 }
-    const starterBarista = new Employee('emp_1', 'Ahmet Usta', 'FAST_WORKER', 80);
+    const starterBarista = new Employee('emp_1', 'Ahmet Usta', 'FAST_WORKER', 80, 'male');
     starterBarista.x = door.x;
     starterBarista.y = door.y;
     starterBarista.state = 'ENTERING';
@@ -127,10 +136,10 @@ export class EmployeeSystem {
     this.gameState.employees = [starterBarista];
   }
 
-  hireEmployee(name, traitKey, salary) {
+  hireEmployee(name, traitKey, salary, gender = null) {
     if (!this.gameState.economy.canAfford(salary)) return false;
 
-    const emp = new Employee(`emp_${Date.now()}`, name, traitKey, salary);
+    const emp = new Employee(`emp_${Date.now()}`, name, traitKey, salary, gender);
     const door = this.gameState.gridManager.entrancePos; // { x: 0, y: 7 }
     emp.x = door.x;
     emp.y = door.y;
