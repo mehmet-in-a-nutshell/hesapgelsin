@@ -278,36 +278,142 @@ export class UIManager {
   openGuideModal() {
     audioEngine.playClick();
     const html = `
-      <div style="padding: 10px; color: #fff; line-height: 1.6;">
-        <div style="text-align: center; margin-bottom: 16px;">
-          <div style="font-size: 40px; margin-bottom: 4px;">📖</div>
-          <h3 style="color: #ffd54f; font-size: 20px; margin: 0;">Kafe İşletme & Başlangıç Rehberi</h3>
-          <p style="font-size: 13px; color: #ccc;">Şehrin en popüler kafesini yönetmek için bilmen gereken 4 temel altın kural:</p>
+      <div style="padding: 6px 10px; color: #fff; line-height: 1.5;">
+        <!-- TOP HEADER -->
+        <div style="text-align: center; margin-bottom: 12px;">
+          <h3 style="color: #ffd54f; font-size: 20px; margin: 0 0 4px 0;">📖 Kafe İşletme & Strateji Rehberi</h3>
+          <p style="font-size: 12px; color: #ccc; margin: 0;">Kafe imparatorluğunuzu büyütmek için bilmeniz gereken tüm detaylar:</p>
         </div>
 
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px;">
-          <div style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 14px;">
-            <div style="font-size: 15px; font-weight: 800; color: #ffd54f; margin-bottom: 6px;">1. ☕ Sipariş & Servis</div>
-            <p style="font-size: 12px; color: #bbb; margin: 0;">Müşteriler masalara oturduğunda sipariş verir. Baristalarınız ürünleri hazırlayıp masaya taşır. Hızlı servis yüksek yıldız kazandırır!</p>
+        <!-- TAB NAVIGATION BUTTONS -->
+        <div style="display: flex; gap: 6px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.12);">
+          <button class="guide-tab-btn active" data-tab="tab-flow" style="background: rgba(255, 179, 0, 0.25); border: 1px solid #ffb300; color: #ffd54f; padding: 6px 12px; border-radius: 8px; font-weight: 700; font-size: 12px; cursor: pointer; white-space: nowrap;">☕ Döngü & Müşteriler</button>
+          <button class="guide-tab-btn" data-tab="tab-stock" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); color: #ccc; padding: 6px 12px; border-radius: 8px; font-weight: 700; font-size: 12px; cursor: pointer; white-space: nowrap;">📦 Stok & Soğuk Depo</button>
+          <button class="guide-tab-btn" data-tab="tab-staff" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); color: #ccc; padding: 6px 12px; border-radius: 8px; font-weight: 700; font-size: 12px; cursor: pointer; white-space: nowrap;">👨‍🍳 Baristalar & Traits</button>
+          <button class="guide-tab-btn" data-tab="tab-weather" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); color: #ccc; padding: 6px 12px; border-radius: 8px; font-weight: 700; font-size: 12px; cursor: pointer; white-space: nowrap;">☀️ Hava & Lokasyon</button>
+          <button class="guide-tab-btn" data-tab="tab-rep" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); color: #ccc; padding: 6px 12px; border-radius: 8px; font-weight: 700; font-size: 12px; cursor: pointer; white-space: nowrap;">⭐ İtibar & Viraller</button>
+        </div>
+
+        <!-- TAB CONTENT PANELS -->
+        <div id="guide-tab-contents" style="min-height: 320px; max-height: 420px; overflow-y: auto; padding-right: 4px;">
+          <!-- TAB 1: FLOW & CUSTOMERS -->
+          <div id="tab-flow" class="guide-tab-panel" style="display: block;">
+            <div style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 12px; margin-bottom: 10px;">
+              <h4 style="color: #ffd54f; font-size: 14px; margin: 0 0 6px 0;">🔄 Temel Kafe İşleyiş Döngüsü</h4>
+              <p style="font-size: 12px; color: #ddd; margin: 0; line-height: 1.5;">
+                Müşteriler kafeye adım atar ➔ Boş bir masadaki sandalyeye oturur ➔ Mutfaktan sipariş verir ➔ Baristanız kahveyi hazırlar ve masaya taşır ➔ Müşteri kahvesini yudumlayıp kasaya ödemesini yapar.
+              </p>
+            </div>
+
+            <h4 style="color: #ffd54f; font-size: 13.5px; margin: 12px 0 6px 0;">👥 Öne Çıkan Müşteri Profilleri</h4>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 11.5px;">
+              <div style="background: rgba(255,255,255,0.04); border-radius: 8px; padding: 8px 10px; border: 1px solid rgba(255,255,255,0.08);">
+                <b style="color: #ffb300;">🎓 Öğrenciler:</b> Bütçe dostu ürün ararlar. Hızlı servis beklerler.
+              </div>
+              <div style="background: rgba(255,255,255,0.04); border-radius: 8px; padding: 8px 10px; border: 1px solid rgba(255,255,255,0.08);">
+                <b style="color: #2196f3;">💼 Ofis Çalışanları:</b> Öğle saatlerinde yoğunlaşırlar. Harcama güçleri yüksektir.
+              </div>
+              <div style="background: rgba(255,255,255,0.04); border-radius: 8px; padding: 8px 10px; border: 1px solid rgba(255,255,255,0.08);">
+                <b style="color: #9c27b0;">💻 Yazılımcılar / Freelancer:</b> Masada uzun kalırlar, Wi-Fi ve lamba severler.
+              </div>
+              <div style="background: rgba(255,255,255,0.04); border-radius: 8px; padding: 8px 10px; border: 1px solid rgba(255,255,255,0.08);">
+                <b style="color: #e91e63;">📱 Influencerlar:</b> Lüks ekipman görünce **Instagram Virali** patlatıp yıldız yağdırırlar! 📸
+              </div>
+            </div>
           </div>
 
-          <div style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 14px;">
-            <div style="font-size: 15px; font-weight: 800; color: #ffd54f; margin-bottom: 6px;">2. 📦 Stok & Depo</div>
-            <p style="font-size: 12px; color: #bbb; margin: 0;">Süt, kahve çekirdeği ve un gibi malzemelerinizi "Stok" sekmesinden toptan satın alın. Malzemeleriniz tükenirse siparişler aksar.</p>
+          <!-- TAB 2: STOCK & COLD STORAGE -->
+          <div id="tab-stock" class="guide-tab-panel" style="display: none;">
+            <div style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 12px; margin-bottom: 10px;">
+              <h4 style="color: #ffd54f; font-size: 14px; margin: 0 0 6px 0;">📦 Malzeme Tedariği & Stok Takibi</h4>
+              <p style="font-size: 12px; color: #ddd; margin: 0; line-height: 1.5;">
+                Kahve Çekirdeği, Süt, Un, Şerbet ve Çikolata stoklarınızı alt kısımdaki <b>"Stok"</b> sekmesinden toptan sipariş edin. Depoda malzeme biterse barista siparişi hazırlayamaz.
+              </p>
+            </div>
+
+            <div style="background: rgba(244, 67, 54, 0.12); border: 1px solid rgba(244, 67, 54, 0.4); border-radius: 10px; padding: 12px;">
+              <h4 style="color: #ff5252; font-size: 13.5px; margin: 0 0 4px 0;">⚠️ Soğuk Depo & Bozulma Mekaniği (🤢)</h4>
+              <p style="font-size: 11.5px; color: #ffebee; margin: 0; line-height: 1.4;">
+                Dükkanınızda yeterli <b>Buzdolabı</b> yoksa, her saat başı taze malzemeler (süt vb.) sıcak ortamda bozulur ve ziyan olur. Kafe hacminiz büyüdükçe mutlaka yeni buzdolapları satın alın!
+              </p>
+            </div>
           </div>
 
-          <div style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 14px;">
-            <div style="font-size: 15px; font-weight: 800; color: #ffd54f; margin-bottom: 6px;">3. 👨‍🍳 Personel Yönetimi</div>
-            <p style="font-size: 12px; color: #bbb; margin: 0;">Kafeyi tek başınıza yönetemezsiniz! "Personel" sekmesinden Hızlı, Güler Yüzlü veya Çalışkan baristalar işe alın.</p>
+          <!-- TAB 3: STAFF & TRAITS -->
+          <div id="tab-staff" class="guide-tab-panel" style="display: none;">
+            <div style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 12px; margin-bottom: 10px;">
+              <h4 style="color: #ffd54f; font-size: 14px; margin: 0 0 6px 0;">👨‍🍳 Barista İşe Alımı & Çeşitlilik</h4>
+              <p style="font-size: 12px; color: #ddd; margin: 0; line-height: 1.5;">
+                Kafe yoğunlaştığında baristasız kalmamak için <b>"Personel"</b> sekmesinden Kadın ve Erkek barista adaylarını işe alın. Dükkanda çalışan yoksa Personel butonu yanıp sönerek sizi uyarır!
+              </p>
+            </div>
+
+            <h4 style="color: #ffd54f; font-size: 13.5px; margin: 10px 0 6px 0;">✨ Personel Özellikleri (Traits)</h4>
+            <div style="display: flex; flex-direction: column; gap: 6px; font-size: 11.5px;">
+              <div style="background: rgba(255,255,255,0.04); border-radius: 8px; padding: 8px 10px; border: 1px solid rgba(255,255,255,0.08);">
+                <b style="color: #4caf50;">⚡ Hızlı:</b> Kahve demleme ve tepsi taşıma sürelerini %20 oranında hızlandırır.
+              </div>
+              <div style="background: rgba(255,255,255,0.04); border-radius: 8px; padding: 8px 10px; border: 1px solid rgba(255,255,255,0.08);">
+                <b style="color: #ffd54f;">😊 Güler Yüzlü:</b> Müşteri memnuniyetini artırarak her serviste ekstra **+0.03 Yıldız** kazandırır.
+              </div>
+              <div style="background: rgba(255,255,255,0.04); border-radius: 8px; padding: 8px 10px; border: 1px solid rgba(255,255,255,0.08);">
+                <b style="color: #2196f3;">🧠 Çalışkan:</b> Yorulma katsayısı düşüktür, uzun süre yüksek tempoda hizmet verir.
+              </div>
+            </div>
           </div>
 
-          <div style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 14px;">
-            <div style="font-size: 15px; font-weight: 800; color: #ffd54f; margin-bottom: 6px;">4. ☀️ Hava & Müşteri Akışı</div>
-            <p style="font-size: 12px; color: #bbb; margin: 0;">Güneşli, yağmurlu veya karlı günlerde müşteri sayıları ve talepleri değişir. Hava durumunu üst bardan takip edin!</p>
+          <!-- TAB 4: WEATHER & LOCATIONS -->
+          <div id="tab-weather" class="guide-tab-panel" style="display: none;">
+            <div style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 12px; margin-bottom: 10px;">
+              <h4 style="color: #ffd54f; font-size: 14px; margin: 0 0 6px 0;">☀️ Dinamik Hava Durumu Sistemi</h4>
+              <ul style="padding-left: 16px; margin: 0; font-size: 11.5px; color: #ddd; line-height: 1.5;">
+                <li><b>☀️ Güneşli (26°C):</b> Dış mekan masaları tercih edilir. Akış dengelidir.</li>
+                <li><b>🌧️ Yağmurlu (14°C):</b> İç mekana sığınanlar artar! Sıcak kahve satışı ve trafik <b>%30 yükselir</b>.</li>
+                <li><b>❄️ Karlı (2°C):</b> Müşteriler sıcak latte ve fırın tatlılarına yönelir.</li>
+              </ul>
+            </div>
+
+            <div style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 12px;">
+              <h4 style="color: #ffd54f; font-size: 14px; margin: 0 0 6px 0;">🗺️ Stratejik Bölge & Lokasyonlar</h4>
+              <p style="font-size: 11.5px; color: #ddd; margin: 0; line-height: 1.4;">
+                Üniversite bölgesi yüksek müşteri trafiği sunarken, Finans Merkezi yüksek harcama gücü sağlar. Lokasyonunuzu dilediğiniz an harita ekranından taşıyabilirsiniz.
+              </p>
+            </div>
+          </div>
+
+          <!-- TAB 5: REPUTATION & VIRALS -->
+          <div id="tab-rep" class="guide-tab-panel" style="display: none;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 11.5px; margin-bottom: 10px;">
+              <div style="background: rgba(76, 175, 80, 0.08); border: 1px solid rgba(76, 175, 80, 0.3); border-radius: 8px; padding: 10px;">
+                <b style="color: #4caf50;">📈 Yıldız Kazandıranlar (+⭐)</b>
+                <ul style="padding-left: 14px; margin: 4px 0 0 0; color: #ccc; line-height: 1.4;">
+                  <li>Zamanında Servis: <b>+0.05 ⭐</b></li>
+                  <li>Güler Yüzlü Barista: <b>+0.03 ⭐</b></li>
+                  <li>Saksı Bitkileri & Lambalar: <b>+0.02 ⭐</b></li>
+                  <li>Instagram Virali Patlaması: <b>+0.15 ⭐</b></li>
+                </ul>
+              </div>
+              <div style="background: rgba(244, 67, 54, 0.08); border: 1px solid rgba(244, 67, 54, 0.3); border-radius: 8px; padding: 10px;">
+                <b style="color: #ff5252;">📉 Yıldız Düşürenler (-⭐)</b>
+                <ul style="padding-left: 14px; margin: 4px 0 0 0; color: #ccc; line-height: 1.4;">
+                  <li>Siparişin Gecikmesi: <b>-0.10 ⭐</b></li>
+                  <li>Tıkalı Yol / Sandalye Yok: <b>-0.10 ⭐</b></li>
+                  <li>Malzemenin Tükenmesi: <b>-0.05 ⭐</b></li>
+                </ul>
+              </div>
+            </div>
+
+            <div style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 10px; text-align: center;">
+              <b style="color: #ffd54f; font-size: 12.5px;">🏁 Kafeyi Devret & Global Skorboard</b>
+              <p style="font-size: 11px; color: #bbb; margin: 4px 0 0 0;">
+                Başarıyla büyüttüğünüz kafenizi devrederek toplam servetinizi Global Liderlik Tablosunda ölümsüzleştirin! 🏆
+              </p>
+            </div>
           </div>
         </div>
 
-        <div style="text-align: center; margin-top: 20px;">
+        <!-- FOOTER CLOSE BUTTON -->
+        <div style="text-align: center; margin-top: 14px;">
           <button id="btn-guide-close-confirm" style="background: linear-gradient(135deg, #ffb300, #ff8f00); color: #000; font-weight: 800; border: none; padding: 10px 28px; border-radius: 10px; cursor: pointer; font-size: 14px; box-shadow: 0 4px 12px rgba(255, 179, 0, 0.4);">
             Anladım, Oyuna Dön 🚀
           </button>
@@ -315,9 +421,38 @@ export class UIManager {
       </div>
     `;
 
-    this.openModal('📖 Nasıl Oynanır? Rehberi', html, '680px');
+    this.openModal('📖 Kafe İşletme & Strateji Rehberi', html, '750px');
 
-    const btnCloseConfirm = document.getElementById('btn-guide-close-confirm');
+    // Tab switching event handlers
+    const tabBtns = this.modalBody.querySelectorAll('.guide-tab-btn');
+    const tabPanels = this.modalBody.querySelectorAll('.guide-tab-panel');
+
+    tabBtns.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        audioEngine.playClick();
+        const targetTab = e.currentTarget.getAttribute('data-tab');
+
+        tabBtns.forEach(b => {
+          b.style.background = 'rgba(255,255,255,0.06)';
+          b.style.borderColor = 'rgba(255,255,255,0.12)';
+          b.style.color = '#ccc';
+        });
+
+        e.currentTarget.style.background = 'rgba(255, 179, 0, 0.25)';
+        e.currentTarget.style.borderColor = '#ffb300';
+        e.currentTarget.style.color = '#ffd54f';
+
+        tabPanels.forEach(panel => {
+          if (panel.id === targetTab) {
+            panel.style.display = 'block';
+          } else {
+            panel.style.display = 'none';
+          }
+        });
+      });
+    });
+
+    const btnCloseConfirm = this.modalBody.querySelector('#btn-guide-close-confirm');
     if (btnCloseConfirm) {
       btnCloseConfirm.addEventListener('click', () => {
         this.closeModal();
