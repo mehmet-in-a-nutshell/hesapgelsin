@@ -65,7 +65,7 @@ class AudioEngine {
   ensureContext() {
     if (!this.ctx) this.init();
     if (this.ctx && this.ctx.state === 'suspended') {
-      this.ctx.resume();
+      this.ctx.resume().catch(() => {});
     }
   }
 

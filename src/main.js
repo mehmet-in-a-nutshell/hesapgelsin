@@ -56,7 +56,7 @@ async function init() {
 
     audioEngine.gameState = gameState;
 
-    // Handle user interaction to unlock Web Audio API Context and start relaxing Lo-Fi Cafe BGM
+    // Attempt immediate auto-start on load for Welcome Screen
     const unlockAudio = () => {
       audioEngine.ensureContext();
       const ws = document.getElementById('welcome-screen');
@@ -68,8 +68,14 @@ async function init() {
         }
       }
     };
-    window.addEventListener('click', unlockAudio, { once: true });
-    window.addEventListener('keydown', unlockAudio, { once: true });
+
+    // Try starting BGM immediately on init
+    unlockAudio();
+
+    // Also wake up AudioContext on any cursor movement, hover, touch or click
+    ['mousemove', 'mouseenter', 'pointermove', 'touchstart', 'click', 'keydown'].forEach(evtType => {
+      window.addEventListener(evtType, unlockAudio, { once: true, passive: true });
+    });
 
     if (hasSave) {
       gameState.saveToLocalStorage();
