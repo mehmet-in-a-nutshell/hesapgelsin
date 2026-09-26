@@ -205,12 +205,12 @@ export class UIManager {
 
     // Array of helpful daily barista tips
     const tips = [
-      "Günün İpucu: Yağmurlu günlerde kahve satışı coşar! Deponuzda taze kahve çekirdeği bulundurun. ☕🌧️",
-      "Günün İpucu: Güler Yüzlü personel çalıştırmak her serviste ekstra +0.03 Yıldız kazandırır. 👨‍🍳⭐",
-      "Günün İpucu: Tier 2 ve Tier 3 espresso makineleri Instagram'da viral olarak müşteri akışını artırır! 📸✨",
-      "Günün İpucu: Her gün saat 23:00'te dükkan kapanır ve günlük kira ile malzeme giderleri hesaplanır. 🌙💰",
-      "Günün İpucu: Kafeyi lambalar ve saksı bitkileri ile dekore etmek itibar puanınızı hızla yükseltir. 🪴💡",
-      "Günün İpucu: İşletmeci Profilinizi ve Kafe İsminizi dilediğiniz an değiştirebilirsiniz. 👤🏷️"
+      "İpucu: Yağmurlu günlerde kahve satışı coşar! Deponuzda taze kahve çekirdeği bulundurun. ☕🌧️",
+      "İpucu: Güler Yüzlü personel çalıştırmak her serviste ekstra +0.03 Yıldız kazandırır. 👨‍🍳⭐",
+      "İpucu: Tier 2 ve Tier 3 espresso makineleri Instagram'da viral olarak müşteri akışını artırır! 📸✨",
+      "İpucu: Her gün saat 23:00'te dükkan kapanır ve günlük kira ile malzeme giderleri hesaplanır. 🌙💰",
+      "İpucu: Kafeyi lambalar ve saksı bitkileri ile dekore etmek itibar puanınızı hızla yükseltir. 🪴💡",
+      "İpucu: İşletmeci Profilinizi ve Kafe İsminizi dilediğiniz an değiştirebilirsiniz. 👤🏷️"
     ];
 
     if (tipTextEl) {
@@ -256,16 +256,14 @@ export class UIManager {
           }, 600);
         }
 
-        if (this.gameState && this.gameState.gameSpeed > 0 && !audioEngine.isModalActive) {
-          audioEngine.startBGM();
-        }
-
         // Check if user has save or needs new game setup
         const hasSave = localStorage.getItem('cafe_tycoon_save');
         if (!hasSave) {
           setTimeout(() => {
             this.startNewGameWizard();
           }, 350);
+        } else {
+          this.setSpeed(1);
         }
       });
     }
@@ -517,6 +515,7 @@ export class UIManager {
         this.forceCloseModal();
 
         this.gameState.resetGame(20000, finalCafeName, selectedLocId, finalUserName);
+        this.setSpeed(1);
         audioEngine.playLevelUp();
 
         this.updateHUD();

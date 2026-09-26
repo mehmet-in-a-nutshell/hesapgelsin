@@ -20,7 +20,7 @@ export class GameState {
     this.day = 1;
     this.hour = 8;
     this.minute = 0;
-    this.gameSpeed = 1; // 0=Paused, 1=Normal, 2=Fast, 3=Ultra
+    this.gameSpeed = 0; // 0=Paused, 1=Normal, 2=Fast, 3=Ultra
 
     // Progression Stats
     this.level = 1;
