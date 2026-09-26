@@ -203,6 +203,18 @@ export class UIManager {
     const welcomeSoundToggle = document.getElementById('welcome-sound-toggle');
     const tipTextEl = document.getElementById('welcome-daily-tip-text');
 
+    if (welcomeScreen) {
+      const unlockOnAnyInteraction = () => {
+        audioEngine.ensureContext().then(() => {
+          if (!audioEngine.isMuted && !audioEngine.isModalActive && !audioEngine.isTabHidden) {
+            audioEngine.startBGM();
+          }
+        });
+      };
+      welcomeScreen.addEventListener('click', unlockOnAnyInteraction);
+      welcomeScreen.addEventListener('pointerdown', unlockOnAnyInteraction);
+    }
+
     // Array of helpful daily barista tips
     const tips = [
       "İpucu: Yağmurlu günlerde kahve satışı coşar! Deponuzda taze kahve çekirdeği bulundurun. ☕🌧️",

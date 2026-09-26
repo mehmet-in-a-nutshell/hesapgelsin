@@ -65,7 +65,26 @@ class AudioEngine {
   ensureContext() {
     if (!this.ctx) this.init();
     if (this.ctx && this.ctx.state === 'suspended') {
-      this.ctx.resume().catch(() => {});
+      return this.ctx.resume().then(() => {
+        this.updateAudioBadge();
+      }).catch(() => {});
+    } else {
+      this.updateAudioBadge();
+    }
+    return Promise.resolve();
+  }
+
+  updateAudioBadge() {
+    if (typeof document === 'undefined') return;
+    const badge = document.querySelector('.welcome-ver-badge');
+    if (!badge) return;
+
+    if (this.isMuted) {
+      badge.innerText = '🔇 Müzik Kapalı • v1.5';
+    } else if (this.ctx && this.ctx.state === 'running' && this.bgmPlaying) {
+      badge.innerText = '🔊 Lo-Fi Cafe Jazz Çalıyor • v1.5';
+    } else if (this.ctx && this.ctx.state === 'suspended') {
+      badge.innerText = '🎵 Müziği Başlatmak İçin Ekrana Tıklayın • v1.5';
     }
   }
 
