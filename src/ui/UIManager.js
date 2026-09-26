@@ -2211,10 +2211,7 @@ export class UIManager {
   async openLeaderboardModal(options = {}) {
     audioEngine.playClick();
 
-    const isSupabaseActive = LeaderboardService.isConfigured();
-    const statusBadge = isSupabaseActive
-      ? `<span style="background: rgba(76, 175, 80, 0.2); color: #81c784; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; border: 1px solid rgba(76, 175, 80, 0.4);">🌐 CANLI GLOBAL LİDERLİK TABLOSU (SUPABASE)</span>`
-      : `<span style="background: rgba(255, 179, 0, 0.2); color: #ffd54f; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; border: 1px solid rgba(255, 179, 0, 0.4);" title="Supabase Bağlandığında Tüm Oyuncular Canlı Sıralamasını Görür">💻 LOKAL LİDERLİK TABLOSU</span>`;
+    const statusBadge = `<span style="background: rgba(76, 175, 80, 0.2); color: #81c784; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; border: 1px solid rgba(76, 175, 80, 0.4);">🌐 Global Liderlik Tablosu</span>`;
 
     const entries = await LeaderboardService.getEntries();
     entries.sort((a, b) => (Number(b.money) || 0) - (Number(a.money) || 0));
