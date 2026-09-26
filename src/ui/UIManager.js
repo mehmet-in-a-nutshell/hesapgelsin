@@ -268,15 +268,9 @@ export class UIManager {
           }, 600);
         }
 
-        // Check if user has save or needs new game setup
-        const hasSave = localStorage.getItem('cafe_tycoon_save');
-        if (!hasSave) {
-          setTimeout(() => {
-            this.startNewGameWizard();
-          }, 350);
-        } else {
-          this.setSpeed(1);
-        }
+        setTimeout(() => {
+          this.startNewGameWizard();
+        }, 350);
       });
     }
   }
@@ -343,21 +337,72 @@ export class UIManager {
   }
 
   startNewGameWizard() {
-    this.tempUserName = this.gameState.userName || 'Mehmet';
     this.tempNewCafeName = this.gameState.cafeName || 'Ekin Cafe';
-    this.openUserNameModal();
+    this.tempUserName = this.gameState.userName || 'Mehmet';
+    this.openNewCafeNameModal();
+  }
+
+  openNewCafeNameModal() {
+    audioEngine.playClick();
+    const currentCafeName = this.tempNewCafeName || this.gameState.cafeName || 'Ekin Cafe';
+
+    const html = `
+      <div style="padding: 16px; text-align: center; color: #fff;">
+        <div style="font-size: 44px; margin-bottom: 8px;">☕</div>
+        <h3 style="margin-bottom: 8px; color: #ffd54f; font-size: 20px;">Kafenizin İsmi Nedir?</h3>
+        <p style="font-size: 13px; color: #ccc; margin-bottom: 24px; line-height: 1.4;">
+          Yeni kafenizin adını belirleyin. Kafenizin ismi sol üst başlık alanında ve müşteri değerlendirmelerinde görüntülenecektir.
+        </p>
+        <div style="margin-bottom: 24px;">
+          <input type="text" id="input-new-cafe-name" value="${currentCafeName}" 
+            placeholder="Örn: Lezzet Durağı" 
+            style="width: 85%; max-width: 340px; padding: 12px 16px; border-radius: 10px; border: 2px solid #ffb300; background: rgba(0,0,0,0.5); color: #fff; font-size: 16px; font-weight: 700; text-align: center; outline: none; box-shadow: 0 0 10px rgba(255, 179, 0, 0.2);">
+        </div>
+        <button id="btn-submit-cafe-name" style="background: linear-gradient(135deg, #4caf50, #2e7d32); color: #fff; border: none; padding: 12px 32px; border-radius: 10px; font-weight: 700; font-size: 15px; cursor: pointer; transition: transform 0.15s, filter 0.15s;">
+          Devam Et (İşletmeci Adı) ➡️
+        </button>
+      </div>
+    `;
+
+    this.openModal('☕ 1/3: Kafe Adı Seçimi', html, null, true);
+
+    const inputEl = this.modalBody.querySelector('#input-new-cafe-name');
+    const submitBtn = this.modalBody.querySelector('#btn-submit-cafe-name');
+
+    if (inputEl) {
+      inputEl.focus();
+      inputEl.select();
+
+      inputEl.addEventListener('keyup', (e) => {
+        if (e.key === 'Enter') {
+          if (submitBtn) submitBtn.click();
+        }
+      });
+    }
+
+    if (submitBtn) {
+      submitBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        audioEngine.playClick();
+        const enteredName = inputEl ? inputEl.value.trim() : '';
+        this.tempNewCafeName = enteredName || 'Ekin Cafe';
+        this.openUserNameModal();
+      });
+    }
   }
 
   openUserNameModal() {
     audioEngine.playClick();
     const currentUserName = this.tempUserName || this.gameState.userName || 'Mehmet';
+    const cafeName = this.tempNewCafeName || 'Ekin Cafe';
 
     const html = `
       <div style="padding: 16px; text-align: center; color: #fff;">
         <div style="font-size: 44px; margin-bottom: 8px;">👤</div>
-        <h3 style="margin-bottom: 8px; color: #ffd54f; font-size: 20px;">İşletmeci Adınız Nedir?</h3>
+        <h3 style="margin-bottom: 8px; color: #ffd54f; font-size: 20px;">'${cafeName}' İşletmecisi Olarak Adınız Nedir?</h3>
         <p style="font-size: 13px; color: #ccc; margin-bottom: 24px; line-height: 1.4;">
-          Kafe sahibi olarak kullanıcı adınızı girin. Adınız sol üst köşede kafe isminizin altında görüntülenecektir.
+          Kafe sahibi olarak adınızı girin. İsminiz sol üst köşede kafe adının altında görüntülenecektir.
         </p>
         <div style="margin-bottom: 24px;">
           <input type="text" id="input-user-name" value="${currentUserName}" 
@@ -365,12 +410,12 @@ export class UIManager {
             style="width: 85%; max-width: 340px; padding: 12px 16px; border-radius: 10px; border: 2px solid #ffb300; background: rgba(0,0,0,0.5); color: #fff; font-size: 16px; font-weight: 700; text-align: center; outline: none; box-shadow: 0 0 10px rgba(255, 179, 0, 0.2);">
         </div>
         <button id="btn-submit-user-name" style="background: linear-gradient(135deg, #2196f3, #1976d2); color: #fff; border: none; padding: 12px 32px; border-radius: 10px; font-weight: 700; font-size: 15px; cursor: pointer; transition: transform 0.15s, filter 0.15s;">
-          Devam Et (Kafe Adı) ➡️
+          Devam Et (Lokasyon Seçimi) ➡️
         </button>
       </div>
     `;
 
-    this.openModal('👤 İşletmeci Profil Adı', html);
+    this.openModal('👤 2/3: İşletmeci Profil Adı', html, null, true);
 
     const inputEl = this.modalBody.querySelector('#input-user-name');
     const submitBtn = this.modalBody.querySelector('#btn-submit-user-name');
@@ -393,7 +438,7 @@ export class UIManager {
         audioEngine.playClick();
         const enteredUserName = inputEl ? inputEl.value.trim() : '';
         this.tempUserName = enteredUserName || 'Mehmet';
-        this.openNewCafeNameModal();
+        this.openLocationSelectionModal();
       });
     }
   }
