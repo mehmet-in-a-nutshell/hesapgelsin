@@ -894,16 +894,28 @@ export class CanvasRenderer {
       ctx.restore();
     });
 
-    // 2. 3D Wall Trim (NE edge along rightmost wall boundary x=14)
+    // 2. 3D Wall Enclosure Panel on Right Edge (NE boundary along gx=14)
     const isoTR = gridToIso(14, 0);
     const isoDR = gridToIso(14, 1);
+    const wallH = 44;
 
     ctx.save();
-    ctx.strokeStyle = '#263238';
-    ctx.lineWidth = 3;
+    // Solid 3D Right Side Wall Panel (Closing the right side of the cafe room)
+    const wallGrad = ctx.createLinearGradient(isoTR.x, isoTR.y - wallH, isoDR.x + TILE_W / 2, isoDR.y + TILE_H / 2);
+    wallGrad.addColorStop(0, '#455a64');
+    wallGrad.addColorStop(1, '#263238');
+
+    ctx.fillStyle = wallGrad;
+    ctx.strokeStyle = '#1c2826';
+    ctx.lineWidth = 1.5;
+
     ctx.beginPath();
     ctx.moveTo(isoTR.x + TILE_W / 2, isoTR.y);
-    ctx.lineTo(isoDR.x + TILE_W / 2, isoDR.y);
+    ctx.lineTo(isoTR.x + TILE_W / 2, isoTR.y - wallH);
+    ctx.lineTo(isoDR.x + TILE_W / 2, isoDR.y + TILE_H / 2 - wallH);
+    ctx.lineTo(isoDR.x + TILE_W / 2, isoDR.y + TILE_H / 2);
+    ctx.closePath();
+    ctx.fill();
     ctx.stroke();
     ctx.restore();
 
@@ -916,7 +928,7 @@ export class CanvasRenderer {
     // Drop Shadow under Toilet Base
     ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
     ctx.beginPath();
-    ctx.ellipse(kX - 2, kY - 8, 14, 8, -Math.PI / 6, 0, Math.PI * 2);
+    ctx.ellipse(kX - 2, kY - 6, 13, 7, -Math.PI / 6, 0, Math.PI * 2);
     ctx.fill();
 
     // Porcelain Pedestal Base (Sculpted 3D Base)
@@ -924,47 +936,47 @@ export class CanvasRenderer {
     ctx.strokeStyle = '#90a4ae';
     ctx.lineWidth = 1.2;
     ctx.beginPath();
-    ctx.ellipse(kX - 3, kY - 14, 11, 6.5, -Math.PI / 6, 0, Math.PI * 2);
+    ctx.ellipse(kX - 3, kY - 12, 10, 6, -Math.PI / 6, 0, Math.PI * 2);
     ctx.fill();
     ctx.stroke();
 
     // 3D Angled Bowl Body Fill & Gradient
-    const bowlGrad = ctx.createLinearGradient(kX - 12, kY - 30, kX + 10, kY - 10);
+    const bowlGrad = ctx.createLinearGradient(kX - 10, kY - 26, kX + 8, kY - 8);
     bowlGrad.addColorStop(0, '#ffffff');
     bowlGrad.addColorStop(0.7, '#eceff1');
     bowlGrad.addColorStop(1, '#b0bec5');
 
     ctx.fillStyle = bowlGrad;
     ctx.strokeStyle = '#78909c';
-    ctx.lineWidth = 1.5;
+    ctx.lineWidth = 1.2;
 
     // Angled 3D Bowl Rim (Oval tilted along SW-NE isometric axis)
     ctx.beginPath();
-    ctx.ellipse(kX - 2, kY - 20, 10, 6, -Math.PI / 6, 0, Math.PI * 2);
+    ctx.ellipse(kX - 2, kY - 17, 9, 5.5, -Math.PI / 6, 0, Math.PI * 2);
     ctx.fill();
     ctx.stroke();
 
     // Deep Inner Water Depth & Glow (#00acc1 turquoise water)
     ctx.fillStyle = '#00acc1';
     ctx.beginPath();
-    ctx.ellipse(kX - 2, kY - 20, 6.5, 3.5, -Math.PI / 6, 0, Math.PI * 2);
+    ctx.ellipse(kX - 2, kY - 17, 5.8, 3.0, -Math.PI / 6, 0, Math.PI * 2);
     ctx.fill();
 
     // White Porcelain Tank (Rezervuar) Angled at Back
-    const tankGrad = ctx.createLinearGradient(kX + 2, kY - 44, kX + 16, kY - 24);
+    const tankGrad = ctx.createLinearGradient(kX + 1, kY - 38, kX + 14, kY - 20);
     tankGrad.addColorStop(0, '#ffffff');
     tankGrad.addColorStop(1, '#cfd8dc');
 
     ctx.fillStyle = tankGrad;
     ctx.strokeStyle = '#78909c';
-    ctx.lineWidth = 1.5;
+    ctx.lineWidth = 1.2;
 
     // Tank 3D Isometric Box (Back-right facing)
     ctx.beginPath();
-    ctx.moveTo(kX + 2, kY - 42);
-    ctx.lineTo(kX + 14, kY - 36);
-    ctx.lineTo(kX + 14, kY - 20);
-    ctx.lineTo(kX + 2, kY - 26);
+    ctx.moveTo(kX + 1, kY - 36);
+    ctx.lineTo(kX + 12, kY - 31);
+    ctx.lineTo(kX + 12, kY - 17);
+    ctx.lineTo(kX + 1, kY - 22);
     ctx.closePath();
     ctx.fill();
     ctx.stroke();
@@ -972,10 +984,10 @@ export class CanvasRenderer {
     // Tank Top Lid
     ctx.fillStyle = '#eceff1';
     ctx.beginPath();
-    ctx.moveTo(kX + 1, kY - 45);
-    ctx.lineTo(kX + 15, kY - 38);
-    ctx.lineTo(kX + 11, kY - 35);
-    ctx.lineTo(kX - 3, kY - 42);
+    ctx.moveTo(kX, kY - 38);
+    ctx.lineTo(kX + 13, kY - 33);
+    ctx.lineTo(kX + 9, kY - 30);
+    ctx.lineTo(kX - 4, kY - 35);
     ctx.closePath();
     ctx.fill();
     ctx.stroke();
@@ -983,22 +995,20 @@ export class CanvasRenderer {
     // Dual Flush Metallic Button on Lid
     ctx.fillStyle = '#ffb300';
     ctx.beginPath();
-    ctx.ellipse(kX + 6, kY - 39, 2.5, 1.3, -Math.PI / 6, 0, Math.PI * 2);
+    ctx.ellipse(kX + 5, kY - 33, 2.2, 1.2, -Math.PI / 6, 0, Math.PI * 2);
     ctx.fill();
-    ctx.strokeStyle = '#ffd54f';
-    ctx.stroke();
 
     // 3D Toilet Paper Roll Holder on Adjacent Wall
     ctx.fillStyle = '#eceff1';
     ctx.strokeStyle = '#90a4ae';
     ctx.lineWidth = 1;
     ctx.beginPath();
-    ctx.ellipse(kX + 18, kY - 28, 4, 2.5, 0, 0, Math.PI * 2);
+    ctx.ellipse(kX + 15, kY - 24, 3.5, 2, 0, 0, Math.PI * 2);
     ctx.fill();
     ctx.stroke();
     // Paper hanging down
     ctx.fillStyle = '#ffffff';
-    ctx.fillRect(kX + 16, kY - 28, 4, 6);
+    ctx.fillRect(kX + 13, kY - 24, 4, 5);
 
     ctx.restore();
 
@@ -1014,39 +1024,38 @@ export class CanvasRenderer {
     ctx.strokeStyle = '#4e342e';
     ctx.lineWidth = 1.5;
 
-    // Doorway opening frame background
-    drawRoundRect(ctx, dX - 16, dY - 52, 32, 46, 3);
+    // Doorway opening frame background (height 38px)
+    drawRoundRect(ctx, dX - 14, dY - 42, 28, 38, 3);
     ctx.fill();
     ctx.stroke();
 
     // Light Coffee Wood Door Panel Gradient (#d7ccc8 -> #bcaaa4 -> #8d6e63)
-    const woodGrad = ctx.createLinearGradient(dX - 14, dY - 50, dX + 14, dY - 10);
+    const woodGrad = ctx.createLinearGradient(dX - 12, dY - 40, dX + 12, dY - 8);
     woodGrad.addColorStop(0, '#d7ccc8');
     woodGrad.addColorStop(0.5, '#bcaaa4');
     woodGrad.addColorStop(1, '#8d6e63');
 
     ctx.fillStyle = woodGrad;
     ctx.strokeStyle = '#5d4037';
-    ctx.lineWidth = 1.8;
+    ctx.lineWidth = 1.5;
 
     if (!isOccupied) {
       // DOOR IS OPEN / AJAR (Kapı açık - Müşteri içinden rahatça yürüyüp girer)
-      // Tilted inward open door polygon
       ctx.beginPath();
-      ctx.moveTo(dX - 14, dY - 48); // top-left hinge
-      ctx.lineTo(dX + 2, dY - 54);  // top-right (swung inward)
-      ctx.lineTo(dX + 2, dY - 10);  // bottom-right
-      ctx.lineTo(dX - 14, dY - 4);  // bottom-left hinge
+      ctx.moveTo(dX - 12, dY - 38); // top-left hinge
+      ctx.lineTo(dX + 1, dY - 43);  // top-right (swung inward)
+      ctx.lineTo(dX + 1, dY - 8);   // bottom-right
+      ctx.lineTo(dX - 12, dY - 3);  // bottom-left hinge
       ctx.closePath();
       ctx.fill();
       ctx.stroke();
     } else {
       // DOOR IS CLOSED (Kapı kapalı)
       ctx.beginPath();
-      ctx.moveTo(dX - 14, dY - 48); // top-left
-      ctx.lineTo(dX + 10, dY - 56); // top-right
-      ctx.lineTo(dX + 10, dY - 12); // bottom-right
-      ctx.lineTo(dX - 14, dY - 4);  // bottom-left
+      ctx.moveTo(dX - 12, dY - 38); // top-left
+      ctx.lineTo(dX + 8, dY - 44);  // top-right
+      ctx.lineTo(dX + 8, dY - 9);   // bottom-right
+      ctx.lineTo(dX - 12, dY - 3);  // bottom-left
       ctx.closePath();
       ctx.fill();
       ctx.stroke();
@@ -1056,50 +1065,47 @@ export class CanvasRenderer {
     ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
     ctx.lineWidth = 1;
     ctx.beginPath();
-    ctx.moveTo(dX - 10, dY - 42);
-    ctx.lineTo(dX + 4, dY - 47);
-    ctx.lineTo(dX + 4, dY - 16);
-    ctx.lineTo(dX - 10, dY - 12);
+    ctx.moveTo(dX - 9, dY - 33);
+    ctx.lineTo(dX + 3, dY - 37);
+    ctx.lineTo(dX + 3, dY - 13);
+    ctx.lineTo(dX - 9, dY - 9);
     ctx.closePath();
     ctx.stroke();
 
-    // Gold Brass Lever Handle with drop shadow
+    // Gold Brass Lever Handle
     ctx.fillStyle = '#ffb300';
-    ctx.shadowBlur = 4;
-    ctx.shadowColor = '#000000';
     ctx.beginPath();
-    ctx.ellipse(dX + 1, dY - 30, 3.5, 2, 0, 0, Math.PI * 2);
+    ctx.ellipse(dX + 1, dY - 24, 3, 1.8, 0, 0, Math.PI * 2);
     ctx.fill();
 
     // Lever Handle Bar
     ctx.fillStyle = '#ffd54f';
-    ctx.fillRect(dX - 4, dY - 31, 5, 2);
-    ctx.shadowBlur = 0;
+    ctx.fillRect(dX - 3, dY - 25, 4, 1.8);
 
     // 5. OCCUPANCY INDICATOR LIGHT (🔴 DOLU / 🟢 BOŞ)
     const lightColor = isOccupied ? '#ff1744' : '#00e676';
     const lightBg = isOccupied ? 'rgba(40, 10, 10, 0.95)' : 'rgba(10, 35, 20, 0.95)';
     const lightText = isOccupied ? '🔴 DOLU' : '🟢 BOŞ';
 
-    // Glowing Neon Glassmorphic Light Box Frame
+    // Glowing Neon Glassmorphic Light Box Frame (Mounted neatly at dY - 56)
     ctx.save();
     ctx.fillStyle = lightBg;
     ctx.strokeStyle = lightColor;
-    ctx.lineWidth = 1.8;
-    ctx.shadowBlur = 14;
+    ctx.lineWidth = 1.5;
+    ctx.shadowBlur = 10;
     ctx.shadowColor = lightColor;
 
-    drawRoundRect(ctx, dX - 24, dY - 72, 48, 16, 8);
+    drawRoundRect(ctx, dX - 22, dY - 57, 44, 14, 7);
     ctx.fill();
     ctx.stroke();
 
     // Inner glowing text
     ctx.fillStyle = lightColor;
-    ctx.font = 'bold 9.5px sans-serif';
+    ctx.font = 'bold 9px sans-serif';
     ctx.textAlign = 'center';
-    ctx.shadowBlur = 4;
+    ctx.shadowBlur = 3;
     ctx.shadowColor = lightColor;
-    ctx.fillText(lightText, dX, dY - 60);
+    ctx.fillText(lightText, dX, dY - 47);
     ctx.restore();
 
     ctx.restore();
