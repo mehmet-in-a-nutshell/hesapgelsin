@@ -878,7 +878,12 @@ export class UIManager {
     if (elUserName) {
       elUserName.innerText = `İşletmeci: ${this.gameState.userName || 'Mehmet'}`;
     }
-    document.getElementById('stat-money').innerText = `${Math.floor(this.gameState.economy.money).toLocaleString()} TL`;
+    const moneyEl = document.getElementById('stat-money');
+    if (moneyEl) {
+      const moneyVal = Math.floor(this.gameState.economy.money);
+      moneyEl.innerText = `${moneyVal.toLocaleString()} TL`;
+      moneyEl.style.color = moneyVal < 0 ? '#ff5252' : '#ffd54f';
+    }
     document.getElementById('stat-daily-profit').innerText = `${this.gameState.economy.dailyRevenue >= 0 ? '+' : ''}${Math.floor(this.gameState.economy.dailyRevenue)} TL`;
     
     const customerSys = this.customerSystem || (this.gameState && this.gameState.customerSystem);
@@ -2591,7 +2596,8 @@ export class UIManager {
   openEndDayModal() {
     const eco = this.gameState.economy;
     const rent = this.gameState.location.rent;
-    const netProfit = eco.dailyRevenue - eco.dailyExpenses - rent;
+    const staffSalaries = this.gameState.employees ? this.gameState.employees.reduce((sum, e) => sum + (e.salary || 800), 0) : 0;
+    const netProfit = eco.dailyRevenue - eco.dailyExpenses - rent - staffSalaries;
     const servedCount = this.gameState.dailyServedCustomers || 0;
     const missedCount = this.gameState.dailyMissedCustomers || 0;
 
@@ -2602,11 +2608,12 @@ export class UIManager {
           <div>Hizmet Verilen Müşteri: <b style="color:#4caf50;">${servedCount} Kişi 😊</b></div>
           <div>Kaçırılan Müşteri: <b style="color:#ff5252;">${missedCount} Kişi 😢</b></div>
           <div>Toplam İçecek/Tatlı Satışı: <b>${eco.todaySalesCount} Adet</b></div>
-          <div>Günlük Brüt Gelir: <b style="color:#4caf50;">+${eco.dailyRevenue} TL</b></div>
-          <div>Malzeme & İşletme Gideri: <b style="color:#f44336;">-${eco.dailyExpenses} TL</b></div>
-          <div>Bölge Kirası: <b style="color:#f44336;">-${rent} TL</b></div>
+          <div>Günlük Brüt Gelir: <b style="color:#4caf50;">+${eco.dailyRevenue.toLocaleString()} TL</b></div>
+          <div>Malzeme & Tedarik Gideri: <b style="color:#f44336;">-${eco.dailyExpenses.toLocaleString()} TL</b></div>
+          <div>Bölge Kirası: <b style="color:#f44336;">-${rent.toLocaleString()} TL</b></div>
+          ${staffSalaries > 0 ? `<div>Personel Maaşları (${this.gameState.employees.length} Barista): <b style="color:#f44336;">-${staffSalaries.toLocaleString()} TL</b></div>` : ''}
           <hr style="border-color:rgba(255,255,255,0.1); margin:10px 0;"/>
-          <div style="font-size:18px;">Net Günlük Kar: <b style="color:${netProfit >= 0 ? '#4caf50' : '#f44336'};">${netProfit >= 0 ? '+' : ''}${netProfit} TL</b></div>
+          <div style="font-size:18px;">Net Günlük Kar / Zarar: <b style="color:${netProfit >= 0 ? '#4caf50' : '#f44336'};">${netProfit >= 0 ? '+' : ''}${netProfit.toLocaleString()} TL</b></div>
         </div>
         <button id="btn-next-day" class="action-btn" style="font-size:16px; padding:12px 28px;">
           Yeni Güne Başla ☀️
@@ -2619,8 +2626,12 @@ export class UIManager {
     const btnNext = document.getElementById('btn-next-day');
     if (btnNext) {
       btnNext.addEventListener('click', () => {
-        // Deduct rent and reset ledger & daily customer counters
-        eco.spendMoney(rent, 'Günlük Bölge Kirası');
+        // Force compulsory deductions for rent & staff salaries
+        eco.spendMoney(rent, 'Günlük Bölge Kirası', true);
+        if (staffSalaries > 0) {
+          eco.spendMoney(staffSalaries, 'Personel Günlük Maaşları', true);
+        }
+
         eco.resetDailyLedger();
         this.gameState.dailyServedCustomers = 0;
         this.gameState.dailyMissedCustomers = 0;
@@ -2633,6 +2644,7 @@ export class UIManager {
         this.gameState.gridManager.processDailyItemBreakdown(this);
 
         this.setSpeed(1); // Set gameSpeed to 1x and UNPAUSE game clock!
+        this.updateHUD();
         this.gameState.saveToLocalStorage();
         audioEngine.playLevelUp();
         this.closeModal();

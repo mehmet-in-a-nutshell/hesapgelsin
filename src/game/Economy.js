@@ -147,8 +147,8 @@ export class Economy {
     return true;
   }
 
-  spendMoney(amount, reason = 'Harcama') {
-    if (!this.canAfford(amount)) return false;
+  spendMoney(amount, reason = 'Harcama', force = false) {
+    if (!force && !this.canAfford(amount)) return false;
     this.money -= amount;
     this.dailyExpenses += amount;
     this.todayLog.push({ type: 'expense', amount, reason, timestamp: Date.now() });
