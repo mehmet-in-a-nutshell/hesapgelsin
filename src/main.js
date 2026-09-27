@@ -32,7 +32,6 @@ async function init() {
     recipeManager = new RecipeManager();
     gameState = new GameState();
     gameState.recipeManager = recipeManager;
-    const hasSave = gameState.loadFromLocalStorage();
 
     customerSystem = new CustomerSystem(gameState, recipeManager, renderer);
     gameState.customerSystem = customerSystem;
@@ -42,9 +41,13 @@ async function init() {
     renderer.repairmanSystem = repairmanSystem;
 
     questManager = new QuestManager(gameState);
+    gameState.questManager = questManager;
+
     weatherManager = new WeatherManager(gameState);
     gameState.weatherManager = weatherManager;
     renderer.weatherManager = weatherManager;
+
+    const hasSave = gameState.loadFromLocalStorage();
 
     uiManager = new UIManager(gameState, recipeManager, questManager, employeeSystem, renderer);
     uiManager.weatherManager = weatherManager;

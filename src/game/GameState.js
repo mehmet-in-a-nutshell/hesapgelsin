@@ -82,20 +82,12 @@ export class GameState {
 
     // Reset Quests
     if (this.questManager) {
-      this.questManager.currentQuestIndex = 0;
-      this.questManager.isCompleting = false;
+      this.questManager.reset();
     }
 
     // Reset Recipe Manager
     if (this.recipeManager) {
-      Object.keys(RECIPES).forEach(id => {
-        if (this.recipeManager.recipes[id] && RECIPES[id]) {
-          const r = this.recipeManager.recipes[id];
-          r.sellPrice = RECIPES[id].sellPrice;
-          r.costPrice = RECIPES[id].costPrice;
-          r.unlocked = (id === 'espresso' || id === 'americano' || id === 'latte');
-        }
-      });
+      this.recipeManager.reset();
     }
 
     // Reset Employee AI

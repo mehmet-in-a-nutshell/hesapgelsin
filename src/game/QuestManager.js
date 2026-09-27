@@ -465,6 +465,11 @@ export class QuestManager {
     this.onQuestComplete = null;
   }
 
+  reset() {
+    this.currentQuestIndex = 0;
+    this.isCompleting = false;
+  }
+
   get currentQuest() {
     return QUESTS[this.currentQuestIndex] || null;
   }

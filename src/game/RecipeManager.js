@@ -210,6 +210,10 @@ export class RecipeManager {
     this.recipes = JSON.parse(JSON.stringify(RECIPES));
   }
 
+  reset() {
+    this.recipes = JSON.parse(JSON.stringify(RECIPES));
+  }
+
   getUnlockedRecipes() {
     return Object.values(this.recipes).filter(r => r.unlocked);
   }
