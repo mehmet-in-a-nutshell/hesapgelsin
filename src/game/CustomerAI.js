@@ -698,7 +698,7 @@ export class CustomerSystem {
             cust.hasBagOnChair = true; // Leave bag on chair to reserve seat!
             cust.state = 'GOING_TO_TOILET';
 
-            const doorPos = restroom.doorPos || { x: 13, y: 1 };
+            const doorPos = restroom.doorPos || { x: 12, y: 2 };
             const p = gridManager.pathfinder.findPath(Math.floor(cust.x), Math.floor(cust.y), doorPos.x, doorPos.y);
             if (p && p.length > 0) {
               cust.path = p;
@@ -723,7 +723,7 @@ export class CustomerSystem {
           break;
         }
 
-        // Arrived at restroom doorway (13, 1)
+        // Arrived at restroom doorway (12, 2)
         if (!restroom.isOccupied) {
           // Toilet is free! Enter toilet bowl tile (14, 0)
           restroom.isOccupied = true;

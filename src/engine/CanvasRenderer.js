@@ -867,98 +867,225 @@ export class CanvasRenderer {
   }
 
   drawRestroom(ctx, gridManager) {
-    const restroom = (gridManager && gridManager.restroom) ? gridManager.restroom : { x: 13, y: 0, isOccupied: false };
+    const restroom = (gridManager && gridManager.restroom) ? gridManager.restroom : { x: 12, y: 1, isOccupied: false };
     const isOccupied = restroom.isOccupied;
 
-    // 1. Restroom 2x2 Ceramic Floor Tiles (13,0; 14,0; 13,1; 14,1)
+    // 1. Restroom 2x2 Marble Ceramic Floor Tiles (12,1; 13,1; 12,2; 13,2)
     const tiles = [
-      { x: 13, y: 0 },
-      { x: 14, y: 0 },
+      { x: 12, y: 1 },
       { x: 13, y: 1 },
-      { x: 14, y: 1 }
+      { x: 12, y: 2 },
+      { x: 13, y: 2 }
     ];
 
     tiles.forEach(t => {
       const iso = gridToIso(t.x, t.y);
-      drawIsoDiamond(ctx, iso.x, iso.y, TILE_W, TILE_H, '#e0f2f1', '#b2dfdb');
+      // Premium Slate & Marble Tile with Grout Line
+      drawIsoDiamond(ctx, iso.x, iso.y, TILE_W, TILE_H, '#1c2826', '#3b5249');
+
+      // Glossy sheen reflection diagonal
+      ctx.save();
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(iso.x - 14, iso.y - 3);
+      ctx.lineTo(iso.x + 14, iso.y + 3);
+      ctx.stroke();
+      ctx.restore();
     });
 
-    // 2. 3D Isometric Toilet Bowl (Klozet) at (14, 0)
-    const isoKlozet = gridToIso(14, 0);
+    // 2. 3D Isometric Wall Trim (NE edge separating restroom from outside)
+    const isoTR = gridToIso(13, 1);
+    const isoDR = gridToIso(13, 2);
+
+    ctx.save();
+    ctx.strokeStyle = '#273832';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(isoTR.x + TILE_W / 2, isoTR.y);
+    ctx.lineTo(isoDR.x + TILE_W / 2, isoDR.y);
+    ctx.stroke();
+    ctx.restore();
+
+    // 3. 3D Isometric Angled Porcelain Toilet Bowl (Klozet) at (13, 1)
+    const isoKlozet = gridToIso(13, 1);
     const kX = isoKlozet.x;
     const kY = isoKlozet.y;
 
     ctx.save();
-    // Porcelain Base Box
-    ctx.fillStyle = '#f5f5f5';
-    ctx.strokeStyle = '#9e9e9e';
-    ctx.lineWidth = 1;
-    drawRoundRect(ctx, kX - 10, kY - 22, 20, 16, 4);
-    ctx.fill();
-    ctx.stroke();
-
-    // Toilet Seat Ring
-    ctx.fillStyle = '#ffffff';
+    // Drop Shadow under Toilet Base
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
     ctx.beginPath();
-    ctx.ellipse(kX, kY - 14, 7, 4.5, 0, 0, Math.PI * 2);
+    ctx.ellipse(kX - 2, kY - 8, 14, 8, -Math.PI / 6, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Porcelain Pedestal Base (Sculpted 3D Base)
+    ctx.fillStyle = '#cfd8dc';
+    ctx.strokeStyle = '#90a4ae';
+    ctx.lineWidth = 1.2;
+    ctx.beginPath();
+    ctx.ellipse(kX - 3, kY - 14, 11, 6.5, -Math.PI / 6, 0, Math.PI * 2);
     ctx.fill();
     ctx.stroke();
 
-    // Toilet Water Tank (Back)
-    ctx.fillStyle = '#e0e0e0';
-    drawRoundRect(ctx, kX - 9, kY - 36, 18, 14, 3);
+    // 3D Angled Bowl Body Fill & Gradient
+    const bowlGrad = ctx.createLinearGradient(kX - 12, kY - 30, kX + 10, kY - 10);
+    bowlGrad.addColorStop(0, '#ffffff');
+    bowlGrad.addColorStop(0.7, '#eceff1');
+    bowlGrad.addColorStop(1, '#b0bec5');
+
+    ctx.fillStyle = bowlGrad;
+    ctx.strokeStyle = '#78909c';
+    ctx.lineWidth = 1.5;
+
+    // Angled 3D Bowl Rim (Oval tilted along SW-NE isometric axis)
+    ctx.beginPath();
+    ctx.ellipse(kX - 2, kY - 20, 10, 6, -Math.PI / 6, 0, Math.PI * 2);
     ctx.fill();
     ctx.stroke();
 
-    // Flush Gold Button
+    // Deep Inner Water Depth & Glow (#00acc1 turquoise water)
+    ctx.fillStyle = '#00acc1';
+    ctx.beginPath();
+    ctx.ellipse(kX - 2, kY - 20, 6.5, 3.5, -Math.PI / 6, 0, Math.PI * 2);
+    ctx.fill();
+
+    // White Porcelain Tank (Rezervuar) Angled at Back
+    const tankGrad = ctx.createLinearGradient(kX + 2, kY - 44, kX + 16, kY - 24);
+    tankGrad.addColorStop(0, '#ffffff');
+    tankGrad.addColorStop(1, '#cfd8dc');
+
+    ctx.fillStyle = tankGrad;
+    ctx.strokeStyle = '#78909c';
+    ctx.lineWidth = 1.5;
+
+    // Tank 3D Isometric Box (Back-right facing)
+    ctx.beginPath();
+    ctx.moveTo(kX + 2, kY - 42);
+    ctx.lineTo(kX + 14, kY - 36);
+    ctx.lineTo(kX + 14, kY - 20);
+    ctx.lineTo(kX + 2, kY - 26);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // Tank Top Lid
+    ctx.fillStyle = '#eceff1';
+    ctx.beginPath();
+    ctx.moveTo(kX + 1, kY - 45);
+    ctx.lineTo(kX + 15, kY - 38);
+    ctx.lineTo(kX + 11, kY - 35);
+    ctx.lineTo(kX - 3, kY - 42);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // Dual Flush Metallic Button on Lid
     ctx.fillStyle = '#ffb300';
     ctx.beginPath();
-    ctx.arc(kX, kY - 30, 2.5, 0, Math.PI * 2);
+    ctx.ellipse(kX + 6, kY - 39, 2.5, 1.3, -Math.PI / 6, 0, Math.PI * 2);
     ctx.fill();
+    ctx.strokeStyle = '#ffd54f';
+    ctx.stroke();
+
+    // 3D Toilet Paper Roll Holder on Adjacent Wall
+    ctx.fillStyle = '#eceff1';
+    ctx.strokeStyle = '#90a4ae';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.ellipse(kX + 18, kY - 28, 4, 2.5, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+    // Paper hanging down
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(kX + 16, kY - 28, 4, 6);
+
     ctx.restore();
 
-    // 3. 3D Isometric Restroom Door & Occupancy Light Indicator at (13, 1)
-    const isoDoor = gridToIso(13, 1);
+    // 4. 3D Isometric Angled Restroom Door & Occupancy LED Indicator at (12, 2)
+    const isoDoor = gridToIso(12, 2);
     const dX = isoDoor.x;
     const dY = isoDoor.y;
 
     ctx.save();
-    // Modern Wood Door Panel
-    ctx.fillStyle = '#3e2723';
-    ctx.strokeStyle = '#1b0000';
+    // 3D Door Frame (Kapı Kasası)
+    ctx.fillStyle = '#21100b';
+    ctx.strokeStyle = '#100805';
     ctx.lineWidth = 1.5;
-    drawRoundRect(ctx, dX - 14, dY - 48, 28, 42, 4);
+
+    // Doorway opening frame background
+    drawRoundRect(ctx, dX - 16, dY - 52, 32, 46, 3);
     ctx.fill();
     ctx.stroke();
 
-    // Gold Door Handle
-    ctx.fillStyle = '#ffb300';
+    // 3D Angled Wooden Door Panel (Açılı 3D Kapı)
+    const woodGrad = ctx.createLinearGradient(dX - 14, dY - 50, dX + 14, dY - 10);
+    woodGrad.addColorStop(0, '#5d4037');
+    woodGrad.addColorStop(0.5, '#3e2723');
+    woodGrad.addColorStop(1, '#2c1b18');
+
+    ctx.fillStyle = woodGrad;
+    ctx.strokeStyle = '#1b0d0a';
+    ctx.lineWidth = 1.8;
+
+    // Angled Door Polygon (tilted 3D door panel facing outward)
     ctx.beginPath();
-    ctx.arc(dX + 8, dY - 26, 3, 0, Math.PI * 2);
+    ctx.moveTo(dX - 14, dY - 48); // top-left
+    ctx.lineTo(dX + 10, dY - 56); // top-right (angled back into isometric depth)
+    ctx.lineTo(dX + 10, dY - 12); // bottom-right
+    ctx.lineTo(dX - 14, dY - 4);  // bottom-left
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // Door Wood Grain Inset Panel Detail Lines
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(dX - 10, dY - 42);
+    ctx.lineTo(dX + 6, dY - 48);
+    ctx.lineTo(dX + 6, dY - 18);
+    ctx.lineTo(dX - 10, dY - 12);
+    ctx.closePath();
+    ctx.stroke();
+
+    // Gold Brass Lever Handle with drop shadow
+    ctx.fillStyle = '#ffb300';
+    ctx.shadowBlur = 4;
+    ctx.shadowColor = '#000000';
+    ctx.beginPath();
+    ctx.ellipse(dX + 2, dY - 32, 3.5, 2, 0, 0, Math.PI * 2);
     ctx.fill();
 
-    // OCCUPANCY INDICATOR LIGHT (🔴 DOLU / 🟢 BOŞ)
-    const lightColor = isOccupied ? '#ff5252' : '#4caf50';
+    // Lever Handle Bar
+    ctx.fillStyle = '#ffd54f';
+    ctx.fillRect(dX - 3, dY - 33, 5, 2);
+    ctx.shadowBlur = 0;
+
+    // 5. OCCUPANCY INDICATOR LIGHT (🔴 DOLU / 🟢 BOŞ)
+    const lightColor = isOccupied ? '#ff1744' : '#00e676';
+    const lightBg = isOccupied ? 'rgba(40, 10, 10, 0.95)' : 'rgba(10, 35, 20, 0.95)';
     const lightText = isOccupied ? '🔴 DOLU' : '🟢 BOŞ';
 
-    // Glowing Light Box Frame
+    // Glowing Neon Glassmorphic Light Box Frame
     ctx.save();
-    ctx.fillStyle = 'rgba(18, 18, 18, 0.95)';
+    ctx.fillStyle = lightBg;
     ctx.strokeStyle = lightColor;
-    ctx.lineWidth = 1.5;
-    ctx.shadowBlur = 12;
+    ctx.lineWidth = 1.8;
+    ctx.shadowBlur = 14;
     ctx.shadowColor = lightColor;
 
-    drawRoundRect(ctx, dX - 22, dY - 65, 44, 15, 6);
+    drawRoundRect(ctx, dX - 24, dY - 72, 48, 16, 8);
     ctx.fill();
     ctx.stroke();
 
-    // Light Box Text
+    // Inner glowing text
     ctx.fillStyle = lightColor;
-    ctx.font = 'bold 9px sans-serif';
+    ctx.font = 'bold 9.5px sans-serif';
     ctx.textAlign = 'center';
-    ctx.shadowBlur = 0;
-    ctx.fillText(lightText, dX, dY - 54);
+    ctx.shadowBlur = 4;
+    ctx.shadowColor = lightColor;
+    ctx.fillText(lightText, dX, dY - 60);
     ctx.restore();
 
     ctx.restore();
