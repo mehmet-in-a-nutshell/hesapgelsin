@@ -226,8 +226,10 @@ export class EmployeeSystem {
   updateEmployeeAI(emp, dt) {
     const gridManager = this.gameState.gridManager;
     const economy = this.gameState.economy;
-    const speedMult = (emp.trait.speedBonus || 1.0) * this.gameState.gameSpeed;
-    const moveSpeed = 4.5 * dt * speedMult;
+    const baristaSpeedMult = (emp.trait.speedBonus || 1.0) * this.gameState.gameSpeed;
+    const moveSpeed = 4.5 * dt * baristaSpeedMult;
+    const machineSpeedMult = gridManager ? gridManager.getEspressoMachineSpeedMultiplier() : 1.0;
+    const brewingSpeedMult = baristaSpeedMult * machineSpeedMult;
 
     // If employee has a cross emoji timer (❌), count down to clear bubble
     if (emp.crossTimer > 0) {
@@ -239,7 +241,7 @@ export class EmployeeSystem {
 
     // If employee is brewing, advance brew timer even while moving to waiting tile
     if (emp.state === 'BREWING') {
-      emp.brewTimer += dt * speedMult;
+      emp.brewTimer += dt * brewingSpeedMult;
       if (emp.brewTimer >= 1.5 && emp.activeBubble === 'check') {
         emp.activeBubble = null;
       }
@@ -419,7 +421,7 @@ export class EmployeeSystem {
 
       case 'BREWING': {
         emp.animState = 'idle';
-        emp.brewTimer += dt * speedMult;
+        emp.brewTimer += dt * brewingSpeedMult;
 
         // Clear checkmark bubble after 1.5s of preparation
         if (emp.brewTimer >= 1.5 && emp.activeBubble === 'check') {

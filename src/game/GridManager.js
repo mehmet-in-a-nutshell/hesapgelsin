@@ -117,7 +117,7 @@ export const ITEM_CATALOG = {
     qualityBonus: 5,
     width: 1,
     height: 1,
-    description: 'Temel espresso demleme makinesi.'
+    description: 'Temel espresso demleme makinesi (1.0x hız). Dükkana eklenecek ilave her aktif makine demleme hızını +%15 artırır!'
   },
   ESPRESSO_MACHINE_TIER_2: {
     id: 'ESPRESSO_MACHINE_TIER_2',
@@ -132,7 +132,7 @@ export const ITEM_CATALOG = {
     height: 1,
     viralBonusChance: 0.05,
     repBonus: 0.08,
-    description: '📸 +%5 Instagram viral paylaşım katkısı (🤩) ve +0.08 Yıldız bonusu kazandırır! (Maks %30 tavan)'
+    description: '⚡ %40 Daha hızlı kahve demleme (1.4x hız)! Ek olarak +%5 Instagram viral katkısı ve +0.08 Yıldız bonusu kazandırır! (İlave makineler +%15 hız katar).'
   },
   ESPRESSO_MACHINE_TIER_3: {
     id: 'ESPRESSO_MACHINE_TIER_3',
@@ -147,7 +147,7 @@ export const ITEM_CATALOG = {
     height: 1,
     viralBonusChance: 0.10,
     repBonus: 0.15,
-    description: '📸 +%10 Instagram viral paylaşım katkısı (🤩) ve +0.15 Yıldız bonusu kazandırır! (Maks %30 tavan)'
+    description: '⚡ 2 kat daha hızlı kahve demleme (2.0x hız)! Ek olarak +%10 Instagram viral katkısı ve +0.15 Yıldız bonusu kazandırır! (İlave makineler +%15 hız katar).'
   },
   REFRIGERATOR_SMALL: {
     id: 'REFRIGERATOR_SMALL',
@@ -599,6 +599,27 @@ export class GridManager {
 
   hasWorkingEspressoMachine() {
     return this.items.some(it => !it.isBroken && it.id.startsWith('ESPRESSO_MACHINE'));
+  }
+
+  /**
+   * Calculates total coffee brewing speed multiplier.
+   * - Base speed comes from the highest active espresso machine tier (1.0x, 1.4x, 2.0x).
+   * - Each additional active espresso machine adds +15% (+0.15) extra brewing speed multiplier.
+   */
+  getEspressoMachineSpeedMultiplier() {
+    const activeMachines = this.items.filter(it => !it.isBroken && it.id.startsWith('ESPRESSO_MACHINE'));
+    if (activeMachines.length === 0) return 1.0;
+
+    let maxBaseSpeed = 1.0;
+    activeMachines.forEach(it => {
+      const def = ITEM_CATALOG[it.id];
+      if (def && def.speedBonus) {
+        maxBaseSpeed = Math.max(maxBaseSpeed, def.speedBonus);
+      }
+    });
+
+    const extraMachinesBonus = (activeMachines.length - 1) * 0.15;
+    return Number((maxBaseSpeed + extraMachinesBonus).toFixed(2));
   }
 
   /**
