@@ -131,7 +131,18 @@ export class EmployeeSystem {
 
     const targetTile = this.getRandomWaitingTile();
     starterBarista.targetWaitTile = targetTile;
-    starterBarista.path = this.gameState.gridManager.pathfinder.findPath(door.x, door.y, targetTile.x, targetTile.y);
+    const p = this.gameState.gridManager.pathfinder.findPath(door.x, door.y, targetTile.x, targetTile.y);
+    if (p && p.length > 0) {
+      starterBarista.path = p;
+    } else {
+      // Fallback: If door path is blocked by furniture, spawn directly near counter interior
+      const counterPos = this.gameState.gridManager.getCounterPosition();
+      const safeTile = this.gameState.gridManager.getNearestWalkableTile(counterPos.x, counterPos.y);
+      starterBarista.x = safeTile.x;
+      starterBarista.y = safeTile.y;
+      starterBarista.state = 'IDLE';
+      starterBarista.path = [];
+    }
 
     this.gameState.employees = [starterBarista];
   }
@@ -147,7 +158,18 @@ export class EmployeeSystem {
 
     const targetTile = this.getRandomWaitingTile();
     emp.targetWaitTile = targetTile;
-    emp.path = this.gameState.gridManager.pathfinder.findPath(door.x, door.y, targetTile.x, targetTile.y);
+    const p = this.gameState.gridManager.pathfinder.findPath(door.x, door.y, targetTile.x, targetTile.y);
+    if (p && p.length > 0) {
+      emp.path = p;
+    } else {
+      // Fallback: If door path is blocked by furniture, spawn directly near counter interior
+      const counterPos = this.gameState.gridManager.getCounterPosition();
+      const safeTile = this.gameState.gridManager.getNearestWalkableTile(counterPos.x, counterPos.y);
+      emp.x = safeTile.x;
+      emp.y = safeTile.y;
+      emp.state = 'IDLE';
+      emp.path = [];
+    }
 
     this.gameState.employees.push(emp);
     return emp;
