@@ -92,8 +92,8 @@ export const QUESTS = [
     desc: '5.0 Maksimum Yıldız itibarına ulaş!',
     targetType: 'reputation',
     targetAmount: 5.0,
-    rewardXP: 2000,
-    rewardMoney: 28000
+    rewardXP: 1500,
+    rewardMoney: 21000
   },
   {
     id: 'q11_serve_75',
@@ -101,8 +101,8 @@ export const QUESTS = [
     desc: '75 müşteriye başarıyla servis sun.',
     targetType: 'serve_customers',
     targetAmount: 75,
-    rewardXP: 2500,
-    rewardMoney: 35000
+    rewardXP: 1875,
+    rewardMoney: 26250
   },
   {
     id: 'q12_unlock_4_recipes',
@@ -110,8 +110,8 @@ export const QUESTS = [
     desc: 'Menünde 4 farklı ürün reçetesi aç.',
     targetType: 'unlock_recipe',
     targetAmount: 4,
-    rewardXP: 2800,
-    rewardMoney: 38500
+    rewardXP: 2100,
+    rewardMoney: 28875
   },
   {
     id: 'q13_place_6_decor',
@@ -119,8 +119,8 @@ export const QUESTS = [
     desc: 'Kafeye toplam 6 adet mobilya yerleştir.',
     targetType: 'place_decor',
     targetAmount: 6,
-    rewardXP: 3000,
-    rewardMoney: 42000
+    rewardXP: 2250,
+    rewardMoney: 31500
   },
   {
     id: 'q14_reach_level_4',
@@ -128,8 +128,8 @@ export const QUESTS = [
     desc: 'Seviye 4 kafe statüsüne ulaş.',
     targetType: 'level',
     targetAmount: 4,
-    rewardXP: 3500,
-    rewardMoney: 47250
+    rewardXP: 2625,
+    rewardMoney: 35435
   },
   {
     id: 'q15_hire_3_staff',
@@ -137,8 +137,8 @@ export const QUESTS = [
     desc: 'Kafende 3 barista çalıştırmaya başla.',
     targetType: 'hire_staff',
     targetAmount: 3,
-    rewardXP: 4000,
-    rewardMoney: 52500
+    rewardXP: 3000,
+    rewardMoney: 39375
   },
   {
     id: 'q16_serve_120',
@@ -146,8 +146,8 @@ export const QUESTS = [
     desc: 'Toplam 120 müşteriye hizmet ver.',
     targetType: 'serve_customers',
     targetAmount: 120,
-    rewardXP: 4500,
-    rewardMoney: 57750
+    rewardXP: 3375,
+    rewardMoney: 43310
   },
   {
     id: 'q17_unlock_5_recipes',
@@ -155,8 +155,8 @@ export const QUESTS = [
     desc: 'Toplam 5 ürün reçetesinin lisansını aç.',
     targetType: 'unlock_recipe',
     targetAmount: 5,
-    rewardXP: 5000,
-    rewardMoney: 63000
+    rewardXP: 3750,
+    rewardMoney: 47250
   },
   {
     id: 'q18_reach_level_5',
@@ -164,8 +164,8 @@ export const QUESTS = [
     desc: 'Seviye 5 kafe seviyesine yüksel.',
     targetType: 'level',
     targetAmount: 5,
-    rewardXP: 5500,
-    rewardMoney: 70000
+    rewardXP: 4125,
+    rewardMoney: 52500
   },
   {
     id: 'q19_place_10_decor',
@@ -173,8 +173,8 @@ export const QUESTS = [
     desc: 'Kafeye 10 adet mobilya ve dekorasyon eşyası kur.',
     targetType: 'place_decor',
     targetAmount: 10,
-    rewardXP: 6000,
-    rewardMoney: 77000
+    rewardXP: 4500,
+    rewardMoney: 57750
   },
   {
     id: 'q20_serve_200',
@@ -182,8 +182,8 @@ export const QUESTS = [
     desc: '200 müşteriye servis yap.',
     targetType: 'serve_customers',
     targetAmount: 200,
-    rewardXP: 6500,
-    rewardMoney: 87500
+    rewardXP: 4875,
+    rewardMoney: 65625
   },
   {
     id: 'q21_unlock_6_recipes',
@@ -191,8 +191,8 @@ export const QUESTS = [
     desc: '6 adet ürün reçetesinin lisansını tamamla.',
     targetType: 'unlock_recipe',
     targetAmount: 6,
-    rewardXP: 7000,
-    rewardMoney: 67500
+    rewardXP: 5250,
+    rewardMoney: 50625
   },
   {
     id: 'q22_reach_level_6',
@@ -200,8 +200,8 @@ export const QUESTS = [
     desc: 'Seviye 6 kafe seviyesine ulaş.',
     targetType: 'level',
     targetAmount: 6,
-    rewardXP: 7500,
-    rewardMoney: 75000
+    rewardXP: 5625,
+    rewardMoney: 56250
   },
   {
     id: 'q23_hire_4_staff',
@@ -209,8 +209,8 @@ export const QUESTS = [
     desc: 'Kadrona 4. baristayı dahil et.',
     targetType: 'hire_staff',
     targetAmount: 4,
-    rewardXP: 8000,
-    rewardMoney: 80000
+    rewardXP: 6000,
+    rewardMoney: 60000
   },
   {
     id: 'q24_serve_300',
@@ -218,8 +218,8 @@ export const QUESTS = [
     desc: 'Toplam 300 müşteriyi memnun et.',
     targetType: 'serve_customers',
     targetAmount: 300,
-    rewardXP: 8500,
-    rewardMoney: 87500
+    rewardXP: 6375,
+    rewardMoney: 65625
   },
   {
     id: 'q25_place_15_furniture',
@@ -227,8 +227,8 @@ export const QUESTS = [
     desc: 'Kafeyi 15 kaliteli eşya ile döşe.',
     targetType: 'place_decor',
     targetAmount: 15,
-    rewardXP: 9000,
-    rewardMoney: 95000
+    rewardXP: 6750,
+    rewardMoney: 71250
   },
   {
     id: 'q26_reach_level_7',
@@ -236,8 +236,8 @@ export const QUESTS = [
     desc: 'Seviye 7 seviyesine yüksel.',
     targetType: 'level',
     targetAmount: 7,
-    rewardXP: 9500,
-    rewardMoney: 100000
+    rewardXP: 7125,
+    rewardMoney: 75000
   },
   {
     id: 'q27_serve_400',
@@ -245,8 +245,8 @@ export const QUESTS = [
     desc: 'Toplam 400 müşteriye kusursuz hizmet sağla.',
     targetType: 'serve_customers',
     targetAmount: 400,
-    rewardXP: 10000,
-    rewardMoney: 112500
+    rewardXP: 7500,
+    rewardMoney: 84375
   },
   {
     id: 'q28_unlock_all_recipes',
@@ -254,8 +254,8 @@ export const QUESTS = [
     desc: 'Menündeki 7 ürünün tamamını aç.',
     targetType: 'unlock_recipe',
     targetAmount: 7,
-    rewardXP: 11000,
-    rewardMoney: 125000
+    rewardXP: 8250,
+    rewardMoney: 93750
   },
   {
     id: 'q29_reach_level_8',
@@ -263,8 +263,8 @@ export const QUESTS = [
     desc: 'Seviye 8 seviyesine ulaş.',
     targetType: 'level',
     targetAmount: 8,
-    rewardXP: 12000,
-    rewardMoney: 137500
+    rewardXP: 9000,
+    rewardMoney: 103125
   },
   {
     id: 'q30_hire_5_staff',
@@ -272,8 +272,8 @@ export const QUESTS = [
     desc: 'Ekibini 5 uzman çalışanla donat.',
     targetType: 'hire_staff',
     targetAmount: 5,
-    rewardXP: 13000,
-    rewardMoney: 150000
+    rewardXP: 9750,
+    rewardMoney: 112500
   },
   {
     id: 'q31_serve_550',
@@ -281,8 +281,8 @@ export const QUESTS = [
     desc: '550 müşteriye hizmet ver.',
     targetType: 'serve_customers',
     targetAmount: 550,
-    rewardXP: 14000,
-    rewardMoney: 162500
+    rewardXP: 10500,
+    rewardMoney: 121875
   },
   {
     id: 'q32_place_20_furniture',
@@ -290,8 +290,8 @@ export const QUESTS = [
     desc: 'Eşya sayını 20\'ye yükselt.',
     targetType: 'place_decor',
     targetAmount: 20,
-    rewardXP: 15000,
-    rewardMoney: 175000
+    rewardXP: 11250,
+    rewardMoney: 131250
   },
   {
     id: 'q33_reach_level_9',
@@ -299,8 +299,8 @@ export const QUESTS = [
     desc: 'Seviye 9 statüsüne ulaş.',
     targetType: 'level',
     targetAmount: 9,
-    rewardXP: 16000,
-    rewardMoney: 187500
+    rewardXP: 12000,
+    rewardMoney: 140625
   },
   {
     id: 'q34_serve_700',
@@ -308,8 +308,8 @@ export const QUESTS = [
     desc: '700 müşteriye hizmet sun.',
     targetType: 'serve_customers',
     targetAmount: 700,
-    rewardXP: 17000,
-    rewardMoney: 200000
+    rewardXP: 12750,
+    rewardMoney: 150000
   },
   {
     id: 'q35_reach_level_10',
@@ -317,8 +317,8 @@ export const QUESTS = [
     desc: 'Seviye 10 kafe seviyesine ulaş!',
     targetType: 'level',
     targetAmount: 10,
-    rewardXP: 18000,
-    rewardMoney: 212500
+    rewardXP: 13500,
+    rewardMoney: 159375
   },
   {
     id: 'q36_serve_900',
@@ -326,8 +326,8 @@ export const QUESTS = [
     desc: 'Tam 900 müşteriye kahve ve tatlı sun.',
     targetType: 'serve_customers',
     targetAmount: 900,
-    rewardXP: 20000,
-    rewardMoney: 135000
+    rewardXP: 15000,
+    rewardMoney: 101250
   },
   {
     id: 'q37_hire_6_staff',
@@ -335,8 +335,8 @@ export const QUESTS = [
     desc: '6 adet baristayı eş zamanlı çalıştır.',
     targetType: 'hire_staff',
     targetAmount: 6,
-    rewardXP: 22000,
-    rewardMoney: 150000
+    rewardXP: 16500,
+    rewardMoney: 112500
   },
   {
     id: 'q38_place_25_furniture',
@@ -344,8 +344,8 @@ export const QUESTS = [
     desc: 'Kafende 25 adet eşyayı düzenle.',
     targetType: 'place_decor',
     targetAmount: 25,
-    rewardXP: 25000,
-    rewardMoney: 165000
+    rewardXP: 18750,
+    rewardMoney: 123750
   },
   {
     id: 'q39_serve_1200',
@@ -353,8 +353,8 @@ export const QUESTS = [
     desc: 'Toplam 1,200 müşteriyi ağırla.',
     targetType: 'serve_customers',
     targetAmount: 1200,
-    rewardXP: 30000,
-    rewardMoney: 187500
+    rewardXP: 22500,
+    rewardMoney: 140625
   },
   {
     id: 'q40_serve_1500',
@@ -362,8 +362,8 @@ export const QUESTS = [
     desc: '1,500 sipariş teslimatını tamamla!',
     targetType: 'serve_customers',
     targetAmount: 1500,
-    rewardXP: 35000,
-    rewardMoney: 225000
+    rewardXP: 26250,
+    rewardMoney: 168750
   },
   {
     id: 'q41_serve_1800',
@@ -371,8 +371,8 @@ export const QUESTS = [
     desc: '1,800 müşteriyi memnuniyetle ağırla.',
     targetType: 'serve_customers',
     targetAmount: 1800,
-    rewardXP: 40000,
-    rewardMoney: 262500
+    rewardXP: 30000,
+    rewardMoney: 196875
   },
   {
     id: 'q42_place_30_furniture',
@@ -380,8 +380,8 @@ export const QUESTS = [
     desc: 'Kafene 30 adet mobilya ve dekorasyon ekle.',
     targetType: 'place_decor',
     targetAmount: 30,
-    rewardXP: 45000,
-    rewardMoney: 300000
+    rewardXP: 33750,
+    rewardMoney: 225000
   },
   {
     id: 'q43_serve_2000',
@@ -389,8 +389,8 @@ export const QUESTS = [
     desc: '2,000 müşteriye servis ulaştır.',
     targetType: 'serve_customers',
     targetAmount: 2000,
-    rewardXP: 50000,
-    rewardMoney: 337500
+    rewardXP: 37500,
+    rewardMoney: 253125
   },
   {
     id: 'q44_hire_7_staff',
@@ -398,8 +398,8 @@ export const QUESTS = [
     desc: '7 adet kalifiye baristayı istihdam et.',
     targetType: 'hire_staff',
     targetAmount: 7,
-    rewardXP: 55000,
-    rewardMoney: 375000
+    rewardXP: 41250,
+    rewardMoney: 281250
   },
   {
     id: 'q45_serve_2500',
@@ -407,8 +407,8 @@ export const QUESTS = [
     desc: '2,500 müşteriye başarıyla kahve ve tatlı servis et.',
     targetType: 'serve_customers',
     targetAmount: 2500,
-    rewardXP: 60000,
-    rewardMoney: 450000
+    rewardXP: 45000,
+    rewardMoney: 337500
   },
   {
     id: 'q46_place_35_furniture',
@@ -416,8 +416,8 @@ export const QUESTS = [
     desc: 'Kafende 35 parça dekoratif eşya bulundur.',
     targetType: 'place_decor',
     targetAmount: 35,
-    rewardXP: 70000,
-    rewardMoney: 525000
+    rewardXP: 52500,
+    rewardMoney: 393750
   },
   {
     id: 'q47_serve_3000',
@@ -425,8 +425,8 @@ export const QUESTS = [
     desc: '3,000 müşteriyi başarıyla ağırla.',
     targetType: 'serve_customers',
     targetAmount: 3000,
-    rewardXP: 80000,
-    rewardMoney: 600000
+    rewardXP: 60000,
+    rewardMoney: 450000
   },
   {
     id: 'q48_hire_8_staff',
@@ -434,8 +434,8 @@ export const QUESTS = [
     desc: 'Toplam 8 baristayı aynı anda çalıştır.',
     targetType: 'hire_staff',
     targetAmount: 8,
-    rewardXP: 90000,
-    rewardMoney: 675000
+    rewardXP: 67500,
+    rewardMoney: 506250
   },
   {
     id: 'q49_serve_4000',
@@ -443,8 +443,8 @@ export const QUESTS = [
     desc: '4,000 müşteriye servis başarısı göster.',
     targetType: 'serve_customers',
     targetAmount: 4000,
-    rewardXP: 100000,
-    rewardMoney: 750000
+    rewardXP: 75000,
+    rewardMoney: 562500
   },
   {
     id: 'q50_ultimate_empire',
@@ -452,8 +452,8 @@ export const QUESTS = [
     desc: '5,000 müşteriyi memnun ederek efsaneler arasına gir!',
     targetType: 'serve_customers',
     targetAmount: 5000,
-    rewardXP: 250000,
-    rewardMoney: 1500000
+    rewardXP: 187500,
+    rewardMoney: 1125000
   }
 ];
 
