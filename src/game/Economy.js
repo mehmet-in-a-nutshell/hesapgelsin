@@ -71,7 +71,7 @@ export const INGREDIENT_TYPES = {
 };
 
 export class Economy {
-  constructor(initialMoney = 20000) {
+  constructor(initialMoney = 30000) {
     this.money = initialMoney;
     this.dailyRevenue = 0;
     this.dailyExpenses = 0;

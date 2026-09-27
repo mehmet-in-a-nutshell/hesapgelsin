@@ -655,7 +655,7 @@ export class UIManager {
 
         this.forceCloseModal();
 
-        this.gameState.resetGame(20000, finalCafeName, selectedLocId, finalUserName);
+        this.gameState.resetGame(30000, finalCafeName, selectedLocId, finalUserName);
         this.setSpeed(1);
         audioEngine.playLevelUp();
 
@@ -2209,7 +2209,7 @@ export class UIManager {
     }
     const totalAttempted = servedCustomers + missedCustomers;
     const successRate = totalAttempted > 0 ? Math.min(100, Math.max(0, Math.round((servedCustomers / totalAttempted) * 100))) : 100;
-    const money = (this.gameState && this.gameState.economy && this.gameState.economy.money !== undefined) ? Math.floor(this.gameState.economy.money) : 20000;
+    const money = (this.gameState && this.gameState.economy && this.gameState.economy.money !== undefined) ? Math.floor(this.gameState.economy.money) : 30000;
     const reputation = (this.gameState && this.gameState.reputation !== undefined) ? this.gameState.reputation.toFixed(1) : '4.2';
     const locIcon = (this.gameState && this.gameState.location && this.gameState.location.icon) ? this.gameState.location.icon : '🏢';
     const locNameClean = (this.gameState && this.gameState.location && this.gameState.location.name) ? this.gameState.location.name.replace(/\s*\([^)]*\)/g, '').trim() : 'Üniversite Kampüsü';

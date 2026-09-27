@@ -13,7 +13,7 @@ import { EMPLOYEE_TRAITS, Employee } from './EmployeeAI.js';
 export class GameState {
   constructor() {
     this.location = LOCATIONS.university;
-    this.economy = new Economy(20000);
+    this.economy = new Economy(30000);
     this.gridManager = new GridManager(15, 15);
 
     // Simulation Clock
@@ -47,7 +47,7 @@ export class GameState {
     this.dailyMissedCustomers = (this.dailyMissedCustomers || 0) + 1;
   }
 
-  resetGame(startingMoney = 20000, newCafeName = 'Ekin Cafe', locationId = 'university', newUserName = 'Mehmet') {
+  resetGame(startingMoney = 30000, newCafeName = 'Ekin Cafe', locationId = 'university', newUserName = 'Mehmet') {
     try {
       localStorage.removeItem('cafe_tycoon_save');
     } catch (e) {
@@ -181,7 +181,7 @@ export class GameState {
       if (this.questManager && data.questIndex !== undefined) {
         this.questManager.currentQuestIndex = data.questIndex;
       }
-      this.economy.money = data.money !== undefined ? data.money : 20000;
+      this.economy.money = data.money !== undefined ? data.money : 30000;
       if (data.inventory) {
         this.economy.inventory = data.inventory;
         this.economy.ensureInventoryFormat();
