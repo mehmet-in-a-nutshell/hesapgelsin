@@ -622,6 +622,9 @@ export function renderBubbleIcon(type) {
     case 'donut':
       emoji = '🍩';
       break;
+    case 'toilet':
+      emoji = '🚽';
+      break;
     default:
       emoji = '☕';
       break;

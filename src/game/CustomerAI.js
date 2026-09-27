@@ -697,8 +697,9 @@ export class CustomerSystem {
             cust.hasVisitedToilet = true;
             cust.hasBagOnChair = true; // Leave bag on chair to reserve seat!
             cust.state = 'GOING_TO_TOILET';
+            cust.activeBubble = 'toilet'; // Show 🚽 toilet emoji bubble!
 
-            const doorPos = restroom.doorPos || { x: 12, y: 2 };
+            const doorPos = restroom.doorPos || { x: 13, y: 1 };
             const p = gridManager.pathfinder.findPath(Math.floor(cust.x), Math.floor(cust.y), doorPos.x, doorPos.y);
             if (p && p.length > 0) {
               cust.path = p;
@@ -716,19 +717,22 @@ export class CustomerSystem {
 
       case 'GOING_TO_TOILET': {
         cust.animState = 'idle';
+        cust.activeBubble = 'toilet'; // Show 🚽 toilet emoji bubble while walking!
         const restroom = gridManager.restroom;
         if (!restroom) {
           cust.hasBagOnChair = false;
+          cust.activeBubble = null;
           cust.state = 'PAYING';
           break;
         }
 
-        // Arrived at restroom doorway (12, 2)
+        // Arrived at restroom doorway (13, 1)
         if (!restroom.isOccupied) {
           // Toilet is free! Enter toilet bowl tile (14, 0)
           restroom.isOccupied = true;
           restroom.occupant = cust;
           cust.state = 'USING_TOILET';
+          cust.activeBubble = null;
           cust.toiletDuration = 5.0 + Math.random() * 10.0; // 5 - 15 in-game minutes
           cust.toiletTimer = 0;
 
@@ -742,6 +746,7 @@ export class CustomerSystem {
         } else {
           // Toilet is occupied! Join queue line in front of door
           cust.state = 'WAITING_FOR_TOILET';
+          cust.activeBubble = 'toilet'; // Show 🚽 toilet emoji bubble while waiting in queue!
           if (!restroom.queue.includes(cust)) {
             restroom.queue.push(cust);
           }
@@ -761,9 +766,11 @@ export class CustomerSystem {
 
       case 'WAITING_FOR_TOILET': {
         cust.animState = 'idle';
+        cust.activeBubble = 'toilet'; // Show 🚽 toilet emoji bubble in queue!
         const restroom = gridManager.restroom;
         if (!restroom) {
           cust.hasBagOnChair = false;
+          cust.activeBubble = null;
           cust.state = 'PAYING';
           break;
         }
@@ -774,6 +781,7 @@ export class CustomerSystem {
           restroom.isOccupied = true;
           restroom.occupant = cust;
           cust.state = 'USING_TOILET';
+          cust.activeBubble = null;
           cust.toiletDuration = 5.0 + Math.random() * 10.0; // 5 - 15 in-game minutes
           cust.toiletTimer = 0;
 
@@ -787,6 +795,7 @@ export class CustomerSystem {
 
           // Advance remaining queue customers
           restroom.queue.forEach((qCust, idx) => {
+            qCust.activeBubble = 'toilet';
             const qX = Math.max(1, restroom.queueApproachTile.x - idx);
             const qY = restroom.queueApproachTile.y;
             const qP = gridManager.pathfinder.findPath(Math.floor(qCust.x), Math.floor(qCust.y), qX, qY);
@@ -798,6 +807,7 @@ export class CustomerSystem {
 
       case 'USING_TOILET': {
         cust.animState = 'sit';
+        cust.activeBubble = null;
         const restroom = gridManager.restroom;
         if (restroom) {
           cust.x = restroom.toiletBowlPos.x;
@@ -817,6 +827,7 @@ export class CustomerSystem {
               restroom.isOccupied = true;
               restroom.occupant = nextCust;
               nextCust.state = 'USING_TOILET';
+              nextCust.activeBubble = null;
               nextCust.toiletDuration = 5.0 + Math.random() * 10.0;
               nextCust.toiletTimer = 0;
 
@@ -825,6 +836,7 @@ export class CustomerSystem {
 
               // Advance remaining queue customers
               restroom.queue.forEach((qCust, idx) => {
+                qCust.activeBubble = 'toilet';
                 const qX = Math.max(1, restroom.queueApproachTile.x - idx);
                 const qY = restroom.queueApproachTile.y;
                 const qP = gridManager.pathfinder.findPath(Math.floor(qCust.x), Math.floor(qCust.y), qX, qY);
@@ -835,6 +847,7 @@ export class CustomerSystem {
 
           // Walk back to assigned seat
           cust.state = 'RETURNING_FROM_TOILET';
+          cust.activeBubble = null;
           const seat = cust.assignedSeat;
           const targetX = seat ? (seat.approachX !== undefined ? seat.approachX : seat.x) : cust.x;
           const targetY = seat ? (seat.approachY !== undefined ? seat.approachY : seat.y) : cust.y;

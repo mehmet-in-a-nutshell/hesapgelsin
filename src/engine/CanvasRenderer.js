@@ -396,7 +396,7 @@ export class CanvasRenderer {
 
     // Restroom 2x2 Structure & Occupancy Indicator
     renderList.push({
-      yDepth: (13 + 1) * 10 + 1,
+      yDepth: (14 + 1) * 10 + 1,
       draw: () => this.drawRestroom(ctx, gridManager)
     });
 
@@ -867,25 +867,25 @@ export class CanvasRenderer {
   }
 
   drawRestroom(ctx, gridManager) {
-    const restroom = (gridManager && gridManager.restroom) ? gridManager.restroom : { x: 12, y: 1, isOccupied: false };
+    const restroom = (gridManager && gridManager.restroom) ? gridManager.restroom : { x: 13, y: 0, isOccupied: false };
     const isOccupied = restroom.isOccupied;
 
-    // 1. Restroom 2x2 Marble Ceramic Floor Tiles (12,1; 13,1; 12,2; 13,2)
+    // 1. Restroom 2x2 Slate-Grey Ceramic Floor Tiles (13,0; 14,0; 13,1; 14,1)
     const tiles = [
-      { x: 12, y: 1 },
+      { x: 13, y: 0 },
+      { x: 14, y: 0 },
       { x: 13, y: 1 },
-      { x: 12, y: 2 },
-      { x: 13, y: 2 }
+      { x: 14, y: 1 }
     ];
 
     tiles.forEach(t => {
       const iso = gridToIso(t.x, t.y);
-      // Premium Slate & Marble Tile with Grout Line
-      drawIsoDiamond(ctx, iso.x, iso.y, TILE_W, TILE_H, '#1c2826', '#3b5249');
+      // Slate Grey Ceramic Floor Tile with Grout Line
+      drawIsoDiamond(ctx, iso.x, iso.y, TILE_W, TILE_H, '#546e7a', '#37474f');
 
-      // Glossy sheen reflection diagonal
+      // Subtle diagonal sheen reflection
       ctx.save();
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.18)';
       ctx.lineWidth = 1;
       ctx.beginPath();
       ctx.moveTo(iso.x - 14, iso.y - 3);
@@ -894,12 +894,12 @@ export class CanvasRenderer {
       ctx.restore();
     });
 
-    // 2. 3D Isometric Wall Trim (NE edge separating restroom from outside)
-    const isoTR = gridToIso(13, 1);
-    const isoDR = gridToIso(13, 2);
+    // 2. 3D Wall Trim (NE edge along rightmost wall boundary x=14)
+    const isoTR = gridToIso(14, 0);
+    const isoDR = gridToIso(14, 1);
 
     ctx.save();
-    ctx.strokeStyle = '#273832';
+    ctx.strokeStyle = '#263238';
     ctx.lineWidth = 3;
     ctx.beginPath();
     ctx.moveTo(isoTR.x + TILE_W / 2, isoTR.y);
@@ -907,8 +907,8 @@ export class CanvasRenderer {
     ctx.stroke();
     ctx.restore();
 
-    // 3. 3D Isometric Angled Porcelain Toilet Bowl (Klozet) at (13, 1)
-    const isoKlozet = gridToIso(13, 1);
+    // 3. 3D Isometric Angled Porcelain Toilet Bowl (Klozet) at (14, 0)
+    const isoKlozet = gridToIso(14, 0);
     const kX = isoKlozet.x;
     const kY = isoKlozet.y;
 
@@ -1002,15 +1002,16 @@ export class CanvasRenderer {
 
     ctx.restore();
 
-    // 4. 3D Isometric Angled Restroom Door & Occupancy LED Indicator at (12, 2)
-    const isoDoor = gridToIso(12, 2);
+    // 4. 3D Isometric Angled Restroom Door & Occupancy LED Indicator at (13, 1)
+    // Positioned on the front-left tile (13, 1) so customer physically walks through the doorway tile!
+    const isoDoor = gridToIso(13, 1);
     const dX = isoDoor.x;
     const dY = isoDoor.y;
 
     ctx.save();
-    // 3D Door Frame (Kapı Kasası)
-    ctx.fillStyle = '#21100b';
-    ctx.strokeStyle = '#100805';
+    // Light Coffee Brown Wood Door Frame (Açık Ton Kahve Kapı Kasası)
+    ctx.fillStyle = '#6d4c41';
+    ctx.strokeStyle = '#4e342e';
     ctx.lineWidth = 1.5;
 
     // Doorway opening frame background
@@ -1018,33 +1019,46 @@ export class CanvasRenderer {
     ctx.fill();
     ctx.stroke();
 
-    // 3D Angled Wooden Door Panel (Açılı 3D Kapı)
+    // Light Coffee Wood Door Panel Gradient (#d7ccc8 -> #bcaaa4 -> #8d6e63)
     const woodGrad = ctx.createLinearGradient(dX - 14, dY - 50, dX + 14, dY - 10);
-    woodGrad.addColorStop(0, '#5d4037');
-    woodGrad.addColorStop(0.5, '#3e2723');
-    woodGrad.addColorStop(1, '#2c1b18');
+    woodGrad.addColorStop(0, '#d7ccc8');
+    woodGrad.addColorStop(0.5, '#bcaaa4');
+    woodGrad.addColorStop(1, '#8d6e63');
 
     ctx.fillStyle = woodGrad;
-    ctx.strokeStyle = '#1b0d0a';
+    ctx.strokeStyle = '#5d4037';
     ctx.lineWidth = 1.8;
 
-    // Angled Door Polygon (tilted 3D door panel facing outward)
-    ctx.beginPath();
-    ctx.moveTo(dX - 14, dY - 48); // top-left
-    ctx.lineTo(dX + 10, dY - 56); // top-right (angled back into isometric depth)
-    ctx.lineTo(dX + 10, dY - 12); // bottom-right
-    ctx.lineTo(dX - 14, dY - 4);  // bottom-left
-    ctx.closePath();
-    ctx.fill();
-    ctx.stroke();
+    if (!isOccupied) {
+      // DOOR IS OPEN / AJAR (Kapı açık - Müşteri içinden rahatça yürüyüp girer)
+      // Tilted inward open door polygon
+      ctx.beginPath();
+      ctx.moveTo(dX - 14, dY - 48); // top-left hinge
+      ctx.lineTo(dX + 2, dY - 54);  // top-right (swung inward)
+      ctx.lineTo(dX + 2, dY - 10);  // bottom-right
+      ctx.lineTo(dX - 14, dY - 4);  // bottom-left hinge
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+    } else {
+      // DOOR IS CLOSED (Kapı kapalı)
+      ctx.beginPath();
+      ctx.moveTo(dX - 14, dY - 48); // top-left
+      ctx.lineTo(dX + 10, dY - 56); // top-right
+      ctx.lineTo(dX + 10, dY - 12); // bottom-right
+      ctx.lineTo(dX - 14, dY - 4);  // bottom-left
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+    }
 
     // Door Wood Grain Inset Panel Detail Lines
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(dX - 10, dY - 42);
-    ctx.lineTo(dX + 6, dY - 48);
-    ctx.lineTo(dX + 6, dY - 18);
+    ctx.lineTo(dX + 4, dY - 47);
+    ctx.lineTo(dX + 4, dY - 16);
     ctx.lineTo(dX - 10, dY - 12);
     ctx.closePath();
     ctx.stroke();
@@ -1054,12 +1068,12 @@ export class CanvasRenderer {
     ctx.shadowBlur = 4;
     ctx.shadowColor = '#000000';
     ctx.beginPath();
-    ctx.ellipse(dX + 2, dY - 32, 3.5, 2, 0, 0, Math.PI * 2);
+    ctx.ellipse(dX + 1, dY - 30, 3.5, 2, 0, 0, Math.PI * 2);
     ctx.fill();
 
     // Lever Handle Bar
     ctx.fillStyle = '#ffd54f';
-    ctx.fillRect(dX - 3, dY - 33, 5, 2);
+    ctx.fillRect(dX - 4, dY - 31, 5, 2);
     ctx.shadowBlur = 0;
 
     // 5. OCCUPANCY INDICATOR LIGHT (🔴 DOLU / 🟢 BOŞ)
