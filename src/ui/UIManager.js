@@ -1801,14 +1801,14 @@ export class UIManager {
 
     const employees = this.gameState.employees || [];
     const candidates = [
-      { name: 'Selin Yılmaz', trait: 'PERFECTIONIST', salary: 1100, gender: 'female' },
-      { name: 'Caner Demir', trait: 'FAST_WORKER', salary: 1000, gender: 'male' },
-      { name: 'Elif Kaya', trait: 'CHARMER', salary: 950, gender: 'female' },
-      { name: 'Burak Şahin', trait: 'HARD_WORKER', salary: 900, gender: 'male' },
-      { name: 'Deniz Arslan', trait: 'FAST_WORKER', salary: 1050, gender: 'female' },
-      { name: 'Zeynep Çelik', trait: 'CHARMER', salary: 1000, gender: 'female' },
-      { name: 'Kaan Tunç', trait: 'PERFECTIONIST', salary: 1150, gender: 'male' },
-      { name: 'Merve Şen', trait: 'HARD_WORKER', salary: 950, gender: 'female' }
+      { name: 'Selin Yılmaz', trait: 'PERFECTIONIST', salary: 1650, gender: 'female' },
+      { name: 'Caner Demir', trait: 'FAST_WORKER', salary: 1500, gender: 'male' },
+      { name: 'Elif Kaya', trait: 'CHARMER', salary: 1450, gender: 'female' },
+      { name: 'Burak Şahin', trait: 'HARD_WORKER', salary: 1350, gender: 'male' },
+      { name: 'Deniz Arslan', trait: 'FAST_WORKER', salary: 1600, gender: 'female' },
+      { name: 'Zeynep Çelik', trait: 'CHARMER', salary: 1500, gender: 'female' },
+      { name: 'Kaan Tunç', trait: 'PERFECTIONIST', salary: 1750, gender: 'male' },
+      { name: 'Merve Şen', trait: 'HARD_WORKER', salary: 1450, gender: 'female' }
     ];
 
     let html = `
@@ -1839,7 +1839,7 @@ export class UIManager {
       html += `<div style="display: flex; flex-direction: column; gap: 12px;">`;
       employees.forEach(emp => {
         const traitDef = emp.trait || EMPLOYEE_TRAITS[emp.traitKey] || EMPLOYEE_TRAITS.FAST_WORKER;
-        const severanceFee = Math.floor((emp.salary || 800) * 3);
+        const severanceFee = Math.floor((emp.salary || 1200) * 3);
         const canAffordSeverance = this.gameState.economy.canAfford(severanceFee);
         const isFemale = emp.gender === 'female' || emp.type === 'barista_female';
         const empIcon = isFemale ? '👩‍🍳' : '👨‍🍳';
@@ -1856,7 +1856,7 @@ export class UIManager {
                   <b>${traitDef.name}</b> • <span style="color: #aaa;">${traitDef.desc}</span>
                 </div>
                 <div style="font-size: 11.5px; color: #bbb; margin-top: 4px;">
-                  Maaş: <b style="color:#ffffff;">${emp.salary || 800} TL / gün</b> | Tazminat Maliyeti: <b style="color:#ff5252;">${severanceFee} TL</b>
+                  Maaş: <b style="color:#ffffff;">${emp.salary || 1200} TL / gün</b> | Tazminat Maliyeti: <b style="color:#ff5252;">${severanceFee} TL</b>
                 </div>
               </div>
             </div>
@@ -2596,7 +2596,7 @@ export class UIManager {
   openEndDayModal() {
     const eco = this.gameState.economy;
     const rent = this.gameState.location.rent;
-    const staffSalaries = this.gameState.employees ? this.gameState.employees.reduce((sum, e) => sum + (e.salary || 800), 0) : 0;
+    const staffSalaries = this.gameState.employees ? this.gameState.employees.reduce((sum, e) => sum + (e.salary || 1200), 0) : 0;
     const netProfit = eco.dailyRevenue - eco.dailyExpenses - rent - staffSalaries;
     const servedCount = this.gameState.dailyServedCustomers || 0;
     const missedCount = this.gameState.dailyMissedCustomers || 0;

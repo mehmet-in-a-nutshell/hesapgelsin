@@ -210,7 +210,7 @@ export class GameState {
       }
       if (data.employees && Array.isArray(data.employees)) {
         this.employees = data.employees.map(e => {
-          const emp = new Employee(e.id, e.name, e.traitKey || 'FAST_WORKER', e.salary || 80);
+          const emp = new Employee(e.id, e.name, e.traitKey || 'FAST_WORKER', e.salary || 1200);
           emp.x = e.x || 4;
           emp.y = e.y || 3;
           emp.state = 'IDLE';

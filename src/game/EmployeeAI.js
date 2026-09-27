@@ -21,7 +21,7 @@ export function detectGenderByName(name = '') {
 }
 
 export class Employee {
-  constructor(id, name, traitKey = 'FAST_WORKER', salary = 800, gender = null) {
+  constructor(id, name, traitKey = 'FAST_WORKER', salary = 1200, gender = null) {
     this.id = id;
     this.name = name;
     this.trait = EMPLOYEE_TRAITS[traitKey] || EMPLOYEE_TRAITS.FAST_WORKER;
@@ -124,7 +124,7 @@ export class EmployeeSystem {
   initDefaultStaff() {
     // 1 Starting Barista spawns at entrance door and walks to random waiting tile!
     const door = this.gameState.gridManager.entrancePos; // { x: 0, y: 7 }
-    const starterBarista = new Employee('emp_1', 'Ahmet Usta', 'FAST_WORKER', 80, 'male');
+    const starterBarista = new Employee('emp_1', 'Ahmet Usta', 'FAST_WORKER', 1200, 'male');
     starterBarista.x = door.x;
     starterBarista.y = door.y;
     starterBarista.state = 'ENTERING';
