@@ -68,7 +68,7 @@ class AssetManager {
       });
     });
 
-    ['coffee', 'heart', 'wait', 'money', 'star', 'check', 'angry', 'sad', 'disappointed', 'croissant', 'cheesecake', 'waffle', 'cold_brew', 'toast', 'donut', 'toilet'].forEach(b => renderBubbleIcon(b));
+    ['coffee', 'heart', 'wait', 'money', 'star', 'check', 'angry', 'sad', 'disappointed', 'croissant', 'cheesecake', 'waffle', 'cold_brew', 'toast', 'donut'].forEach(b => renderBubbleIcon(b));
 
     this.isReady = true;
     console.log('[AssetManager] Pre-baking complete! All game sprites cached.');

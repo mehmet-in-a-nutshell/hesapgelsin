@@ -1803,12 +1803,12 @@ export class UIManager {
     const candidates = [
       { name: 'Selin Yılmaz', trait: 'PERFECTIONIST', salary: 1650, gender: 'female' },
       { name: 'Caner Demir', trait: 'FAST_WORKER', salary: 1500, gender: 'male' },
-      { name: 'Elif Kaya', trait: 'CHARMER', salary: 1450, gender: 'female' },
+      { name: 'Elif Kaya', trait: 'CHARMER', salary: 1425, gender: 'female' },
       { name: 'Burak Şahin', trait: 'HARD_WORKER', salary: 1350, gender: 'male' },
-      { name: 'Deniz Arslan', trait: 'FAST_WORKER', salary: 1600, gender: 'female' },
+      { name: 'Deniz Arslan', trait: 'FAST_WORKER', salary: 1575, gender: 'female' },
       { name: 'Zeynep Çelik', trait: 'CHARMER', salary: 1500, gender: 'female' },
-      { name: 'Kaan Tunç', trait: 'PERFECTIONIST', salary: 1750, gender: 'male' },
-      { name: 'Merve Şen', trait: 'HARD_WORKER', salary: 1450, gender: 'female' }
+      { name: 'Kaan Tunç', trait: 'PERFECTIONIST', salary: 1725, gender: 'male' },
+      { name: 'Merve Şen', trait: 'HARD_WORKER', salary: 1425, gender: 'female' }
     ];
 
     let html = `
@@ -2596,7 +2596,7 @@ export class UIManager {
   openEndDayModal() {
     const eco = this.gameState.economy;
     const rent = this.gameState.location.rent;
-    const staffSalaries = this.gameState.employees ? this.gameState.employees.reduce((sum, e) => sum + (e.salary || 1200), 0) : 0;
+    const staffSalaries = this.gameState.employees ? this.gameState.employees.reduce((sum, e) => sum + (e.salary || 800), 0) : 0;
     const netProfit = eco.dailyRevenue - eco.dailyExpenses - rent - staffSalaries;
     const servedCount = this.gameState.dailyServedCustomers || 0;
     const missedCount = this.gameState.dailyMissedCustomers || 0;

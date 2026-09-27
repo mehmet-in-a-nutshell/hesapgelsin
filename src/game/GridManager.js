@@ -260,20 +260,6 @@ export class GridManager {
     this.pathfinder = new Pathfinder(cols, rows);
     this.entrancePos = { x: 0, y: 7 }; // Door on left wall
 
-    // Restroom 2x2 structure at top-right corner (13..14, 0..1)
-    this.restroom = {
-      x: 13,
-      y: 0,
-      width: 2,
-      height: 2,
-      toiletBowlPos: { x: 14, y: 0 },
-      doorPos: { x: 13, y: 1 },
-      queueApproachTile: { x: 12, y: 1 },
-      isOccupied: false,
-      occupant: null,
-      queue: []
-    };
-
     this.initDefaultStartingLayout();
   }
 
@@ -369,15 +355,6 @@ export class GridManager {
     this.pathfinder.setGridSize(this.cols, this.rows);
     // Ensure entrance doorway tile (0, 7) is ALWAYS walkable
     this.pathfinder.setObstacle(0, 7, false);
-
-    // Restroom 2x2 structure at top-right corner (13..14, 0..1)
-    // Structure walls: (13,0), (14,0), (14,1) are obstacles.
-    // Doorway tile: (13,1) is WALKABLE!
-    this.pathfinder.setObstacle(14, 0, true);  // Toilet bowl corner inside
-    this.pathfinder.setObstacle(13, 0, true);  // Back wall interior
-    this.pathfinder.setObstacle(14, 1, true);  // Side wall
-    this.pathfinder.setObstacle(13, 1, false); // Restroom door entry
-
     this.items.forEach(item => {
       // ALL items (chairs, tables, counters, plants, equipment) are obstacles!
       this.pathfinder.setObstacle(item.x, item.y, true);
@@ -414,8 +391,6 @@ export class GridManager {
     if (gx < 0 || gx >= this.cols || gy < 0 || gy >= this.rows) return false;
     // Disallow building furniture on the entrance doorway tile (0, 7)
     if (gx === 0 && gy === 7) return false;
-    // Disallow building inside or on the 2x2 Restroom area (13..14, 0..1)
-    if (gx >= 13 && gx <= 14 && gy >= 0 && gy <= 1) return false;
     // Check if tile already occupied
     const occupied = this.items.some(it => it.x === gx && it.y === gy);
     return !occupied;
@@ -425,7 +400,6 @@ export class GridManager {
     if (!item) return false;
     if (newGx < 0 || newGx >= this.cols || newGy < 0 || newGy >= this.rows) return false;
     if (newGx === 0 && newGy === 7) return false;
-    if (newGx >= 13 && newGx <= 14 && newGy >= 0 && newGy <= 1) return false;
 
     // Tile is valid if free or is the item's current tile
     const occupied = this.items.some(it => it.uid !== item.uid && it.x === newGx && it.y === newGy);
