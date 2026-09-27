@@ -691,9 +691,166 @@ export class CustomerSystem {
 
         const maxStay = cust.stayDurationGameMinutes || 30;
         if (cust.consumeTimer >= maxStay) {
-          // Finished drink & stay! Pay and leave tip
-          cust.state = 'PAYING';
+          const restroom = gridManager.restroom;
+          // 15% chance to visit restroom if not visited yet and restroom exists
+          if (restroom && !cust.hasVisitedToilet && Math.random() < 0.15) {
+            cust.hasVisitedToilet = true;
+            cust.hasBagOnChair = true; // Leave bag on chair to reserve seat!
+            cust.state = 'GOING_TO_TOILET';
+
+            const doorPos = restroom.doorPos || { x: 13, y: 1 };
+            const p = gridManager.pathfinder.findPath(Math.floor(cust.x), Math.floor(cust.y), doorPos.x, doorPos.y);
+            if (p && p.length > 0) {
+              cust.path = p;
+            } else {
+              cust.x = doorPos.x;
+              cust.y = doorPos.y;
+            }
+          } else {
+            // Finished drink & stay! Pay and leave tip
+            cust.state = 'PAYING';
+          }
         }
+        break;
+      }
+
+      case 'GOING_TO_TOILET': {
+        cust.animState = 'idle';
+        const restroom = gridManager.restroom;
+        if (!restroom) {
+          cust.hasBagOnChair = false;
+          cust.state = 'PAYING';
+          break;
+        }
+
+        // Arrived at restroom doorway (13, 1)
+        if (!restroom.isOccupied) {
+          // Toilet is free! Enter toilet bowl tile (14, 0)
+          restroom.isOccupied = true;
+          restroom.occupant = cust;
+          cust.state = 'USING_TOILET';
+          cust.toiletDuration = 5.0 + Math.random() * 10.0; // 5 - 15 in-game minutes
+          cust.toiletTimer = 0;
+
+          const p = gridManager.pathfinder.findPath(Math.floor(cust.x), Math.floor(cust.y), restroom.toiletBowlPos.x, restroom.toiletBowlPos.y);
+          if (p && p.length > 0) {
+            cust.path = p;
+          } else {
+            cust.x = restroom.toiletBowlPos.x;
+            cust.y = restroom.toiletBowlPos.y;
+          }
+        } else {
+          // Toilet is occupied! Join queue line in front of door
+          cust.state = 'WAITING_FOR_TOILET';
+          if (!restroom.queue.includes(cust)) {
+            restroom.queue.push(cust);
+          }
+          const queueIdx = restroom.queue.indexOf(cust);
+          const queueX = Math.max(1, restroom.queueApproachTile.x - queueIdx);
+          const queueY = restroom.queueApproachTile.y;
+          const p = gridManager.pathfinder.findPath(Math.floor(cust.x), Math.floor(cust.y), queueX, queueY);
+          if (p && p.length > 0) {
+            cust.path = p;
+          } else {
+            cust.x = queueX;
+            cust.y = queueY;
+          }
+        }
+        break;
+      }
+
+      case 'WAITING_FOR_TOILET': {
+        cust.animState = 'idle';
+        const restroom = gridManager.restroom;
+        if (!restroom) {
+          cust.hasBagOnChair = false;
+          cust.state = 'PAYING';
+          break;
+        }
+
+        // Check if toilet became vacant and customer is first in queue
+        if (!restroom.isOccupied && restroom.queue[0] === cust) {
+          restroom.queue.shift();
+          restroom.isOccupied = true;
+          restroom.occupant = cust;
+          cust.state = 'USING_TOILET';
+          cust.toiletDuration = 5.0 + Math.random() * 10.0; // 5 - 15 in-game minutes
+          cust.toiletTimer = 0;
+
+          const p = gridManager.pathfinder.findPath(Math.floor(cust.x), Math.floor(cust.y), restroom.toiletBowlPos.x, restroom.toiletBowlPos.y);
+          if (p && p.length > 0) {
+            cust.path = p;
+          } else {
+            cust.x = restroom.toiletBowlPos.x;
+            cust.y = restroom.toiletBowlPos.y;
+          }
+
+          // Advance remaining queue customers
+          restroom.queue.forEach((qCust, idx) => {
+            const qX = Math.max(1, restroom.queueApproachTile.x - idx);
+            const qY = restroom.queueApproachTile.y;
+            const qP = gridManager.pathfinder.findPath(Math.floor(qCust.x), Math.floor(qCust.y), qX, qY);
+            if (qP && qP.length > 0) qCust.path = qP;
+          });
+        }
+        break;
+      }
+
+      case 'USING_TOILET': {
+        cust.animState = 'sit';
+        const restroom = gridManager.restroom;
+        if (restroom) {
+          cust.x = restroom.toiletBowlPos.x;
+          cust.y = restroom.toiletBowlPos.y;
+        }
+
+        const gameMinutesElapsed = dt * 3.0 * this.gameState.gameSpeed;
+        cust.toiletTimer = (cust.toiletTimer || 0) + gameMinutesElapsed;
+
+        if (cust.toiletTimer >= (cust.toiletDuration || 10)) {
+          // Finished toilet! Free restroom
+          if (restroom) {
+            restroom.isOccupied = false;
+            restroom.occupant = null;
+            if (restroom.queue.length > 0) {
+              const nextCust = restroom.queue.shift();
+              restroom.isOccupied = true;
+              restroom.occupant = nextCust;
+              nextCust.state = 'USING_TOILET';
+              nextCust.toiletDuration = 5.0 + Math.random() * 10.0;
+              nextCust.toiletTimer = 0;
+
+              const p = gridManager.pathfinder.findPath(Math.floor(nextCust.x), Math.floor(nextCust.y), restroom.toiletBowlPos.x, restroom.toiletBowlPos.y);
+              if (p && p.length > 0) nextCust.path = p;
+
+              // Advance remaining queue customers
+              restroom.queue.forEach((qCust, idx) => {
+                const qX = Math.max(1, restroom.queueApproachTile.x - idx);
+                const qY = restroom.queueApproachTile.y;
+                const qP = gridManager.pathfinder.findPath(Math.floor(qCust.x), Math.floor(qCust.y), qX, qY);
+                if (qP && qP.length > 0) qCust.path = qP;
+              });
+            }
+          }
+
+          // Walk back to assigned seat
+          cust.state = 'RETURNING_FROM_TOILET';
+          const seat = cust.assignedSeat;
+          const targetX = seat ? (seat.approachX !== undefined ? seat.approachX : seat.x) : cust.x;
+          const targetY = seat ? (seat.approachY !== undefined ? seat.approachY : seat.y) : cust.y;
+          const p = gridManager.pathfinder.findPath(Math.floor(cust.x), Math.floor(cust.y), targetX, targetY);
+          if (p && p.length > 0) {
+            cust.path = p;
+          }
+        }
+        break;
+      }
+
+      case 'RETURNING_FROM_TOILET': {
+        cust.animState = 'idle';
+        // Pick up bag from chair
+        cust.hasBagOnChair = false;
+        cust.state = 'PAYING';
         break;
       }
 

@@ -394,6 +394,24 @@ export class CanvasRenderer {
       });
     });
 
+    // Restroom 2x2 Structure & Occupancy Indicator
+    renderList.push({
+      yDepth: (13 + 1) * 10 + 1,
+      draw: () => this.drawRestroom(ctx, gridManager)
+    });
+
+    // Bags reserved on chairs for customers visiting restroom
+    if (gameState.customers) {
+      gameState.customers.forEach(cust => {
+        if (cust.hasBagOnChair && cust.assignedSeat) {
+          renderList.push({
+            yDepth: (cust.assignedSeat.x + cust.assignedSeat.y) * 10 + 4,
+            draw: () => this.drawBagOnChair(ctx, cust)
+          });
+        }
+      });
+    }
+
     // Furniture & Equipment
     items.forEach(item => {
       const isBeingMoved = this.movingItem && this.movingItem.item && this.movingItem.item.uid === item.uid;
@@ -844,6 +862,149 @@ export class CanvasRenderer {
         ctx.fill();
       });
     }
+
+    ctx.restore();
+  }
+
+  drawRestroom(ctx, gridManager) {
+    const restroom = (gridManager && gridManager.restroom) ? gridManager.restroom : { x: 13, y: 0, isOccupied: false };
+    const isOccupied = restroom.isOccupied;
+
+    // 1. Restroom 2x2 Ceramic Floor Tiles (13,0; 14,0; 13,1; 14,1)
+    const tiles = [
+      { x: 13, y: 0 },
+      { x: 14, y: 0 },
+      { x: 13, y: 1 },
+      { x: 14, y: 1 }
+    ];
+
+    tiles.forEach(t => {
+      const iso = gridToIso(t.x, t.y);
+      drawIsoDiamond(ctx, iso.x, iso.y, TILE_W, TILE_H, '#e0f2f1', '#b2dfdb');
+    });
+
+    // 2. 3D Isometric Toilet Bowl (Klozet) at (14, 0)
+    const isoKlozet = gridToIso(14, 0);
+    const kX = isoKlozet.x;
+    const kY = isoKlozet.y;
+
+    ctx.save();
+    // Porcelain Base Box
+    ctx.fillStyle = '#f5f5f5';
+    ctx.strokeStyle = '#9e9e9e';
+    ctx.lineWidth = 1;
+    drawRoundRect(ctx, kX - 10, kY - 22, 20, 16, 4);
+    ctx.fill();
+    ctx.stroke();
+
+    // Toilet Seat Ring
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath();
+    ctx.ellipse(kX, kY - 14, 7, 4.5, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+
+    // Toilet Water Tank (Back)
+    ctx.fillStyle = '#e0e0e0';
+    drawRoundRect(ctx, kX - 9, kY - 36, 18, 14, 3);
+    ctx.fill();
+    ctx.stroke();
+
+    // Flush Gold Button
+    ctx.fillStyle = '#ffb300';
+    ctx.beginPath();
+    ctx.arc(kX, kY - 30, 2.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+
+    // 3. 3D Isometric Restroom Door & Occupancy Light Indicator at (13, 1)
+    const isoDoor = gridToIso(13, 1);
+    const dX = isoDoor.x;
+    const dY = isoDoor.y;
+
+    ctx.save();
+    // Modern Wood Door Panel
+    ctx.fillStyle = '#3e2723';
+    ctx.strokeStyle = '#1b0000';
+    ctx.lineWidth = 1.5;
+    drawRoundRect(ctx, dX - 14, dY - 48, 28, 42, 4);
+    ctx.fill();
+    ctx.stroke();
+
+    // Gold Door Handle
+    ctx.fillStyle = '#ffb300';
+    ctx.beginPath();
+    ctx.arc(dX + 8, dY - 26, 3, 0, Math.PI * 2);
+    ctx.fill();
+
+    // OCCUPANCY INDICATOR LIGHT (🔴 DOLU / 🟢 BOŞ)
+    const lightColor = isOccupied ? '#ff5252' : '#4caf50';
+    const lightText = isOccupied ? '🔴 DOLU' : '🟢 BOŞ';
+
+    // Glowing Light Box Frame
+    ctx.save();
+    ctx.fillStyle = 'rgba(18, 18, 18, 0.95)';
+    ctx.strokeStyle = lightColor;
+    ctx.lineWidth = 1.5;
+    ctx.shadowBlur = 12;
+    ctx.shadowColor = lightColor;
+
+    drawRoundRect(ctx, dX - 22, dY - 65, 44, 15, 6);
+    ctx.fill();
+    ctx.stroke();
+
+    // Light Box Text
+    ctx.fillStyle = lightColor;
+    ctx.font = 'bold 9px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.shadowBlur = 0;
+    ctx.fillText(lightText, dX, dY - 54);
+    ctx.restore();
+
+    ctx.restore();
+  }
+
+  drawBagOnChair(ctx, cust) {
+    if (!cust || !cust.hasBagOnChair || !cust.assignedSeat) return;
+
+    const seat = cust.assignedSeat;
+    const iso = gridToIso(seat.x, seat.y);
+
+    ctx.save();
+    // Render 3D Leather Backpack 🎒 on Chair
+    const bX = iso.x;
+    const bY = iso.y - 12;
+
+    // Leather Bag Body
+    ctx.fillStyle = '#6d4c41';
+    ctx.strokeStyle = '#3e2723';
+    ctx.lineWidth = 1.2;
+    drawRoundRect(ctx, bX - 8, bY - 12, 16, 14, 4);
+    ctx.fill();
+    ctx.stroke();
+
+    // Front Pocket
+    ctx.fillStyle = '#8d6e63';
+    drawRoundRect(ctx, bX - 5, bY - 6, 10, 7, 2);
+    ctx.fill();
+    ctx.stroke();
+
+    // Gold Buckle Accent
+    ctx.fillStyle = '#ffb300';
+    ctx.fillRect(bX - 2, bY - 10, 4, 3);
+
+    // Floating Reserved Badge: 🎒 Rezerve
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.85)';
+    ctx.strokeStyle = '#ffd54f';
+    ctx.lineWidth = 1;
+    drawRoundRect(ctx, bX - 25, bY - 30, 50, 15, 7);
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.fillStyle = '#ffd54f';
+    ctx.font = 'bold 9px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('🎒 Rezerve', bX, bY - 19);
 
     ctx.restore();
   }
