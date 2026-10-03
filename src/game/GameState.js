@@ -10,6 +10,53 @@ import { GridManager } from './GridManager.js';
 import { LOCATIONS } from './LocationManager.js';
 import { EMPLOYEE_TRAITS, Employee } from './EmployeeAI.js';
 
+export const LOAN_PACKAGES = [
+  {
+    id: 'loan_cep',
+    name: 'Günü Kurtaran Cep Kredisi',
+    icon: '🆘',
+    principal: 20000,
+    termDays: 7,
+    interestRate: 0.05,
+    totalRepayment: 21000,
+    dailyInstallment: 3000,
+    desc: '20.000 TL Ana Para • 7 Gün Vadeli (%5 Faiz). Günlük Taksit: 3.000 TL'
+  },
+  {
+    id: 'loan_esnaf',
+    name: 'Mahalle Esnafı Büyüme Kredisi',
+    icon: '🏪',
+    principal: 40000,
+    termDays: 14,
+    interestRate: 0.10,
+    totalRepayment: 44000,
+    dailyInstallment: 3143,
+    desc: '40.000 TL Ana Para • 14 Gün Vadeli (%10 Faiz). Günlük Taksit: 3.143 TL'
+  },
+  {
+    id: 'loan_patron',
+    name: 'Patron Çıldırdı Yatırım Kredisi',
+    icon: '🌟',
+    principal: 70000,
+    termDays: 21,
+    interestRate: 0.15,
+    totalRepayment: 80500,
+    dailyInstallment: 3833,
+    desc: '70.000 TL Ana Para • 21 Gün Vadeli (%15 Faiz). Günlük Taksit: 3.833 TL'
+  },
+  {
+    id: 'loan_atilim',
+    name: 'Ticari Atılım Kredisi',
+    icon: '🚀',
+    principal: 100000,
+    termDays: 28,
+    interestRate: 0.20,
+    totalRepayment: 120000,
+    dailyInstallment: 4286,
+    desc: '100.000 TL Ana Para • 28 Gün Vadeli (%20 Faiz). Günlük Taksit: 4.286 TL'
+  }
+];
+
 export class GameState {
   constructor() {
     this.location = LOCATIONS.university;
@@ -37,6 +84,7 @@ export class GameState {
     // Entities
     this.customers = [];
     this.employees = [];
+    this.activeLoans = []; // Bank loan contracts
 
     // Specialization choice (unlocked at lvl 5)
     this.specialization = null; // 'artisan_coffee', 'bakery_sweet', 'express_drive'
@@ -79,6 +127,7 @@ export class GameState {
     // Reset Entities
     this.customers = [];
     this.employees = [];
+    this.activeLoans = [];
 
     // Reset Quests
     if (this.questManager) {
@@ -153,7 +202,8 @@ export class GameState {
           y: e.y
         })),
         userName: this.userName,
-        cafeName: this.cafeName
+        cafeName: this.cafeName,
+        activeLoans: this.activeLoans || []
       };
       localStorage.setItem('cafe_tycoon_save', JSON.stringify(data));
     } catch (e) {
@@ -178,6 +228,7 @@ export class GameState {
       this.dailyMissedCustomers = data.dailyMissedCustomers || 0;
       this.userName = data.userName || 'Mehmet';
       this.cafeName = data.cafeName || 'Ekin Cafe';
+      this.activeLoans = Array.isArray(data.activeLoans) ? data.activeLoans : [];
       if (this.questManager && data.questIndex !== undefined) {
         this.questManager.currentQuestIndex = data.questIndex;
       }

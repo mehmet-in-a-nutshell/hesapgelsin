@@ -11,6 +11,7 @@ import { EMPLOYEE_TRAITS, Employee } from '../game/EmployeeAI.js';
 import { audioEngine } from '../audio/AudioEngine.js';
 import { QUESTS } from '../game/QuestManager.js';
 import { LeaderboardService } from '../game/LeaderboardService.js';
+import { LOAN_PACKAGES } from '../game/GameState.js';
 
 export class UIManager {
   constructor(gameState, recipeManager, questManager, employeeSystem, canvasRenderer) {
@@ -178,6 +179,11 @@ export class UIManager {
     const btnRep = document.getElementById('btn-reputation');
     if (btnRep) {
       btnRep.addEventListener('click', () => this.openReputationModal());
+    }
+
+    const btnLoan = document.getElementById('btn-loan');
+    if (btnLoan) {
+      btnLoan.addEventListener('click', () => this.openLoanModal());
     }
 
     const statRep = document.getElementById('stat-reputation');
@@ -2592,12 +2598,151 @@ export class UIManager {
     }
   }
 
+  openLoanModal() {
+    audioEngine.playClick();
+    const activeLoans = this.gameState.activeLoans || [];
+    const maxLoans = 2;
+    const canTakeLoan = activeLoans.length < maxLoans;
+
+    let activeLoansHTML = '';
+    if (activeLoans.length === 0) {
+      activeLoansHTML = `
+        <div style="background: rgba(255,255,255,0.04); border: 1px dashed rgba(255,255,255,0.15); border-radius: 10px; padding: 14px; text-align: center; color: #aaa; font-size: 13px;">
+          Aktif kullanımda olan bir kredi borcunuz bulunmamaktadır. 🕊️
+        </div>
+      `;
+    } else {
+      activeLoansHTML = activeLoans.map((loan) => {
+        const paidDays = loan.termDays - loan.daysRemaining;
+        const progressPct = Math.round((paidDays / loan.termDays) * 100);
+        return `
+          <div style="background: rgba(33, 150, 243, 0.1); border: 1px solid rgba(33, 150, 243, 0.3); border-radius: 10px; padding: 12px; margin-bottom: 8px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <span style="font-weight: 700; color: #90caf9; font-size: 14px;">${loan.icon} ${loan.name}</span>
+              <span style="font-size: 11px; background: rgba(33, 150, 243, 0.25); color: #e3f2fd; padding: 3px 8px; border-radius: 6px; font-weight: 700;">${loan.daysRemaining} Gün Kaldı</span>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 12px; color: #ddd; margin-bottom: 8px;">
+              <div>Ana Para: <b>${loan.principal.toLocaleString()} TL</b></div>
+              <div>Günlük Taksit: <b style="color: #ff5252;">-${loan.dailyInstallment.toLocaleString()} TL</b></div>
+              <div>Toplam Ödeme: <b>${loan.totalRepayment.toLocaleString()} TL</b></div>
+              <div>Ödenen Gün: <b>${paidDays} / ${loan.termDays} Gün</b></div>
+            </div>
+            <div style="background: rgba(0,0,0,0.4); border-radius: 6px; height: 8px; overflow: hidden;">
+              <div style="width: ${progressPct}%; background: linear-gradient(90deg, #2196f3, #4caf50); height: 100%;"></div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    let packagesHTML = LOAN_PACKAGES.map(pkg => {
+      const disabledAttr = !canTakeLoan ? 'disabled' : '';
+      const buttonStyle = canTakeLoan
+        ? 'background: linear-gradient(135deg, #4caf50, #2e7d32); color: #fff; cursor: pointer; box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3);'
+        : 'background: rgba(255,255,255,0.1); color: #888; cursor: not-allowed; border: 1px solid rgba(255,255,255,0.1);';
+
+      return `
+        <div class="glass-panel" style="background: rgba(30, 35, 45, 0.75); border: 1px solid rgba(255,255,255,0.12); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; justify-content: space-between; gap: 10px;">
+          <div>
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+              <span style="font-size: 26px;">${pkg.icon}</span>
+              <span style="font-size: 11px; background: rgba(76, 175, 80, 0.15); border: 1px solid rgba(76, 175, 80, 0.3); padding: 4px 8px; border-radius: 6px; color: #81c784; font-weight: 700;">+${pkg.principal.toLocaleString()} TL Nakit</span>
+            </div>
+            <h4 style="margin: 0 0 6px 0; color: #fff; font-size: 15px; font-weight: 700;">${pkg.name}</h4>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 11.5px; background: rgba(0,0,0,0.3); padding: 8px 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06); margin-bottom: 8px;">
+              <div>Vade Süresi: <b style="color:#ffd54f;">${pkg.termDays} Gün</b></div>
+              <div>Faiz Oranı: <b style="color:#ff9800;">%${Math.round(pkg.interestRate * 100)}</b></div>
+              <div>Günlük Taksit: <b style="color:#ff5252;">-${pkg.dailyInstallment.toLocaleString()} TL</b></div>
+              <div>Geri Ödeme: <b style="color:#e0e0e0;">${pkg.totalRepayment.toLocaleString()} TL</b></div>
+            </div>
+          </div>
+          
+          <button class="btn-take-loan" data-loan-id="${pkg.id}" ${disabledAttr} style="width: 100%; padding: 10px; border-radius: 8px; border: none; font-weight: 700; font-size: 13px; transition: transform 0.15s, filter 0.15s; ${buttonStyle}">
+            ${canTakeLoan ? 'Kredi Kullan 🏦' : 'Limit Doldu (Maks 2 Kredi)'}
+          </button>
+        </div>
+      `;
+    }).join('');
+
+    const html = `
+      <div style="padding: 6px 10px; color: #fff;">
+        <div style="background: ${canTakeLoan ? 'rgba(255, 179, 0, 0.12)' : 'rgba(244, 67, 54, 0.15)'}; border: 1px solid ${canTakeLoan ? 'rgba(255, 179, 0, 0.4)' : 'rgba(244, 67, 54, 0.4)'}; border-radius: 10px; padding: 10px 14px; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between;">
+          <div style="font-size: 12px; color: ${canTakeLoan ? '#ffd54f' : '#ff8a80'}; font-weight: 600;">
+            ⚠️ <b>Kredi Kullanım Limiti:</b> Banka kuralları gereği aynı anda en fazla <b>2 aktif kredi</b> kullanabilirsiniz.
+          </div>
+          <div style="background: rgba(0,0,0,0.4); padding: 4px 10px; border-radius: 8px; font-weight: 800; font-size: 13px; color: ${activeLoans.length >= 2 ? '#ff5252' : '#4caf50'}; white-space: nowrap; margin-left: 10px;">
+            ${activeLoans.length} / ${maxLoans} Aktif Kredi
+          </div>
+        </div>
+
+        <div style="margin-bottom: 16px;">
+          <h4 style="font-size: 14px; color: #90caf9; margin: 0 0 8px 0; display: flex; align-items: center; gap: 6px;">
+            📋 Mevcut Aktif Kredileriniz (${activeLoans.length})
+          </h4>
+          ${activeLoansHTML}
+        </div>
+
+        <div>
+          <h4 style="font-size: 14px; color: #ffd54f; margin: 0 0 10px 0; display: flex; align-items: center; gap: 6px;">
+            🏦 Alınabilir Kredi Paketleri
+          </h4>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; max-height: 380px; overflow-y: auto; padding-right: 4px;">
+            ${packagesHTML}
+          </div>
+        </div>
+      </div>
+    `;
+
+    this.openModal('🏦 Banka Kredi İşlemleri', html, '750px');
+
+    const takeLoanBtns = this.modalBody.querySelectorAll('.btn-take-loan');
+    takeLoanBtns.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const loanId = e.currentTarget.getAttribute('data-loan-id');
+        const pkg = LOAN_PACKAGES.find(p => p.id === loanId);
+        if (!pkg) return;
+
+        if (this.gameState.activeLoans.length >= maxLoans) {
+          alert('Aynı anda en fazla 2 aktif kredi kullanabilirsiniz!');
+          return;
+        }
+
+        audioEngine.playLevelUp();
+
+        this.gameState.economy.addMoney(pkg.principal, `Kredi Çekildi: ${pkg.name}`);
+
+        this.gameState.activeLoans.push({
+          id: pkg.id,
+          name: pkg.name,
+          icon: pkg.icon,
+          principal: pkg.principal,
+          termDays: pkg.termDays,
+          daysRemaining: pkg.termDays,
+          dailyInstallment: pkg.dailyInstallment,
+          totalRepayment: pkg.totalRepayment,
+          totalPaid: 0,
+          startDate: this.gameState.day
+        });
+
+        this.gameState.saveToLocalStorage();
+        this.updateHUD();
+        this.addNotification(`🏦 ${pkg.name} hesabınıza aktarıldı (+${pkg.principal.toLocaleString()} TL)!`, '🏦', 'praise');
+
+        this.openLoanModal();
+      });
+    });
+  }
+
   // --- 6. END OF DAY MODAL ---
   openEndDayModal() {
     const eco = this.gameState.economy;
     const rent = this.gameState.location.rent;
     const staffSalaries = this.gameState.employees ? this.gameState.employees.reduce((sum, e) => sum + (e.salary || 800), 0) : 0;
-    const netProfit = eco.dailyRevenue - eco.dailyExpenses - rent - staffSalaries;
+    const activeLoans = this.gameState.activeLoans || [];
+    const loanInstallments = activeLoans.reduce((sum, l) => sum + l.dailyInstallment, 0);
+
+    const netProfit = eco.dailyRevenue - eco.dailyExpenses - rent - staffSalaries - loanInstallments;
     const servedCount = this.gameState.dailyServedCustomers || 0;
     const missedCount = this.gameState.dailyMissedCustomers || 0;
 
@@ -2612,6 +2757,7 @@ export class UIManager {
           <div>Malzeme & Tedarik Gideri: <b style="color:#f44336;">-${eco.dailyExpenses.toLocaleString()} TL</b></div>
           <div>Bölge Kirası: <b style="color:#f44336;">-${rent.toLocaleString()} TL</b></div>
           ${staffSalaries > 0 ? `<div>Personel Maaşları (${this.gameState.employees.length} Barista): <b style="color:#f44336;">-${staffSalaries.toLocaleString()} TL</b></div>` : ''}
+          ${loanInstallments > 0 ? `<div>Kredi Taksit Ödemeleri (${activeLoans.length} Kredi): <b style="color:#f44336;">-${loanInstallments.toLocaleString()} TL</b></div>` : ''}
           <hr style="border-color:rgba(255,255,255,0.1); margin:10px 0;"/>
           <div style="font-size:18px;">Net Günlük Kar / Zarar: <b style="color:${netProfit >= 0 ? '#4caf50' : '#f44336'};">${netProfit >= 0 ? '+' : ''}${netProfit.toLocaleString()} TL</b></div>
         </div>
@@ -2630,6 +2776,23 @@ export class UIManager {
         eco.spendMoney(rent, 'Günlük Bölge Kirası', true);
         if (staffSalaries > 0) {
           eco.spendMoney(staffSalaries, 'Personel Günlük Maaşları', true);
+        }
+
+        // Deduct daily loan installments
+        if (this.gameState.activeLoans && this.gameState.activeLoans.length > 0) {
+          this.gameState.activeLoans.forEach(loan => {
+            eco.spendMoney(loan.dailyInstallment, `Kredi Taksiti (${loan.name})`, true);
+            loan.daysRemaining--;
+            loan.totalPaid = (loan.totalPaid || 0) + loan.dailyInstallment;
+          });
+
+          const completedLoans = this.gameState.activeLoans.filter(l => l.daysRemaining <= 0);
+          if (completedLoans.length > 0) {
+            completedLoans.forEach(l => {
+              this.addNotification(`🎉 ${l.name} kredi borcunuz tamamen ödendi ve kapandı!`, '🎉', 'praise');
+            });
+          }
+          this.gameState.activeLoans = this.gameState.activeLoans.filter(l => l.daysRemaining > 0);
         }
 
         eco.resetDailyLedger();
