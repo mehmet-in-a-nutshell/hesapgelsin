@@ -495,7 +495,7 @@ export class GridManager {
    * 1. Completely empty tables (tables with 0 seated customers)
    * 2. Partially occupied tables (if all tables have at least 1 customer)
    */
-  getFreeSeatForCustomer(activeCustomers) {
+  getAllFreeSeatsForCustomer(activeCustomers) {
     const assignedSeats = new Set();
     const occupiedTableKeys = new Set();
 
@@ -539,18 +539,12 @@ export class GridManager {
       }
     }
 
-    // 1. Prioritize seats at completely empty tables
-    if (freeSeatsAtEmptyTables.length > 0) {
-      return freeSeatsAtEmptyTables[0];
-    }
+    return [...freeSeatsAtEmptyTables, ...freeSeatsAtOccupiedTables];
+  }
 
-    // 2. If all available tables have at least 1 customer, use partially occupied tables
-    if (freeSeatsAtOccupiedTables.length > 0) {
-      return freeSeatsAtOccupiedTables[0];
-    }
-
-    // If no placed chair is available, return null (customer requires an actual chair to sit)
-    return null;
+  getFreeSeatForCustomer(activeCustomers) {
+    const seats = this.getAllFreeSeatsForCustomer(activeCustomers);
+    return seats.length > 0 ? seats[0] : null;
   }
 
   getTotalSeatCount() {

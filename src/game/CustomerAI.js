@@ -480,33 +480,42 @@ export class CustomerSystem {
         cust.activeBubble = null;
 
         if (cust.enterPauseTimer <= 0) {
-          // Find an available seat in the cafe
-          const seat = gridManager.getFreeSeatForCustomer(this.gameState.customers);
-          if (seat) {
+          // Find all available candidate seats in the cafe
+          const seats = gridManager.getAllFreeSeatsForCustomer(this.gameState.customers);
+          let chosenSeat = null;
+          let assignedPath = null;
+
+          for (const seat of seats) {
             const targetX = seat.approachX !== undefined ? seat.approachX : seat.x;
             const targetY = seat.approachY !== undefined ? seat.approachY : seat.y;
             const p = gridManager.pathfinder.findPath(Math.floor(cust.x), Math.floor(cust.y), targetX, targetY);
             if (p && p.length > 0) {
-              cust.assignedSeat = seat;
-              cust.assignedTable = seat.table;
-              cust.state = 'WALKING_TO_SEAT';
-              cust.activeBubble = null;
-              cust.path = p;
-            } else {
-              // Path to seat is blocked by furniture! Get angry & leave
-              cust.activeBubble = 'angry';
-              if (this.renderer) this.renderer.addParticle(cust.x, cust.y, 'Yol Tıkalı! 😡', '#f44336');
-              if (this.uiManager) this.uiManager.addNotification('Yol Tıkalı! Müşteri Kafeyi Terk Etti 😡', '😡');
-              this.gameState.updateReputation(-0.1);
-              this.gameState.recordMissedCustomer();
-              cust.clearTableItem();
-              cust.state = 'LEAVING';
-              cust.stuckTimer = 0;
-              const entrance = gridManager.entrancePos;
-              cust.path = gridManager.pathfinder.findPath(Math.floor(cust.x), Math.floor(cust.y), entrance.x, entrance.y);
+              chosenSeat = seat;
+              assignedPath = p;
+              break; // Found a reachable seat!
             }
+          }
+
+          if (chosenSeat && assignedPath) {
+            cust.assignedSeat = chosenSeat;
+            cust.assignedTable = chosenSeat.table;
+            cust.state = 'WALKING_TO_SEAT';
+            cust.activeBubble = null;
+            cust.path = assignedPath;
+          } else if (seats.length > 0) {
+            // Unassigned seats exist, BUT ALL of them are unreachable by pathfinder (blocked by furniture)!
+            cust.activeBubble = 'angry';
+            if (this.renderer) this.renderer.addParticle(cust.x, cust.y, 'Yol Tıkalı! 😡', '#f44336');
+            if (this.uiManager) this.uiManager.addNotification('Yol Tıkalı! Müşteri Kafeyi Terk Etti 😡', '😡');
+            this.gameState.updateReputation(-0.1);
+            this.gameState.recordMissedCustomer();
+            cust.clearTableItem();
+            cust.state = 'LEAVING';
+            cust.stuckTimer = 0;
+            const entrance = gridManager.entrancePos;
+            cust.path = gridManager.pathfinder.findPath(Math.floor(cust.x), Math.floor(cust.y), entrance.x, entrance.y);
           } else {
-            // No free seat, wait near entrance for an open table
+            // All seats are currently occupied by other customers; wait near entrance!
             cust.state = 'WAITING_SEAT';
             cust.searchSeatTimer = 0;
             cust.activeBubble = null;
@@ -524,8 +533,8 @@ export class CustomerSystem {
         cust.searchSeatTimer = (cust.searchSeatTimer || 0) + dt * this.gameState.gameSpeed;
         if (cust.searchSeatTimer >= 1.0) {
           cust.searchSeatTimer = 0;
-          const seat = gridManager.getFreeSeatForCustomer(this.gameState.customers);
-          if (seat) {
+          const seats = gridManager.getAllFreeSeatsForCustomer(this.gameState.customers);
+          for (const seat of seats) {
             const targetX = seat.approachX !== undefined ? seat.approachX : seat.x;
             const targetY = seat.approachY !== undefined ? seat.approachY : seat.y;
             const p = gridManager.pathfinder.findPath(Math.floor(cust.x), Math.floor(cust.y), targetX, targetY);
@@ -535,6 +544,7 @@ export class CustomerSystem {
               cust.state = 'WALKING_TO_SEAT';
               cust.activeBubble = null;
               cust.path = p;
+              break;
             }
           }
         }
