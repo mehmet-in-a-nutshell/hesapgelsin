@@ -515,22 +515,24 @@ export class GridManager {
 
     for (const chair of chairs) {
       if (!assignedSeats.has(`${chair.x},${chair.y}`)) {
-        const approachTile = this.getNearestWalkableTile(chair.x, chair.y);
         const info = this.getAdjacentTableForChair(chair.x, chair.y);
-        if (info && info.table && info.table.isBroken) {
-          continue; // Ignore broken tables
+        // A chair MUST have an adjacent non-broken table to be valid for customer seating!
+        if (!info || !info.table || info.table.isBroken) {
+          continue; // Skip standalone/unpaired chairs
         }
+
+        const approachTile = this.getNearestWalkableTile(chair.x, chair.y);
         const seatObj = {
           x: chair.x,
           y: chair.y,
           approachX: approachTile.x,
           approachY: approachTile.y,
-          table: info ? info.table : chair,
+          table: info.table,
           chairItem: chair,
-          facingDir: info ? info.dir : 'SE'
+          facingDir: info.dir
         };
 
-        const isOccupiedTable = info ? occupiedTableKeys.has(`${info.table.x},${info.table.y}`) : false;
+        const isOccupiedTable = occupiedTableKeys.has(`${info.table.x},${info.table.y}`);
         if (isOccupiedTable) {
           freeSeatsAtOccupiedTables.push(seatObj);
         } else {
@@ -548,7 +550,15 @@ export class GridManager {
   }
 
   getTotalSeatCount() {
-    return this.items.filter(it => !it.isBroken && ITEM_CATALOG[it.id] && ITEM_CATALOG[it.id].category === 'chairs').length;
+    const chairs = this.items.filter(it => !it.isBroken && ITEM_CATALOG[it.id] && ITEM_CATALOG[it.id].category === 'chairs');
+    let validCount = 0;
+    for (const chair of chairs) {
+      const info = this.getAdjacentTableForChair(chair.x, chair.y);
+      if (info && info.table && !info.table.isBroken) {
+        validCount++;
+      }
+    }
+    return validCount;
   }
 
   getNearestWalkableTile(gx, gy) {
