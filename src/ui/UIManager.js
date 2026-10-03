@@ -2291,7 +2291,7 @@ export class UIManager {
     }
 
     if (saveBtn) {
-      saveBtn.addEventListener('click', (e) => {
+      saveBtn.addEventListener('click', async (e) => {
         if (e) { e.preventDefault(); e.stopPropagation(); }
         if (saveBtn.disabled) return;
         saveBtn.disabled = true;
@@ -2300,7 +2300,7 @@ export class UIManager {
         audioEngine.playClick();
 
         try {
-          this.saveScoreToLeaderboard({
+          await this.saveScoreToLeaderboard({
             userName,
             cafeName,
             locationName: locNameClean,
@@ -2321,7 +2321,7 @@ export class UIManager {
           this.addNotification(`🏆 Tebrikler ${userName}! Kafeniz ${money.toLocaleString()} TL servet ile Liderlik Tablosuna kaydedildi! 🎉`, '🏆', 'praise');
         } catch (err) {}
 
-        this.openLeaderboardModal({
+        await this.openLeaderboardModal({
           showLocationNextButton: true,
           justSavedMoney: money
         });

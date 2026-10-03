@@ -20,6 +20,7 @@ export class LeaderboardService {
    * Fetch leaderboard entries (first tries Supabase REST API, then falls back to LocalStorage)
    */
   static async getEntries() {
+    let entries = [];
     if (this.isConfigured()) {
       try {
         const response = await fetch(`${SUPABASE_URL}/rest/v1/leaderboard?select=*&order=money.desc&limit=50`, {
@@ -33,8 +34,8 @@ export class LeaderboardService {
 
         if (response.ok) {
           const data = await response.json();
-          if (Array.isArray(data) && data.length > 0) {
-            return data.map(item => ({
+          if (Array.isArray(data)) {
+            entries = data.map(item => ({
               userName: item.user_name,
               cafeName: item.cafe_name,
               locationName: item.location_name,
@@ -55,8 +56,27 @@ export class LeaderboardService {
       }
     }
 
-    // Fallback: LocalStorage
-    return this.getLocalEntries();
+    // Always merge local entries with remote entries to guarantee freshly saved local scores show up immediately
+    const localEntries = this.getLocalEntries();
+    const map = new Map();
+
+    // Add Supabase entries first
+    entries.forEach(item => {
+      const key = `${item.userName}_${item.cafeName}_${item.money}_${item.days}`;
+      map.set(key, item);
+    });
+
+    // Add local entries (including freshly saved score) if not already present
+    localEntries.forEach(item => {
+      const key = `${item.userName}_${item.cafeName}_${item.money}_${item.days}`;
+      if (!map.has(key)) {
+        map.set(key, item);
+      }
+    });
+
+    const combined = Array.from(map.values());
+    combined.sort((a, b) => (Number(b.money) || 0) - (Number(a.money) || 0));
+    return combined.slice(0, 50);
   }
 
   /**
