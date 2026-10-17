@@ -91,9 +91,11 @@ async function init() {
     // Handle canvas tile click for build placement, object moving & object selection
     canvas.addEventListener('click', (e) => {
       const isPlacingOrMoving = !!(renderer.movingItem || renderer.buildModeItem);
+      const isTouch = renderer.lastPointerType === 'touch' || renderer.lastPointerType === 'pen';
 
-      // Skip normal tile selection click only if camera was panned AND we are NOT in move/build mode
-      if (renderer.wasDragged && !isPlacingOrMoving) {
+      // Skip tile click if camera was panned. On mouse, build/move mode keeps legacy behaviour;
+      // on touch, a pan must never drop an item where the finger happened to lift.
+      if (renderer.wasDragged && (!isPlacingOrMoving || isTouch)) {
         renderer.wasDragged = false;
         return;
       }
@@ -173,11 +175,75 @@ async function init() {
       }
     });
 
+    setupMobileOrientationGuard();
+
     // Start main loop
     requestAnimationFrame(gameLoop);
     console.log('🚀 Game loop started successfully!');
   } catch (err) {
     console.error('❌ Failed to initialize game engine:', err);
+  }
+}
+
+/**
+ * Phones only (tablets excluded): touch device whose shorter screen side is <= 500px.
+ * Browsers cannot force landscape (iOS forbids orientation.lock), so in portrait we
+ * show a rotate overlay and pause the simulation, restoring the previous speed after.
+ */
+function isPhone() {
+  const coarse = window.matchMedia('(pointer: coarse)').matches;
+  const shortSide = Math.min(window.screen.width, window.screen.height);
+  return coarse && shortSide <= 500;
+}
+
+function setupMobileOrientationGuard() {
+  if (!isPhone()) return;
+  document.documentElement.classList.add('is-phone');
+
+  const overlay = document.getElementById('rotate-overlay');
+  const portraitMQ = window.matchMedia('(orientation: portrait)');
+  let pausedSpeed = null;
+
+  const apply = () => {
+    const portrait = portraitMQ.matches;
+    if (overlay) overlay.classList.toggle('show', portrait);
+    if (!gameState) return;
+
+    if (portrait) {
+      if (pausedSpeed === null && gameState.gameSpeed > 0) {
+        pausedSpeed = gameState.gameSpeed;
+        if (uiManager) uiManager.setSpeed(0); else gameState.gameSpeed = 0;
+      }
+    } else {
+      if (pausedSpeed !== null) {
+        // Don't auto-resume underneath an open modal (e.g. end-of-day report)
+        const modalOpen = document.getElementById('modal-overlay')?.classList.contains('open');
+        if (!modalOpen) {
+          if (uiManager) uiManager.setSpeed(pausedSpeed); else gameState.gameSpeed = pausedSpeed;
+        }
+        pausedSpeed = null;
+      }
+      setTimeout(() => renderer && renderer.resize(), 300);
+    }
+  };
+
+  portraitMQ.addEventListener('change', apply);
+  window.addEventListener('resize', apply);
+  apply();
+
+  // Android: try true fullscreen + landscape lock on first tap of the overlay button
+  const fsBtn = document.getElementById('btn-rotate-fullscreen');
+  if (fsBtn) {
+    const canLock = !!(screen.orientation && screen.orientation.lock) && !!document.documentElement.requestFullscreen;
+    if (!canLock) fsBtn.style.display = 'none';
+    fsBtn.addEventListener('click', async () => {
+      try {
+        await document.documentElement.requestFullscreen({ navigationUI: 'hide' });
+        await screen.orientation.lock('landscape');
+      } catch (err) {
+        console.warn('Orientation lock not available:', err);
+      }
+    });
   }
 }
 

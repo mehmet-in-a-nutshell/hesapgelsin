@@ -106,8 +106,13 @@ export class CanvasRenderer {
     this.camera.y = 0;
   }
 
+  getDpr() {
+    // Cap DPR at 2: retina phones report up to 3, which triples fill cost for no visible gain
+    return Math.min(2, window.devicePixelRatio || 1);
+  }
+
   resize() {
-    const dpr = window.devicePixelRatio || 1;
+    const dpr = this.getDpr();
     const parent = this.canvas.parentElement;
     const rect = parent ? parent.getBoundingClientRect() : { width: window.innerWidth, height: window.innerHeight };
     this.canvas.width = Math.floor(rect.width * dpr);
@@ -118,33 +123,77 @@ export class CanvasRenderer {
 
   initEvents() {
     window.addEventListener('resize', () => this.resize());
+    window.addEventListener('orientationchange', () => setTimeout(() => this.resize(), 250));
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', () => this.resize());
+    }
 
-    // Mouse Panning & Hover
-    this.canvas.addEventListener('mousedown', (e) => {
-      if (e.button === 0 || e.button === 2) {
-        this.isDragging = true;
-        this.dragStart = { x: e.clientX - this.camera.x, y: e.clientY - this.camera.y };
-        this.mouseDownPos = { x: e.clientX, y: e.clientY };
-        this.wasDragged = false;
-      }
-    });
+    // Unified Pointer input (mouse + touch + pen)
+    this.activePointers = new Map();
+    this.pinch = null;
 
-    window.addEventListener('mousemove', (e) => {
-      if (this.isDragging && this.mouseDownPos) {
-        const dx = e.clientX - this.mouseDownPos.x;
-        const dy = e.clientY - this.mouseDownPos.y;
-        if (Math.hypot(dx, dy) > 5) {
-          this.wasDragged = true;
-        }
-        this.camera.x = e.clientX - this.dragStart.x;
-        this.camera.y = e.clientY - this.dragStart.y;
+    this.canvas.addEventListener('pointerdown', (e) => {
+      if (e.pointerType === 'mouse' && e.button !== 0 && e.button !== 2) return;
+      this.lastPointerType = e.pointerType;
+      this.activePointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      try { this.canvas.setPointerCapture(e.pointerId); } catch (_) {}
+
+      if (this.activePointers.size === 2) {
+        // Start pinch: cancel panning, remember distance & zoom
+        const [a, b] = [...this.activePointers.values()];
+        this.pinch = { dist: Math.hypot(a.x - b.x, a.y - b.y) || 1, zoom: this.camera.targetZoom };
+        this.isDragging = false;
+        this.wasDragged = true; // a pinch must never be interpreted as a tap
+        return;
       }
+
+      this.isDragging = true;
+      this.dragStart = { x: e.clientX - this.camera.x, y: e.clientY - this.camera.y };
+      this.mouseDownPos = { x: e.clientX, y: e.clientY };
+      this.wasDragged = false;
+      // Touch has no hover: update preview tile on touch start
       this.updateHoverTile(e.clientX, e.clientY);
     });
 
-    window.addEventListener('mouseup', () => {
-      this.isDragging = false;
+    window.addEventListener('pointermove', (e) => {
+      if (this.activePointers.has(e.pointerId)) {
+        this.activePointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      }
+
+      if (this.pinch && this.activePointers.size >= 2) {
+        const [a, b] = [...this.activePointers.values()];
+        const dist = Math.hypot(a.x - b.x, a.y - b.y) || 1;
+        const z = this.pinch.zoom * (dist / this.pinch.dist);
+        this.camera.targetZoom = Math.min(this.camera.maxZoom, Math.max(this.camera.minZoom, z));
+        return;
+      }
+
+      if (this.isDragging && this.mouseDownPos) {
+        const dx = e.clientX - this.mouseDownPos.x;
+        const dy = e.clientY - this.mouseDownPos.y;
+        // Fingers jitter more than mice: larger tap tolerance on touch
+        const threshold = e.pointerType === 'touch' ? 10 : 5;
+        if (Math.hypot(dx, dy) > threshold) {
+          this.wasDragged = true;
+        }
+        if (this.wasDragged) {
+          this.camera.x = e.clientX - this.dragStart.x;
+          this.camera.y = e.clientY - this.dragStart.y;
+        }
+      }
+      if (e.pointerType === 'mouse' || this.isDragging) {
+        this.updateHoverTile(e.clientX, e.clientY);
+      }
     });
+
+    const endPointer = (e) => {
+      this.activePointers.delete(e.pointerId);
+      if (this.activePointers.size < 2) this.pinch = null;
+      if (this.activePointers.size === 0) this.isDragging = false;
+    };
+    window.addEventListener('pointerup', endPointer);
+    window.addEventListener('pointercancel', endPointer);
+    this.canvas.addEventListener('contextmenu', (e) => e.preventDefault());
 
     // Zooming
     this.canvas.addEventListener('wheel', (e) => {
@@ -211,7 +260,7 @@ export class CanvasRenderer {
    * @param {Object} gridManager - GridManager reference
    */
   render(gameState, gridManager) {
-    const dpr = window.devicePixelRatio || 1;
+    const dpr = this.getDpr();
     const ctx = this.ctx;
     const width = this.canvas.width / dpr;
     const height = this.canvas.height / dpr;

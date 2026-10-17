@@ -2,9 +2,15 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Cafe Tycoon - Kafe Yönetim Simülasyonu</title>
   <meta name="description" content="Commercial-quality 2.5D Isometric Cafe Management Simulation Game">
+  <meta name="theme-color" content="#120e0b">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Hesap Gelsin">
+  <link rel="manifest" href="/manifest.webmanifest">
   <link rel="stylesheet" href="/src/style.css">
 </head>
 <body>
@@ -226,6 +232,17 @@
           <!-- Dynamic Content Rendered by UIManager -->
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- PHONE PORTRAIT GUARD: shown only on phones held vertically -->
+  <div id="rotate-overlay" class="rotate-overlay" role="alertdialog" aria-labelledby="rotate-title">
+    <div class="rotate-card">
+      <div class="rotate-phone" aria-hidden="true"><span>☕</span></div>
+      <h2 id="rotate-title" class="rotate-title">Telefonunu Yatay Çevir</h2>
+      <p class="rotate-text">Hesap Gelsin yatay ekranda oynanır. Telefonunu çevirdiğinde oyun kaldığı yerden devam edecek.</p>
+      <div class="rotate-paused">⏸ Oyun duraklatıldı</div>
+      <button id="btn-rotate-fullscreen" class="rotate-fs-btn">⛶ Tam Ekranda Oyna</button>
     </div>
   </div>
 
