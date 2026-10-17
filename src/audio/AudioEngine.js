@@ -18,6 +18,90 @@ class AudioEngine {
     this.gameState = null;
 
     this.initTabVisibilityListeners();
+    this.installMobileUnlock();
+  }
+
+  /**
+   * Mobile browsers only start audio inside a real user gesture. iOS does NOT count
+   * `touchstart` as one (only touchend/click), and one-shot listeners can be consumed
+   * by a gesture that didn't qualify. So we keep listening until the context is
+   * actually running, then detach.
+   */
+  installMobileUnlock() {
+    if (typeof window === 'undefined') return;
+    const events = ['pointerup', 'touchend', 'click', 'keydown'];
+
+    const tryUnlock = () => {
+      this.unlock().then(() => {
+        if (this.ctx && this.ctx.state === 'running') {
+          events.forEach(ev => window.removeEventListener(ev, tryUnlock, true));
+          // Re-arm later if iOS interrupts audio (phone call, Siri, app switch)
+          this.ctx.onstatechange = () => {
+            if (this.ctx.state !== 'running' && !this.isTabHidden) {
+              events.forEach(ev => window.addEventListener(ev, tryUnlock, true));
+            }
+          };
+        }
+      });
+    };
+    events.forEach(ev => window.addEventListener(ev, tryUnlock, true));
+  }
+
+  unlock() {
+    this.init();
+    if (!this.ctx) return Promise.resolve();
+
+    // iOS 17+: route Web Audio as media playback so the ringer/silent switch doesn't mute it
+    try {
+      if (navigator.audioSession && navigator.audioSession.type !== 'playback') {
+        navigator.audioSession.type = 'playback';
+      }
+    } catch (_) {}
+    // Older iOS: a playing <audio> element switches the session to playback category
+    this.startSilentMediaElement();
+
+    // Classic iOS unlock: play a 1-sample silent buffer synchronously inside the gesture
+    try {
+      const buf = this.ctx.createBuffer(1, 1, 22050);
+      const src = this.ctx.createBufferSource();
+      src.buffer = buf;
+      src.connect(this.ctx.destination);
+      src.start(0);
+    } catch (_) {}
+
+    const resumeP = this.ctx.state !== 'running' ? this.ctx.resume().catch(() => {}) : Promise.resolve();
+    return resumeP.then(() => {
+      this.updateAudioBadge();
+      if (this.ctx.state === 'running' && !this.isMuted && !this.bgmPlaying && !this.isTabHidden) {
+        if (this.isWelcomeActive() || (this.gameState && this.gameState.gameSpeed > 0)) {
+          this.startBGM();
+        }
+      }
+    });
+  }
+
+  startSilentMediaElement() {
+    const isIOS = /iP(hone|od|ad)/.test(navigator.userAgent) ||
+      (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    if (!isIOS || (navigator.audioSession)) return;
+    if (!this.silentEl) {
+      // 0.1s of 8-bit mono silence as an in-memory WAV
+      const sampleRate = 8000, n = 800;
+      const bytes = new Uint8Array(44 + n);
+      const dv = new DataView(bytes.buffer);
+      const w = (o, s) => [...s].forEach((c, i) => bytes[o + i] = c.charCodeAt(0));
+      w(0, 'RIFF'); dv.setUint32(4, 36 + n, true); w(8, 'WAVE'); w(12, 'fmt ');
+      dv.setUint32(16, 16, true); dv.setUint16(20, 1, true); dv.setUint16(22, 1, true);
+      dv.setUint32(24, sampleRate, true); dv.setUint32(28, sampleRate, true);
+      dv.setUint16(32, 1, true); dv.setUint16(34, 8, true); w(36, 'data'); dv.setUint32(40, n, true);
+      bytes.fill(128, 44);
+      this.silentEl = document.createElement('audio');
+      this.silentEl.src = URL.createObjectURL(new Blob([bytes], { type: 'audio/wav' }));
+      this.silentEl.loop = true;
+      this.silentEl.setAttribute('playsinline', '');
+      this.silentEl.setAttribute('x-webkit-airplay', 'deny');
+    }
+    if (this.silentEl.paused) this.silentEl.play().catch(() => {});
   }
 
   initTabVisibilityListeners() {
@@ -26,6 +110,7 @@ class AudioEngine {
     const handleHide = () => {
       this.isTabHidden = true;
       this.pauseBGM();
+      if (this.silentEl) this.silentEl.pause();
       if (this.ctx && this.ctx.state === 'running') {
         this.ctx.suspend();
       }
@@ -33,8 +118,8 @@ class AudioEngine {
 
     const handleShow = () => {
       this.isTabHidden = false;
-      if (this.ctx && this.ctx.state === 'suspended') {
-        this.ctx.resume();
+      if (this.ctx && this.ctx.state !== 'running' && this.ctx.state !== 'closed') {
+        this.ctx.resume().catch(() => {});
       }
       if (!this.isMuted && !this.isModalActive) {
         if (this.isWelcomeActive() || (this.gameState && this.gameState.gameSpeed > 0)) {
@@ -51,8 +136,13 @@ class AudioEngine {
       }
     });
 
-    window.addEventListener('blur', () => handleHide());
-    window.addEventListener('focus', () => handleShow());
+    // Desktop only: on phones `blur` fires spuriously (fullscreen requests, rotation,
+    // system sheets) and would kill the music; visibilitychange covers real app switches.
+    const isTouchDevice = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+    if (!isTouchDevice) {
+      window.addEventListener('blur', () => handleHide());
+      window.addEventListener('focus', () => handleShow());
+    }
   }
 
   init() {
@@ -64,7 +154,8 @@ class AudioEngine {
 
   ensureContext() {
     if (!this.ctx) this.init();
-    if (this.ctx && this.ctx.state === 'suspended') {
+    // iOS uses a non-standard 'interrupted' state after calls/app switches
+    if (this.ctx && this.ctx.state !== 'running' && this.ctx.state !== 'closed') {
       return this.ctx.resume().then(() => {
         this.updateAudioBadge();
       }).catch(() => {});
