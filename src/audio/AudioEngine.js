@@ -32,7 +32,9 @@ class AudioEngine {
     const events = ['pointerup', 'touchend', 'click', 'keydown'];
 
     const tryUnlock = () => {
+      this.gestureSeen = true;
       this.unlock().then(() => {
+        this.renderDebug();
         if (this.ctx && this.ctx.state === 'running') {
           events.forEach(ev => window.removeEventListener(ev, tryUnlock, true));
           // Re-arm later if iOS interrupts audio (phone call, Siri, app switch)
@@ -71,6 +73,17 @@ class AudioEngine {
 
     const resumeP = this.ctx.state !== 'running' ? this.ctx.resume().catch(() => {}) : Promise.resolve();
     return resumeP.then(() => {
+      // Stuck context (known WebKit bug): throw it away and build a fresh one in this gesture
+      if (this.ctx.state !== 'running' && !this.recreatedOnce) {
+        this.recreatedOnce = true;
+        try { this.ctx.close(); } catch (_) {}
+        this.ctx = null;
+        this.bgmPlaying = false;
+        this.init();
+        return this.ctx ? this.ctx.resume().catch(() => {}) : null;
+      }
+    }).then(() => {
+      if (!this.ctx) return;
       this.updateAudioBadge();
       if (this.ctx.state === 'running' && !this.isMuted && !this.bgmPlaying && !this.isTabHidden) {
         if (this.isWelcomeActive() || (this.gameState && this.gameState.gameSpeed > 0)) {
@@ -145,10 +158,27 @@ class AudioEngine {
     }
   }
 
+  renderDebug() {
+    if (typeof location === 'undefined' || !location.search.includes('audiodebug')) return;
+    let el = document.getElementById('audio-debug');
+    if (!el) {
+      el = document.createElement('div');
+      el.id = 'audio-debug';
+      el.style.cssText = 'position:fixed;left:4px;bottom:4px;z-index:300000;background:#000c;color:#0f0;font:11px monospace;padding:4px 6px;border-radius:6px;pointer-events:none;';
+      document.body.appendChild(el);
+      setInterval(() => this.renderDebug(), 1000);
+    }
+    el.textContent = `ctx:${this.ctx ? this.ctx.state : 'yok'} gesture:${!!this.gestureSeen} bgm:${this.bgmPlaying} mute:${this.isMuted} hidden:${this.isTabHidden} session:${navigator.audioSession ? navigator.audioSession.type : '-'}`;
+  }
+
   init() {
-    if (!this.ctx) {
+    // Never create the context before a user gesture: on iOS/WebKit a context born
+    // outside a gesture can stay 'suspended' forever and resume() silently fails.
+    if (!this.ctx && this.gestureSeen) {
       const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtx) return;
       this.ctx = new AudioCtx();
+      this.brushBuffer = null;
     }
   }
 
@@ -192,6 +222,7 @@ class AudioEngine {
     this.lastChimeTime = nowMs;
 
     this.ensureContext();
+    if (!this.ctx) return;
     const now = this.ctx.currentTime;
 
     // Gentle brass bell notes: E6 (1318.51 Hz) -> B6 (1975.53 Hz)
@@ -222,6 +253,7 @@ class AudioEngine {
   playChaChing() {
     if (this.isMuted) return;
     this.ensureContext();
+    if (!this.ctx) return;
     const now = this.ctx.currentTime;
 
     const osc1 = this.ctx.createOscillator();
@@ -255,6 +287,7 @@ class AudioEngine {
   playSteamBrew() {
     if (this.isMuted) return;
     this.ensureContext();
+    if (!this.ctx) return;
     const now = this.ctx.currentTime;
 
     // White noise generator
@@ -292,6 +325,7 @@ class AudioEngine {
   playClick() {
     if (this.isMuted) return;
     this.ensureContext();
+    if (!this.ctx) return;
     const now = this.ctx.currentTime;
 
     const osc = this.ctx.createOscillator();
@@ -317,6 +351,7 @@ class AudioEngine {
   playLevelUp() {
     if (this.isMuted) return;
     this.ensureContext();
+    if (!this.ctx) return;
     const now = this.ctx.currentTime;
 
     const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
@@ -350,6 +385,7 @@ class AudioEngine {
     this.lastOrderServedTime = nowMs;
 
     this.ensureContext();
+    if (!this.ctx) return;
     const now = this.ctx.currentTime;
 
     // Sweet two-note soft chime (F6 1396.91 Hz -> A6 1760.00 Hz)
